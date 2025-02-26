@@ -28,7 +28,7 @@ const Login = () => {
         const loadingId =toast.loading("Waiting...")
         try {
             const options={
-                url:"http://agrivision.tryasp.net/auth",
+                url:"https://agrivision.tryasp.net/auth",
                 method:"POST",
                 data:values,
             }

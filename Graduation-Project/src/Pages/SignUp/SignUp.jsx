@@ -23,7 +23,7 @@ const SignUp = () => {
         const loadingId =toast.loading("Waiting...",{position:"top-left"});
         try{
             const option={
-                url:"http://agrivision.tryasp.net/auth/register",
+                url:"https://agrivision.tryasp.net/auth/register",
                 method:"POST",
                 data:values,
             }
