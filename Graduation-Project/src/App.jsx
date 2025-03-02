@@ -15,7 +15,7 @@ import Landing from './Pages/Landing/Landing';
 import EmailVerified from './Pages/EmailVerified/EmailVerified';
 import VerificationFailed from './Pages/VerificationFailed/VerificationFailed';
 import EmailConfirmation from './Pages/EmailConfirmation/EmailConfirmation';
-EmailConfirmation
+
 function App() {
   const router=createBrowserRouter([
     {index:true,element:<Landing/>},

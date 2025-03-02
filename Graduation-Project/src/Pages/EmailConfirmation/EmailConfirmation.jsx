@@ -5,13 +5,14 @@ import { useSearchParams } from 'react-router-dom';
 import EmailVerified from '../EmailVerified/EmailVerified';
 import VerificationFailed from '../VerificationFailed/VerificationFailed';
 import EmailAlreadyVerified from '../EmailAlreadyVerified/EmailAlreadyVerified';
+import Loading from '../Loading/Loading';
 
 const EmailConfirmation = () => {
     const [searchParams, setSearchParams] = useSearchParams(false)
     let TokenConfirmation=searchParams.get("token");
     let EmailConfirmation=searchParams.get("email");
     let [tokenVerification,setTokenVerification]=useState(false);
-    let EmailFormat="user@example.com";
+    let EmailFormat;
     if(TokenConfirmation){
     const parts = TokenConfirmation.split('.');
     const decodedPayload = atob(parts[1]);
@@ -43,14 +44,14 @@ const EmailConfirmation = () => {
             toast.dismiss(loadingId);
         }
     }
-    useEffect(()=>{
+    setTimeout(() => {
         sendEmailConfirmation()
-    },[])
+    }, 5000);
     return (
         <>
             <div className="h-screen w-screen">
 
-                {EmailConfirmation&&tokenVerification?<EmailVerified/>:(tokenVerification?<EmailAlreadyVerified/>:<VerificationFailed children={EmailFormat}/>)}
+                {EmailConfirmation&&tokenVerification?<EmailVerified/>:(tokenVerification?<EmailAlreadyVerified/>:<Loading/>)}
             </div>
         </>
     );

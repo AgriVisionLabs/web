@@ -20,7 +20,7 @@ const SignUp = () => {
         //rePassword:string().required("Confirm Password is required").oneOf([ref("password")],"Password and Confirm Password should be the same"),
         firstName:string().required("Name is required").min(3,"Name must be at least 3 characters").max(100,"Name can not be than 100 characters"),
         lastName:string().required("Name is required").min(3,"Name must be at least 3 characters").max(100,"Name can not be than 100 characters"),
-        phoneNumber:string().required("Phone is required"),
+        phoneNumber:string().required("Phone is required").matches(/^(2)01[0125][0-9]{8}$/,"Sorry, we Accept Egyption Phone Numbers Only")
         //.matches(/^(02)?01[0125][0-9]{8}$/,"Sorry, we Accept Egyption Phone Numbers Only")
     }) ;
     async function sendDataToRegister(values){
@@ -32,13 +32,8 @@ const SignUp = () => {
                 data:values,
             }
             let {data}= await axios(option);
-            
-            console.log("sushsgsgsggs")
-            toast.success("User created successfully",{position:"top-left"});
-            // setTimeout(()=>{navigate("/Login")},500);
-            
         }catch(error){
-            toast.error(error.response.data.errors[0].description);
+            console.log(error.response.data.errors[0].description);
         }
         finally{
             toast.dismiss(loadingId);
@@ -94,7 +89,7 @@ const SignUp = () => {
 
                                         </div>
                                         <button type="submit"  className="btn w-[90%] px-2 py-5 mx-5 my-10 text-white bg-mainColor  hover:border-mainColor hover:text-mainColor hover:bg-transparent font-medium border-2"onClick={()=>{
-                                            setVerification(true);
+                                            if(formik.values.firstName&&formik.values.lastName&&formik.values.email&&formik.values.password&&formik.values.userName&&formik.values.phoneNumber){setVerification(true)}
                                         }}> Register</button>
                                     </form>
                                     
