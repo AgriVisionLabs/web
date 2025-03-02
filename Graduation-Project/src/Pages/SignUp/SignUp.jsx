@@ -6,33 +6,39 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useFormik } from "formik";
 import { Helmet } from "react-helmet";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { userContext } from "../../Context/User.context";
+import VerificationEmail from "../../Components/VerificationEmail/VerificationEmail";
 
 const SignUp = () => {
+    let {verification,setVerification}=useContext(userContext);
     const navigate=useNavigate();
     const validationSchema=object({
         userName:string().required("Name is required").min(3,"Name must be at least 3 characters").max(32,"Name can not be than 32 characters"),
         email:string().required("Email is required").email("Email is not a valid email address."),
         password:string().required("Password is required").matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,"password should be at least eight characters, at least one upper case English letter, one lower case English letter, one number and one special character"),
-        rePassword:string().required("Confirm Password is required").oneOf([ref("password")],"Password and Confirm Password should be the same"),
+        //rePassword:string().required("Confirm Password is required").oneOf([ref("password")],"Password and Confirm Password should be the same"),
         firstName:string().required("Name is required").min(3,"Name must be at least 3 characters").max(100,"Name can not be than 100 characters"),
         lastName:string().required("Name is required").min(3,"Name must be at least 3 characters").max(100,"Name can not be than 100 characters"),
-       // phone:string().required("Phone is required").matches(/^(02)?01[0125][0-9]{8}$/,"Sorry, we Accept Egyption Phone Numbers Only"),
+        phoneNumber:string().required("Phone is required"),
+        //.matches(/^(02)?01[0125][0-9]{8}$/,"Sorry, we Accept Egyption Phone Numbers Only")
     }) ;
     async function sendDataToRegister(values){
         const loadingId =toast.loading("Waiting...",{position:"top-left"});
         try{
             const option={
-                url:"http://agrivision.tryasp.net/auth/register",
+                url:"https://agrivision.tryasp.net/auth/register",
                 method:"POST",
                 data:values,
             }
             let {data}= await axios(option);
+            
+            console.log("sushsgsgsggs")
             toast.success("User created successfully",{position:"top-left"});
-            setTimeout(()=>{navigate("/Login")},500);
+            // setTimeout(()=>{navigate("/Login")},500);
             
         }catch(error){
-            toast.error(error.response.data.errors[0].description,{position:"top-left"});
+            toast.error(error.response.data.errors[0].description);
         }
         finally{
             toast.dismiss(loadingId);
@@ -43,10 +49,10 @@ const SignUp = () => {
                 userName:"",
                 email:"",
                 password:"",
-                rePassword:"",
+                // rePassword:"",
                 firstName: "",
                 lastName:"",
-                // phone:""
+                phoneNumber:""
         },
         validationSchema,
         onSubmit:sendDataToRegister,
@@ -76,10 +82,10 @@ const SignUp = () => {
                                         {formik.errors.email && formik.touched.email && <p className="text-red-500 mt-1 mx-6 text-ms">* {formik.errors.email}</p>}
                                         <input type="password" placeholder="Password" name="password" className="formControl" value={formik.values.password} onChange={formik.handleChange} onBlur={formik.handleBlur}/>
                                         {formik.errors.password && formik.touched.password && <p className="text-red-500 mt-1 mx-6 text-ms">* {formik.errors.password}</p>}
-                                        <input type="password" placeholder="Confirm Password" name="rePassword" className="formControl" value={formik.values.rePassword} onChange={formik.handleChange} onBlur={formik.handleBlur}/>
-                                        {formik.errors.rePassword && formik.touched.rePassword && <p className="text-red-500 mt-1 mx-6 text-ms">* {formik.errors.rePassword}</p>}
-                                        <input type="tel" placeholder="Phone Number" name="phoneNumber" className="formControl" />
-                                        
+                                        {/* <input type="password" placeholder="Confirm Password" name="rePassword" className="formControl" value={formik.values.rePassword} onChange={formik.handleChange} onBlur={formik.handleBlur}/>
+                                        {formik.errors.rePassword && formik.touched.rePassword && <p className="text-red-500 mt-1 mx-6 text-ms">* {formik.errors.rePassword}</p>} */}
+                                        <input type="tel" placeholder="Phone Number" name="phoneNumber" className="formControl" value={formik.values.phoneNumber} onChange={formik.handleChange} onBlur={formik.handleBlur}/>
+                                        {formik.errors.phoneNumber && formik.touched.phoneNumber && <p className="text-red-500 mt-1 mx-6 text-ms">* {formik.errors.phoneNumber}</p>}
                                         <div className="flex justify-between   my-3">
                                             <div className=" flex  mx-7 items-baseline ">
                                             <input type="checkbox" className=" my-2 mx-3 w-4 h-4  accent-mainColor" id="Remember" />
@@ -87,7 +93,9 @@ const SignUp = () => {
                                             </div>
 
                                         </div>
-                                        <button type="submit"  className="btn w-[90%] px-2 py-5 mx-5 my-10 text-white bg-mainColor  hover:border-mainColor hover:text-mainColor hover:bg-transparent font-medium border-2"> Login</button>
+                                        <button type="submit"  className="btn w-[90%] px-2 py-5 mx-5 my-10 text-white bg-mainColor  hover:border-mainColor hover:text-mainColor hover:bg-transparent font-medium border-2"onClick={()=>{
+                                            setVerification(true);
+                                        }}> Register</button>
                                     </form>
                                     
                                 </div>
@@ -115,6 +123,7 @@ const SignUp = () => {
                             </div>
                         </div>
                     </div>
+                    {verification?<div className=' fixed z-50 inset-0  '><VerificationEmail children={formik.values.email}/></div>:""}
             </section>
         </>
     );

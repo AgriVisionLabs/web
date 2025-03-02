@@ -16,7 +16,7 @@ import { useFormik } from "formik";
 
 
 const Login = () => {
-    let {forgetPassword,otp,setForgetPassword,resetPassword,optLogin,setOptLogin}=useContext(AllContext);
+    let {forgetPassword,otp,setForgetPassword,resetPassword,optLogin}=useContext(AllContext);
     // const [inCorrectEmailorPassword,setInCorrectEmailorPassword]=useState(null);
     const navigate=useNavigate();
     const {setToken}=useContext(userContext);
@@ -28,11 +28,11 @@ const Login = () => {
         const loadingId =toast.loading("Waiting...")
         try {
             const options={
-                url:"http://agrivision.tryasp.net/auth",
+                url:"https://agrivision.tryasp.net/auth",
                 method:"POST",
                 data:values,
             }
-            let {data}=await axios.request(options);
+            let {data}=await axios(options);
             if(data.token){
                 setToken(data.token);
                 toast.success("User Logged in successfully");
@@ -40,9 +40,9 @@ const Login = () => {
                 setToken(data.token);
                 localStorage.setItem("token",data.token);
             }
+            
         }catch(error){
             toast.error("Incorrect email or password ("+error.response.data.errors[0].description+")");
-            
         }finally{
             toast.dismiss(loadingId);
         }
@@ -90,7 +90,9 @@ const Login = () => {
                                 <h1 className="text-center text-[28px] md:text-[33px] lg:text-[38px] my-5 text-mainColor font-medium">Sign in to your account</h1>
                                 <form action="" onSubmit={formik.handleSubmit} >
                                     <input type="text" placeholder="Enter your Email" className="formControl" name="email" value={formik.values.email} onChange={formik.handleChange} onBlur={formik.handleBlur}/>
+                                    {formik.errors.email && formik.touched.email && <p className="text-red-500 mt-1 mx-6 text-ms">* {formik.errors.email}</p>}
                                     <input type="password" placeholder="Enter Your Password" className="formControl"  name="password" value={formik.values.password} onChange={formik.handleChange} onBlur={formik.handleBlur}/>
+                                    {formik.errors.password && formik.touched.password && <p className="text-red-500 mt-1 mx-6 text-ms">* {formik.errors.password}</p>}
                                     <div className="flex justify-between items-center my-3">
                                         <div className=" flex items-center mx-7 ">
                                         <input type="checkbox" className=" my-2 mx-3 w-4 h-4  accent-mainColor  " id="Remember" />
@@ -101,9 +103,7 @@ const Login = () => {
                                     </div>
                                     {/* onClick={()=>{setOptLogin(true); */}
                                     {/* // }} */}
-                                    <button type="submit"   className="btn w-[90%] px-2 py-5 mx-5 my-10 text-white bg-mainColor  hover:border-mainColor hover:text-mainColor hover:bg-transparent font-medium border-2 " 
-                                    
-                                    >Login</button>
+                                    <button type="submit"   className="btn w-[90%] px-2 py-5 mx-5 my-10 text-white bg-mainColor  hover:border-mainColor hover:text-mainColor hover:bg-transparent font-medium border-2 ">Login</button>
                                 </form>
                                 
                             </div>

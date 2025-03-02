@@ -11,9 +11,14 @@ import Login from './Pages/Login/Login'
 import SignUp from './Pages/SignUp/SignUp'
 import UserProvider from './Context/User.context';
 import { Toaster } from 'react-hot-toast';
-
+import Landing from './Pages/Landing/Landing';
+import EmailVerified from './Pages/EmailVerified/EmailVerified';
+import VerificationFailed from './Pages/VerificationFailed/VerificationFailed';
+import EmailConfirmation from './Pages/EmailConfirmation/EmailConfirmation';
+EmailConfirmation
 function App() {
   const router=createBrowserRouter([
+    {index:true,element:<Landing/>},
     {path:"/",element:<ProtectedRoute><Layout/></ProtectedRoute> ,children:[
       {path:"/Home",element:<Home/>,children:[
         {index:true,element:<Dashboard/>}
@@ -22,7 +27,9 @@ function App() {
   ]},
     {path:"/",element:<Layout/>,children:[
       {path:"/Login",element:<Login/>},
-    {path:"/SignUp",element:<SignUp/>},]},
+    {path:"/SignUp",element:<SignUp/>},
+    {path:"/EmailConfirmation",element:<EmailConfirmation/>}
+  ]},
   ]);
   const myClient=new QueryClient();
   
