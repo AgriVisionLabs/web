@@ -10,14 +10,15 @@ import Loading from '../Loading/Loading';
 const EmailConfirmation = () => {
     const [searchParams, setSearchParams] = useSearchParams(false)
     const token=useParams("token");
-    console.log("token : ",token)
+    // console.log("token : ",token)
     let TokenConfirmation=searchParams.get("token");
-    console.log(TokenConfirmation)
+    // console.log(TokenConfirmation)
     // const [searchQuery, setSearchQuery] = useState(searchParams.get("token") || "");
     // let EmailConfirmation=searchParams.get("email");
     let [tokenVerification,setTokenVerification]=useState(false);
-    let [loading,setLoading]=useState(true);
-    let EmailFormat="";
+    let [emailVerification,setEmailVerification]=useState(false);
+    let [emailConfirmed,setEmailConfirmed]=useState(false);
+    let EmailFormat="user@example.com";
     if(TokenConfirmation){
     const parts = TokenConfirmation.split('.');
     const decodedPayload = atob(parts[1]);
@@ -25,7 +26,6 @@ const EmailConfirmation = () => {
     EmailFormat=parsedPayload.email;
     }
     async function sendEmailConfirmation(){
-        setLoading(false);
         const loadingId =toast.loading("Waiting...");
         try{
             const option={
@@ -36,14 +36,23 @@ const EmailConfirmation = () => {
                 },
             }
             let {data}= await axios(option);
-            
             toast.success("Email confirmed");
-            
+            setTokenVerification(true);
+            setEmailVerification(true);
+            setEmailConfirmed(false);
         }catch(error){
             if(error.response.data.errors[0].description=="The email is already confirmed."){
+                console.log(error.response.data.errors[0].description)
                 setTokenVerification(true);
+                setEmailVerification(true);
+                setEmailConfirmed(true);
             }
-            else{toast.error(error.response.data.errors[0].description);}
+            else{toast.error(error.response.data.errors[0].description);
+                console.log(error.response.data.errors[0].description)
+                setTokenVerification(true);
+                setEmailVerification(false);
+                setEmailConfirmed(false)
+            }
             
         }
         finally{
@@ -53,13 +62,15 @@ const EmailConfirmation = () => {
     useEffect(()=>{
         sendEmailConfirmation()
     },[])
-    // setTimeout(() => {
-    //     sendEmailConfirmation()
-    // }, 5000);
     return (
         <>
             <div className="h-screen w-screen">
-                {loading?<Loading/>:EmailFormat&&tokenVerification?<EmailVerified/>:(tokenVerification?<EmailAlreadyVerified/>:<VerificationFailed/>)}
+                {
+                emailVerification&&tokenVerification&&!emailConfirmed?<EmailVerified/>
+                :emailVerification&&tokenVerification&&emailConfirmed?<EmailAlreadyVerified/>
+                :!emailVerification&&tokenVerification&&!emailConfirmed?<VerificationFailed children={EmailFormat}/>
+                :<Loading/>
+                }
                 {/* {EmailFormat&&tokenVerification?<EmailVerified/>:(tokenVerification?<EmailAlreadyVerified/>:<VerificationFailed/>)} */}
             </div>
         </>
