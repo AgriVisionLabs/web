@@ -127,7 +127,7 @@ var forms=[1,2,3,4,5];
         
         <>
         
-        <section className="Dashboard  ms-auto me-3  transition-all duration-500 px-2">
+        <section className="Dashboard  ms-auto   transition-all duration-500 ps-3 ">
             
             <main className="py-10 ">
                 <div className=" mt-12    order-7 overflow-hidden   transition-all duration-500">

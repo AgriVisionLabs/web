@@ -12,6 +12,7 @@ const VerificationEmail = ({children}) => {
     let [seconds,setSeconds]=useState(30);
     // const date= new Date();
     // date.toISOString
+    setInterval(witeTime,1000);
     function witeTime(){
         if(seconds>=1){
             seconds=seconds-1;
@@ -20,7 +21,7 @@ const VerificationEmail = ({children}) => {
             setSeconds(0);
         }
     } 
-    setInterval(witeTime,1000);
+    
     
     async function ResendVerificationEmail(){
         const loadingId =toast.loading("Waiting...",{position:"top-left"});
@@ -34,10 +35,7 @@ const VerificationEmail = ({children}) => {
                 },
             }
             let {data}= await axios(option);
-            if(data){
-                console.log("yes yes")
-                setVerification(false);
-            }
+           
             
         }catch(error){
             console.log(error)
@@ -74,7 +72,7 @@ const VerificationEmail = ({children}) => {
                 <h2 className="text-[16px] text-center font-medium text-[#6b6a6a] ">Click the link in the email to verify your address.</h2>
                 {seconds==0?<>
                 <button className=" px-9  py-4 rounded-full  bg-mainColor text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium  mt-9" onClick={()=>{
-                    ResendVerificationEmail()
+                    ResendVerificationEmail();
                 }}>Resend verification email</button>
                 </>
                 :<>

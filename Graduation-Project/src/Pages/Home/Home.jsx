@@ -54,33 +54,35 @@ function active(e,n){
 }
 function menuResponsive(){
     let menuRes=document.querySelector("main");
-
     if(OnMenu){
-        menuRes.lastElementChild.classList.remove("w-[81%]")
-        menuRes.lastElementChild.classList.add("w-[92%]")
-        
+        menuRes.lastElementChild.classList.remove("w-[88%]")
+        menuRes.lastElementChild.classList.add("w-[95%]")
+
         
     }else{
-        menuRes.lastElementChild.classList.remove("w-[92%]")
-        menuRes.lastElementChild.classList.add("w-[81%]")
+        menuRes.lastElementChild.classList.remove("w-[95%]")
+        menuRes.lastElementChild.classList.add("w-[88%]")
         
     }
 }
 function OpenMenuList(){
+    let section=document.querySelector("section.Home main section");
     let element=document.querySelector("main div.menuList");
     let element2=document.querySelector("main div.menuList div.log-out");
     if(!OnMenu){
         //text-transparent border-e-2
         //log-out
         // element.classList.add("text-transparent");
+        section.classList.add("w-[95%]")
         element2.classList.add("border-t-0");
-        element.classList.remove("border-t-2");
+        element2.classList.remove("border-t-2");
         element.classList.add("w-0");
         element.classList.remove("w-[100%]");
         setOnmenu(true);
     }else{
         // element.classList.remove("text-transparent");
-        element.classList.add("border-t-2");
+        section.classList.remove("w-[95%]")
+        element2.classList.add("border-t-2");
         element2.classList.remove("border-t-0");
         element.classList.add("w-[100%]");
         element.classList.remove("w-0");
@@ -90,7 +92,7 @@ function OpenMenuList(){
 
 useEffect(()=>{
     menuResponsive()
-},[OnMenu,onOpenPage,])
+},[OnMenu,onOpenPage])
 
     return (
         
@@ -113,9 +115,9 @@ useEffect(()=>{
             
             >
                 <div className="transition-all  duration-500">
-                    <div  className="sidebar  w-auto  z-50 order-8 fixed top-[48px] bottom-0  me-6  text-[#0D121C]  font-[400]  grid grid-cols-6 ">
+                    <div  className="sidebar  w-auto  z-50 order-8 fixed top-[48px] bottom-0 flex  me-6  text-[#0D121C]  font-[400]   ">
                         
-                        <div className="bg-[#F7F7F7] flex  col-span-2 flex-col justify-between border-[#0d121c21] border-e-2 lg:border-0 h-[100%]">
+                        <div className="bg-[#F7F7F7] flex  flex-col justify-between border-[#0d121c21] border-e-2 lg:border-0 h-[100%]">
                             <div className="px-3 xl:ps-6 xl:pe-5 pt-12 activePage1 transition-all duration-300" onClick={(e)=>{active(e,1)}}>
                                 <div className="flex cursor-pointer  hover:text-[#1E6930] py-2 text-mainColor">
                                     <LayoutDashboard className=" transition-all duration-300 "/>
@@ -149,7 +151,7 @@ useEffect(()=>{
                             </div>
                             </div>
                         </div>
-                        <div  className={`bg-[#F7F7F7] menuList transition-[width]  hidden  lg:flex  duration-500 overflow-hidden col-span-4 flex-col justify-between h-[100%]   border-[#0d121c21] lg:border-e-2`}>
+                        <div  className={`bg-[#F7F7F7] menuList hidden transition-[width]  overflow-hidden  lg:flex  duration-500   flex-col justify-between h-[100%]   border-[#0d121c21] lg:border-e-2`}>
                             <div className="pt-12 activePage2 pe-2 "  onClick={(e)=>{active(e,2)}}>
                                 <div className="flex cursor-pointer   text-[16px]  hover:text-[#1E6930] py-2 text-mainColor font-[500]">
                                 <p className="">Dashboard</p>
@@ -184,11 +186,13 @@ useEffect(()=>{
                         </div>
                     </div>
                 </div>
+                    <section className="ms-auto transition-all duration-500 px-4">
                     {
                         onOpenPage==0?<Dashboard/>:
                         onOpenPage==1?<FarmsAndFields/>:""
                         
                     }
+                    </section>
             </main>
                 
         </section>

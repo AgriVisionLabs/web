@@ -10,7 +10,7 @@ const Fields = () => {
     let {SetOpenFarmsOrFieled,addField,setAddField}=useContext(AllContext);
     SetOpenFarmsOrFieled(2)
     return (
-        <section className="h-screen   ms-auto me-3  transition-all duration-500  px-2 relative">
+        <section className="h-screen ms-5     transition-all duration-500  px-2 relative">
             
             <main className="py-10 h-full ">
                 <div className=" mt-12 h-full   order-7 overflow-hidden   transition-all duration-500">
