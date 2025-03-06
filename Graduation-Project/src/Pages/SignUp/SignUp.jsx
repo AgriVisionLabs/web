@@ -1,7 +1,7 @@
 
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./SignUp.module.css"
-import { object, ref, string } from "yup";
+import { bool, object, ref, string } from "yup";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useFormik } from "formik";
@@ -12,7 +12,8 @@ import VerificationEmail from "../../Components/VerificationEmail/VerificationEm
 
 const SignUp = () => {
     let {verification,setVerification}=useContext(userContext);
-    const navigate=useNavigate();
+    let [check,setCheck]=useState(false);
+    // const navigate=useNavigate();
     const validationSchema=object({
         userName:string().required("Name is required").min(3,"Name must be at least 3 characters").max(32,"Name can not be than 32 characters"),
         email:string().required("Email is required").email("Email is not a valid email address."),
@@ -20,8 +21,7 @@ const SignUp = () => {
         //rePassword:string().required("Confirm Password is required").oneOf([ref("password")],"Password and Confirm Password should be the same"),
         firstName:string().required("Name is required").min(3,"Name must be at least 3 characters").max(100,"Name can not be than 100 characters"),
         lastName:string().required("Name is required").min(3,"Name must be at least 3 characters").max(100,"Name can not be than 100 characters"),
-        phoneNumber:string().required("Phone is required").matches(/^(2)01[0125][0-9]{8}$/,"Sorry, we Accept Egyption Phone Numbers Only")
-        //.matches(/^(02)?01[0125][0-9]{8}$/,"Sorry, we Accept Egyption Phone Numbers Only")
+        phoneNumber:string().required("Phone is required").matches(/^(2)01[0125][0-9]{8}$/,"Sorry, we Accept Egyption Phone Numbers Only"),
     }) ;
     async function sendDataToRegister(values){
         const loadingId =toast.loading("Waiting...",{position:"top-left"});
@@ -47,7 +47,7 @@ const SignUp = () => {
                 // rePassword:"",
                 firstName: "",
                 lastName:"",
-                phoneNumber:""
+                phoneNumber:"",
         },
         validationSchema,
         onSubmit:sendDataToRegister,
@@ -63,7 +63,7 @@ const SignUp = () => {
                     <div className=" h-full w-full">
                         <div className=" w-full h-full grid grid-cols-12 " >
                             
-                            <div className="col-span-7 flex justify-center items-center ">
+                            <div className=" col-span-7 flex justify-center items-center ">
                                 <div className="w-[480px] flex flex-col justify-center items-center ">
                                     <h1 className=" text-[35px]  my-5 text-mainColor font-medium">Create your new account</h1>
                                     <form action="" className="" onSubmit={formik.handleSubmit}>
@@ -83,13 +83,15 @@ const SignUp = () => {
                                         {formik.errors.phoneNumber && formik.touched.phoneNumber && <p className="text-red-500 mt-1 mx-6 text-ms">* {formik.errors.phoneNumber}</p>}
                                         <div className="flex justify-between   my-3">
                                             <div className=" flex  mx-7 items-baseline ">
-                                            <input type="checkbox" className=" my-2 mx-3 w-4 h-4  accent-mainColor" id="Remember" />
+                                            <input type="checkbox" className=" my-2 mx-3 w-4 h-4  accent-mainColor" required id="Remember" onClick={()=>{
+                                                if(check){setCheck(false)}
+                                                else{setCheck(true)}
+                                            }}/>
                                             <label htmlFor="Remember me" className="text-[16px]" >I agree to <a href="" className="text-mainColor underline underline-offset-4 decoration-mainColor the">Terms and Conditions</a> and <a href="" className="text-mainColor underline underline-offset-4 decoration-mainColor the">Privacy Statement</a></label>
                                             </div>
-
                                         </div>
                                         <button type="submit"  className="btn w-[90%] px-2 py-5 mx-5 my-10 text-white bg-mainColor  hover:border-mainColor hover:text-mainColor hover:bg-transparent font-medium border-2"onClick={()=>{
-                                            if(formik.values.firstName&&formik.values.lastName&&formik.values.email&&formik.values.password&&formik.values.userName&&formik.values.phoneNumber){setVerification(true)}
+                                            if(formik.values.firstName&&formik.values.lastName&&formik.values.email&&formik.values.password&&formik.values.userName&&formik.values.phoneNumber&&check){setVerification(true)}
                                         }}> Register</button>
                                     </form>
                                     

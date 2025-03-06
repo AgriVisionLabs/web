@@ -9,7 +9,7 @@ import Loading from '../Loading/Loading';
 
 const EmailConfirmation = () => {
     const [searchParams, setSearchParams] = useSearchParams(false)
-    const token=useParams("token");
+    // const token=useParams("token");
     // console.log("token : ",token)
     let TokenConfirmation=searchParams.get("token");
     // console.log(TokenConfirmation)
@@ -18,13 +18,14 @@ const EmailConfirmation = () => {
     let [tokenVerification,setTokenVerification]=useState(false);
     let [emailVerification,setEmailVerification]=useState(false);
     let [emailConfirmed,setEmailConfirmed]=useState(false);
+    let [loading,setLoading]=useState(true);
     let EmailFormat="user@example.com";
     if(TokenConfirmation){
-    const parts = TokenConfirmation.split('.');
-    const decodedPayload = atob(parts[1]);
-    const parsedPayload = JSON.parse(decodedPayload);
-    EmailFormat=parsedPayload.email;
-    }
+        const parts = TokenConfirmation.split('.');
+        const decodedPayload = atob(parts[1]);
+        const parsedPayload = JSON.parse(decodedPayload);
+        EmailFormat=parsedPayload.email;
+        }
     async function sendEmailConfirmation(){
         const loadingId =toast.loading("Waiting...");
         try{
@@ -37,6 +38,7 @@ const EmailConfirmation = () => {
             }
             let {data}= await axios(option);
             toast.success("Email confirmed");
+            
             setTokenVerification(true);
             setEmailVerification(true);
             setEmailConfirmed(false);
@@ -56,6 +58,7 @@ const EmailConfirmation = () => {
             
         }
         finally{
+            setLoading(false)
             toast.dismiss(loadingId);
         }
     }
@@ -66,10 +69,11 @@ const EmailConfirmation = () => {
         <>
             <div className="h-screen w-screen">
                 {
-                emailVerification&&tokenVerification&&!emailConfirmed?<EmailVerified/>
+                loading?<Loading/>
+                :emailVerification&&tokenVerification&&!emailConfirmed?<EmailVerified/>
                 :emailVerification&&tokenVerification&&emailConfirmed?<EmailAlreadyVerified/>
-                :!emailVerification&&tokenVerification&&!emailConfirmed?<VerificationFailed children={EmailFormat}/>
-                :<Loading/>
+                :<VerificationFailed children={EmailFormat}/>
+                
                 }
                 {/* {EmailFormat&&tokenVerification?<EmailVerified/>:(tokenVerification?<EmailAlreadyVerified/>:<VerificationFailed/>)} */}
             </div>

@@ -12,13 +12,15 @@ const VerificationEmail = ({children}) => {
     let [seconds,setSeconds]=useState(30);
     // const date= new Date();
     // date.toISOString
-    setInterval(witeTime,1000);
+    let intervalID=setInterval(witeTime,1000);
     function witeTime(){
+        
         if(seconds>=1){
             seconds=seconds-1;
             setSeconds(seconds);
         }else{
             setSeconds(0);
+            clearInterval(intervalID)
         }
     } 
     
@@ -35,7 +37,6 @@ const VerificationEmail = ({children}) => {
                 },
             }
             let {data}= await axios(option);
-           
             
         }catch(error){
             console.log(error)
@@ -73,6 +74,8 @@ const VerificationEmail = ({children}) => {
                 {seconds==0?<>
                 <button className=" px-9  py-4 rounded-full  bg-mainColor text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium  mt-9" onClick={()=>{
                     ResendVerificationEmail();
+                    setSeconds(30)
+                    intervalID=setInterval(witeTime,1000);
                 }}>Resend verification email</button>
                 </>
                 :<>
