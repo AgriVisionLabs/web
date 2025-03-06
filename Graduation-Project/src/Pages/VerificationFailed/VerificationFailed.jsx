@@ -38,7 +38,6 @@ const VerificationFailed = ({children}) => {
                             </div>
                             </div>
                             <h1 className="text-[20px] font-bold py-2">Verification Failed</h1>
-                            <h2 className="text-[18px] font-semibold ">{children}</h2>
                             <p className="text-[16px] font-medium text-[#616161] w-[390px] text-center py-2">
                             We couldn't verify your email. The link may have
                             expired or is invalid.
