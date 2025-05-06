@@ -1,19 +1,29 @@
 import imgLogoIcon from "../../assets/logo/AgrivisionLogo.svg"
 import imgPersonalIcon from "../../assets/images/image 6.png"
-import { LayoutDashboard,Tractor,ListChecks,FireExtinguisher,Thermometer,ChartNoAxesCombined,Settings,LogOut, Link } from 'lucide-react';
-import { useContext, useRef, useState } from "react";
+import { LayoutDashboard,Tractor,ListChecks,FireExtinguisher,Thermometer,ChartNoAxesCombined,Settings,LogOut, Search } from 'lucide-react';
+import { useContext, useState } from "react";
 import { useEffect } from "react";
 import 'react-slidy/lib/styles.css';
 import Dashboard from "../Dashboard/Dashboard";
 import FarmsAndFields from "../FarmsAndFields/FarmsAndFields";
 import { AllContext } from '../../Context/All.context';
 import { userContext } from "../../Context/User.context";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
+import Irrigation from "../IrrigationControl/Irrigation";
+import SensorsDevices from "../Sensors&Devices/Sensors&Devices";
+import HomeDiseaseDetection from "../../Pages/HomeDiseaseDetection/HomeDiseaseDetection";
+import toast from "react-hot-toast";
+import axios from "axios";
 const Home = () => {
+    
+
     let {OnMenu, setOnmenu}=useContext(AllContext);
-    let {logOut}=useContext(userContext)
-    let [onOpenPage,setOnOpenPage]=useState(0);
     const navigate=useNavigate();
+    let [onOpenPage,setOnOpenPage]=useState(0);
+    let {logOut}=useContext(userContext);
+    
+    
+
 function active(e,n){
         // let e1=document.getElementsByClassName("activePage1").firstElementChild;
         // console.log(e.target);
@@ -111,34 +121,36 @@ useEffect(()=>{
                     <img src={imgPersonalIcon} alt="" className="w-7" />
                     </div>
             </nav>
-            <main className={`text-[#0D121C] transition-all duration-500 `}
+            <main  className={`text-[#0D121C] transition-all duration-500 `}
             
             >
                 <div className="transition-all  duration-500">
                     <div  className="sidebar  w-auto  z-50 order-8 fixed top-[48px] bottom-0 flex  me-6  text-[#0D121C]  font-[400]   ">
                         
                         <div className="bg-[#F7F7F7] flex  flex-col justify-between border-[#0d121c21] border-e-2 lg:border-0 h-[100%]">
-                            <div className="px-3 xl:ps-6 xl:pe-5 pt-12 activePage1 transition-all duration-300" onClick={(e)=>{active(e,1)}}>
-                                <div className="flex cursor-pointer  hover:text-[#1E6930] py-2 text-mainColor">
+                            <div className="px-3 xl:ps-6 xl:pe-5 pt-12 activePage1 transition-all duration-300 space-y-[30px]" onClick={(e)=>{active(e,1)}}>
+                                <div className="flex cursor-pointer  hover:text-[#1E6930]  text-mainColor">
                                     <LayoutDashboard className=" transition-all duration-300 "/>
                                 </div>
-                                
-                                <div className="flex cursor-pointer  hover:text-[#1E6930] py-2" >
+                                <div className="flex cursor-pointer  hover:text-[#1E6930] " >
                                     <Tractor className=" transition-all duration-300"/>
                                 </div>
-                                <div className="flex cursor-pointer  hover:text-[#1E6930] py-2">
+                                <div className="flex cursor-pointer  hover:text-[#1E6930] ">
                                     <ListChecks className=" transition-all duration-300"/>
                                 </div>
-                                <div className="flex cursor-pointer  hover:text-[#1E6930] py-2">
+                                <div className="flex cursor-pointer  hover:text-[#1E6930] ">
                                     <FireExtinguisher className=" transition-all duration-300"/>
                                 </div>
-                                <div className="flex cursor-pointer  hover:text-[#1E6930] py-2">
-                                    <Thermometer className=" transition-all duration-300"/>
+                                <div className="flex cursor-pointer  hover:text-[#1E6930] ">
+                                    <Search className=" transition-all duration-300 rotate-[100deg]   "/>
                                 </div>
-                                <div className="flex cursor-pointer  hover:text-[#1E6930] py-2">
+                                <div className="flex cursor-pointer  hover:text-[#1E6930] ">
+                                    <Thermometer className=" transition-all duration-300 "/>
+                                </div>
+                                <div className="flex cursor-pointer  hover:text-[#1E6930] ">
                                     <ChartNoAxesCombined className=" transition-all duration-300"/>
                                 </div>
-                                <div className="flex cursor-pointer  hover:text-[#1E6930] py-2">
+                                <div className="flex cursor-pointer  hover:text-[#1E6930] ">
                                     <Settings className=" transition-all duration-300"/>
                                 </div>
                             </div>
@@ -152,26 +164,29 @@ useEffect(()=>{
                             </div>
                         </div>
                         <div  className={`bg-[#F7F7F7] menuList hidden transition-[width]  overflow-hidden  lg:flex  duration-500   flex-col justify-between h-[100%]   border-[#0d121c21] lg:border-e-2`}>
-                            <div className="pt-12 activePage2 pe-2 "  onClick={(e)=>{active(e,2)}}>
-                                <div className="flex cursor-pointer   text-[16px]  hover:text-[#1E6930] py-2 text-mainColor font-[500]">
+                            <div className="pt-12 activePage2 pe-2 space-y-[30px] "  onClick={(e)=>{active(e,2)}}>
+                                <div className="flex cursor-pointer   text-[16px]  hover:text-[#1E6930] text-mainColor font-[500]">
                                 <p className="">Dashboard</p>
                                 </div>
-                                <div className="flex cursor-pointer    text-[16px]  hover:text-[#1E6930] py-2">
+                                <div className="flex cursor-pointer    text-[16px]  hover:text-[#1E6930] ">
                                     <p className="">Farms and fields</p>
                                 </div>
-                                <div className="flex cursor-pointer    text-[16px]  hover:text-[#1E6930] py-2">
+                                <div className="flex cursor-pointer    text-[16px]  hover:text-[#1E6930] ">
                                     <p className="">Tasks</p>
                                 </div>
-                                <div className="flex cursor-pointer    text-[16px]  hover:text-[#1E6930] py-2">
+                                <div className="flex cursor-pointer    text-[16px]  hover:text-[#1E6930] ">
                                     <p className="">Irrigation</p>
                                 </div>
-                                <div className="flex cursor-pointer    text-[15px]  hover:text-[#1E6930] py-2">
+                                <div className="flex cursor-pointer    text-[15px]  hover:text-[#1E6930] ">
+                                    <p className="">Disease Detection</p>
+                                </div>
+                                <div className="flex cursor-pointer    text-[15px]  hover:text-[#1E6930] ">
                                     <p className="">Sensors and devices</p>
                                 </div>
-                                <div className="flex cursor-pointer    text-[16px]  hover:text-[#1E6930] py-2">
+                                <div className="flex cursor-pointer    text-[16px]  hover:text-[#1E6930] ">
                                     <p className="">Analytics</p>
                                 </div>
-                                <div className="flex cursor-pointer    text-[16px]  hover:text-[#1E6930] py-2">
+                                <div className="flex cursor-pointer    text-[16px]  hover:text-[#1E6930] ">
                                     <p className="">Settings</p>
                                 </div>
                             </div>
@@ -187,11 +202,18 @@ useEffect(()=>{
                     </div>
                 </div>
                     <section className="ms-auto transition-all duration-500 px-4">
+                        <section className="  ms-auto me-[8px] bg-[#FFFFFF]  transition-all duration-500 px-2 relative">
+                            <main className="py-10 lg:px-[40px] ">
                     {
                         onOpenPage==0?<Dashboard/>:
-                        onOpenPage==1?<FarmsAndFields/>:""
-                        
+                        onOpenPage==1?<FarmsAndFields/>:
+                        onOpenPage==3?<Irrigation/>:
+                        onOpenPage==4?<HomeDiseaseDetection/>:
+                        onOpenPage==5?<SensorsDevices/>:""
                     }
+                            
+                            </main>
+                        </section>
                     </section>
             </main>
                 

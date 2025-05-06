@@ -1,4 +1,3 @@
-import React from 'react';
 import mainImage from "../../assets/logo/AgrivisionLogo.svg"
 import toast from 'react-hot-toast';
 import axios from 'axios';

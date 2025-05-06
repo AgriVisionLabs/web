@@ -1,14 +1,13 @@
 import React, { useContext } from 'react';
 import { PinInput } from 'react-input-pin-code';
-import { AllContext } from '../../Context/All.context';
+// import { AllContext } from '../../Context/All.context';
 
-const Check = () => {
-    const {valuesForget, setValuesForget} = useContext(AllContext)
-
+const Check = (children) => {
+    // const {valuesForget, setValuesForget} = useContext(AllContext)
     return (
         <PinInput
-        values={valuesForget}
-        onChange={(value, index, values) => setValuesForget(values)}
+        values={children.otpValue}
+        onChange={(value, index, values) => children.setOtpValue(values)}
         onFocus={"text-red-600"}
         autoFocus={"true"}
         validBorderColor={"rgb(30,105,48)"}

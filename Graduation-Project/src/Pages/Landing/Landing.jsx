@@ -2,6 +2,19 @@
 import Logo from "../../assets/logo/AgrivisionLogo.svg";
 import img1 from "../../assets/images/image 4.png"
 import { Link } from "react-router-dom";
+import React from "react";
+import Lottie from "lottie-react";
+import animationData from "../../assets/animations/BBqicYLAw2.json"; // تأكد من وضع ملف JSON في المسار الصحيح
+
+// const AnimatedComponent = () => {
+//   return (
+//     <div style={{ width: 300, height: 300 }}>
+//       <Lottie animationData={animationData} loop={true} />
+//     </div>
+//   );
+// };
+
+// export default AnimatedComponent;
 const Landing = () => {
     return (
         <>  
@@ -24,6 +37,11 @@ const Landing = () => {
                 <div className="w-[700px] h-[256px] ">
                     <h1 className="text-mainColor text-[52px] pb-4 font-manrope font-semibold">Welcome to Agrivision</h1>
                     <p className=" font-manrope text-[24px] font-medium text-[#0D121C]">We aim to be your primary partner in boosting your agricultural productivity and simplifying your daily operations.</p>
+                    {/* <div className=" bg-slate-500">
+                        <div style={{ width: 300, height: 300 }}>
+                            <Lottie animationData={animationData} loop={true} />
+                        </div>
+                    </div> */}
                 </div>
                 <div className="w-[600px] h-[600px] flex justify-end">
                     <img src={img1} alt="" className="w-[400px]  rounded-t-[300px] rounded-bl-[300px] rounded-br-[30px] object-cover" />

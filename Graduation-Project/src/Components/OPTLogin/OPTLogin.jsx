@@ -7,7 +7,7 @@ const OPTLogin = () => {
     let {outClick,setOptLogin}=useContext(AllContext);
     
     return (
-        <section className="h-[100vh] flex justify-center items-center bg-black bg-opacity-70  font-manrope backdrop-blur-md" onClick={(e)=>{
+        <section className="h-[100vh] flex justify-center items-center bg-black bg-opacity-70  font-manrope backdrop-blur-md " onClick={(e)=>{
             if(e.target===e.currentTarget){
                 outClick()
                 }}}>

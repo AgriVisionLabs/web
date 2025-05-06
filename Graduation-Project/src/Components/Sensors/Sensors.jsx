@@ -1,10 +1,10 @@
-import React from 'react';
+
 import { useContext } from 'react';
 import { AllContext } from '../../Context/All.context';
 import { QrCode } from 'lucide-react';
 
 const Sensors = () => {
-        let {outClick,setBasicInfo,setAddField}=useContext(AllContext);
+        let {outClick,setAddField}=useContext(AllContext);
         return (
             <section className="h-[100vh] flex justify-center items-center bg-black bg-opacity-70  font-manrope backdrop-blur-[blur(5)] absolute z-50 w-[100%]" onClick={(e)=>{
                 if(e.target===e.currentTarget){
@@ -67,11 +67,11 @@ const Sensors = () => {
                                 
                             <i className="fa-solid fa-plus me-2"></i>Add Sensor</button>
                         </div>
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center ">
                             <i className="fa-solid fa-angle-left hover:text-mainColor  transition-all duration-300  cursor-pointer text-[22px]"  onClick={()=>{
                             setAddField(2)
                             }}></i>
-                            <button className="btn2 self-end rounded-lg py-4 bg-mainColor text-[16px] text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium mt-12" onClick={()=>{
+                            <button className="btn2 self-end rounded-lg py-4 bg-mainColor text-[16px] text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium " onClick={()=>{
                                 setAddField(4)
                             }}>Next <i className="fa-solid fa-angle-right ms-3"></i></button>
                         </div>

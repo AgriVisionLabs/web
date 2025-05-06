@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-const VerificationEmail = ({children}) => {
+const VerificationEmail = (children) => {
     const navigate=useNavigate();
     let {verification,setVerification}=useContext(userContext);
     let [seconds,setSeconds]=useState(30);
@@ -28,18 +28,19 @@ const VerificationEmail = ({children}) => {
     async function ResendVerificationEmail(){
         const loadingId =toast.loading("Waiting...",{position:"top-left"});
         try{
-            
+            console.log(children.email)
             const option={
                 url:"https://agrivision.tryasp.net/auth/resend-confirmation-email",
                 method:"POST",
                 data:{
-                    "email":children
+                    "email":children.email
                 },
             }
             let {data}= await axios(option);
+            console.log("resend-confirmation-email")
             
         }catch(error){
-            console.log(error)
+            console.log("resend-confirmation-email error",error)
             toast.error(error,{position:"top-left"});
         }
         finally{
@@ -69,10 +70,10 @@ const VerificationEmail = ({children}) => {
                 </div>
                 <h1 className="text-[20px]  font-bold my-5">Check your email</h1>
                 <h2 className="w-[350px] text-[16px] text-center font-medium text-[#6b6a6a] ">We've sent a verification link to:</h2>
-                <p className="text-[18px]  font-semibold my-5">{children}</p>
+                <p className="text-[18px]  font-semibold my-5">{children.email}</p>
                 <h2 className="text-[16px] text-center font-medium text-[#6b6a6a] ">Click the link in the email to verify your address.</h2>
                 {seconds==0?<>
-                <button className=" px-9  py-4 rounded-full  bg-mainColor text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium  mt-9" onClick={()=>{
+                <button type='button' className=" px-9  py-4 rounded-full  bg-mainColor text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium  mt-9" onClick={()=>{
                     ResendVerificationEmail();
                     setSeconds(30)
                     intervalID=setInterval(witeTime,1000);

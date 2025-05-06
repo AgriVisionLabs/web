@@ -33,7 +33,7 @@ const SignUp = () => {
             }
             let {data}= await axios(option);
         }catch(error){
-            console.log(error.response.data.errors[0].description);
+            console.log(error);
         }
         finally{
             toast.dismiss(loadingId);
@@ -120,7 +120,7 @@ const SignUp = () => {
                             </div>
                         </div>
                     </div>
-                    {verification?<div className=' fixed z-50 inset-0  '><VerificationEmail children={formik.values.email}/></div>:""}
+                    {verification?<div className=' fixed z-50 inset-0  '><VerificationEmail email={formik.values.email}/></div>:""}
             </section>
         </>
     );

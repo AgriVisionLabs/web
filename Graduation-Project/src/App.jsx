@@ -15,21 +15,30 @@ import Landing from './Pages/Landing/Landing';
 import EmailVerified from './Pages/EmailVerified/EmailVerified';
 import VerificationFailed from './Pages/VerificationFailed/VerificationFailed';
 import EmailConfirmation from './Pages/EmailConfirmation/EmailConfirmation';
+import FarmsAndFields from './Pages/FarmsAndFields/FarmsAndFields';
+import Farms from './Pages/Farms/Farms';
+import HomeDiseaseDetection from './Pages/HomeDiseaseDetection/HomeDiseaseDetection';
+import Irrigation from './Components/Irrigation/Irrigation';
+import SensorsDevices from './Pages/Sensors&Devices/Sensors&Devices';
 
 function App() {
   const router=createBrowserRouter([
     {index:true,element:<Landing/>},
     {path:"/",element:<ProtectedRoute><Layout/></ProtectedRoute> ,children:[
-      {path:"/Home",element:<Home/>,children:[
-        {index:true,element:<Dashboard/>}
+      {path:"home",element:<Home/>,children:[
+        {path:"dashboard",element:<Dashboard/>},
+        {path:"irrigation",element:<Irrigation/>},
+        {path:"sensors-and-devices",element:<SensorsDevices/>},
+        {path:"home-disease-detection",element:<HomeDiseaseDetection/>},
+        {path:"farms-and-fields",element:<FarmsAndFields/>,children:[
+          {path:"farms",element:<Farms/>},
+          {path:"fields",element:<Fields/>}]},
       ]},
 
   ]},
-    {path:"/",element:<Layout/>,children:[
-      {path:"/Login",element:<Login/>},
-    {path:"/SignUp",element:<SignUp/>},
-    {path:"/EmailConfirmation",element:<EmailConfirmation/>}
-  ]},
+    {path:"/login",element:<Login/>},
+    {path:"/signUp",element:<SignUp/>},
+    {path:"/emailConfirmation",element:<EmailConfirmation/>}
   ]);
   const myClient=new QueryClient();
   
@@ -40,6 +49,7 @@ function App() {
         <AllProvider>
             <RouterProvider router={router}/>
             <Toaster position="top-right" reverseOrder={false}/>
+            
         </AllProvider>
       </UserProvider>
     </QueryClientProvider>

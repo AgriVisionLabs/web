@@ -6,26 +6,31 @@ import ForgetPassword from "../../Components/ForgetPassword/ForgetPassword";
 import { AllContext } from "../../Context/All.context";
 import OTP from "../../Components/OTP/OTP";
 import ResetPassword from "../../Components/ResetPassword/ResetPassword";
-import OPTLogin from "../../Components/OPTLogin/OPTLogin";
+//import OPTLogin from "../../Components/OPTLogin/OPTLogin";
 import { Helmet } from "react-helmet";
 import { userContext } from "../../Context/User.context";
 import { object, string } from "yup";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useFormik } from "formik";
-
+// import bgImage from "../../assets/images/image 4.png"
 
 const Login = () => {
-    let {forgetPassword,otp,setForgetPassword,resetPassword,optLogin}=useContext(AllContext);
+    let {forgetPassword,otp,setForgetPassword,resetPassword}=useContext(AllContext);
     // const [inCorrectEmailorPassword,setInCorrectEmailorPassword]=useState(null);
+    let [emailOfForgotPassword,setEmailOfForgotPassword ]=useState(null);
+    // let [otpOfForgotPassword,setOtpOfForgotPassword ]=useState(null);
+    let [otpValue,setOtpValue]=useState(["","","","","",""])
     const navigate=useNavigate();
-    const {setToken}=useContext(userContext);
+    const {setToken,setRefreshToken}=useContext(userContext);
     const validationSchema=object({
         email:string().required("Email is required").email("Email is invalid"),
         password:string().required("Password is required").matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,"password should be at least eight characters, at least one upper case English letter, one lower case English letter, one number and one special character"),
     });
     async function sendDataToLogin(values){
+        console.log("sendDataToLogin : ")
         const loadingId =toast.loading("Waiting...")
+        
         try {
             const options={
                 url:"https://agrivision.tryasp.net/auth",
@@ -33,20 +38,59 @@ const Login = () => {
                 data:values,
             }
             let {data}=await axios(options);
-            if(data.token){
+            if(data.token && data.refreshToken){
                 setToken(data.token);
+                setRefreshToken(data.refreshToken);
                 toast.success("User Logged in successfully");
-                setTimeout(()=>{navigate("/Home")},500);
-                setToken(data.token);
                 localStorage.setItem("token",data.token);
+                localStorage.setItem("refreshToken",data.refreshToken);
+                setTimeout(()=>{navigate("/Home")},500);
             }
             
         }catch(error){
-            toast.error("Incorrect email or password ("+error.response.data.errors[0].description+")");
+            // toast.error("Incorrect email or password ("+error.response.data.errors[0].description+")");
+            console.log(error)
         }finally{
             toast.dismiss(loadingId);
         }
     }
+    
+    // async function RefreshToken(){
+    //     console.log("RefreshToken : ")
+    //         const loadingId =toast.loading("Waiting...")
+    //         try {
+    //             const options={
+    //                 url:"https://agrivision.tryasp.net/Auth/refresh",
+    //                 method:"POST",
+    //                 data:{
+    //                     token:token,
+    //                     refreshToken:refreshToken,
+    //                 },
+    //             }
+    //             let {data}=await axios(options);
+    //                 setToken(data.token);
+    //                 localStorage.setItem("token",data.token);
+    //                 setRefreshToken(data.refreshToken);
+    //                 console.log("RefreshToken : end :"+token)
+                    
+    //             }
+    //             catch(error){
+    //             toast.error("Incorrect email or password ("+error+")");
+    //             console.log(error)
+                
+    //         }finally{
+    //             toast.dismiss(loadingId);
+    //         }
+    //     }
+    //     useEffect(()=>{
+    //         if(token&&refreshToken){
+    //             const counter=0;
+    //             counter=setTimeout(() => {RefreshToken()}
+    //             ,((6-5)*1000*6))
+    //             clearTimeout(counter)
+    //         }
+    //     }
+    //     ,[token,refreshToken])
     const formik=useFormik({
         initialValues:{
                 email:"",
@@ -95,7 +139,7 @@ const Login = () => {
                                     {formik.errors.password && formik.touched.password && <p className="text-red-500 mt-1 mx-6 text-ms">* {formik.errors.password}</p>}
                                     <div className="flex justify-between items-center my-3">
                                         <div className=" flex items-center mx-7 ">
-                                        <input type="checkbox" className=" my-2 mx-3 w-4 h-4  accent-mainColor  " id="Remember" />
+                                        <input type="checkbox" className=" my-2 mx-3 w-4 h-4  accent-mainColor   " required id="Remember" />
                                         <label htmlFor="Remember me" className="text-[15px] " >Remember me</label>
                                         </div>
                                         <p className="text-mainColor mx-7 cursor-pointer" onClick={()=>{setForgetPassword(true)}} >Forgot Password ?</p>
@@ -111,25 +155,10 @@ const Login = () => {
                     </div>
                 </div>
 
-                    {forgetPassword?
-                        <div className=" absolute inset-0 " >
-                        <ForgetPassword/>
-                        </div> :"" 
-                    }
-                    {otp?
-                        <div className="absolute inset-0">
-                        <OTP/>
-                        </div>:""
-                        }
-                    {resetPassword?
-                        <div className=" absolute inset-0">
-                        <ResetPassword/>
-                        </div>:""
-                        }
-                    {optLogin?
-                        <div className=" absolute inset-0">
-                        <OPTLogin/>
-                        </div>:""
+                    {forgetPassword?<div className=" absolute inset-0 " ><ForgetPassword setEmailOfForgotPassword={setEmailOfForgotPassword}/></div> :
+                    otp?<div className="absolute inset-0" ><OTP emailOfForgotPassword={emailOfForgotPassword} otpValue ={otpValue} setOtpValue={setOtpValue} /></div>:
+                    resetPassword?<div className=" absolute inset-0"><ResetPassword otpValue ={otpValue} emailOfForgotPassword={emailOfForgotPassword}/></div>:""
+                    // optLogin?<div className=" absolute inset-0"><OPTLogin/></div>:""
                     }
 
                 

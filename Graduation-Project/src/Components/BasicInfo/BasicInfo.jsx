@@ -1,41 +1,50 @@
-import React from 'react';
-import { useContext } from 'react';
+import { useContext, useEffect} from 'react';
 import { AllContext } from '../../Context/All.context';
-import Menu from "../../Components/Menu/Menu";
 import { useState } from "react";
-import { useEffect } from "react";
+import MenuElement from '../MenuElement/MenuElement';
+import { useFormik } from 'formik';
+import { object, string } from 'yup';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import { userContext } from '../../Context/User.context';
 
-const BasicInfo = () => {
+const BasicInfo = ({farmData,setFarmData}) => {
     let {outClick,setBasicInfo,setTeam}=useContext(AllContext);
+    let [indexBI,setIndexBI]=useState(0)
     let [onList,setOnList]=useState(false);
-    function openList(){
-        let element=document.querySelector("form div.forms  i").classList;
-        let element2=document.querySelector("form div.forms div.list").classList;
-        if(onList){
-            setOnList(false);
-            element.remove("fa-angle-down");
-            element.add("fa-angle-up");
-            element2.remove("border-transparent");
-            element2.remove("h-0");
-            element2.add("h-32");
-            element2.add("border-2");
-            element2.add("border-[#0d121c21]")
-            
-        }else{
-            setOnList(true);
-            element.remove("fa-angle-up");
-            element.add("fa-angle-down");
-            element2.remove("h-32");
-            element2.add("border-transparent");
-            element2.add("h-0");
-            element2.remove("border-2");
-            element2.remove("border-[#0d121c21]")
-        }
+    var forms=["","Sandy","Clay","Loamy","",""];
+    const validationSchema=object({
+            name:string().required("Farm Name is required").min(3,"Farm Name must be at least 3 characters").max(100,"Farm Name can not be than 100 characters"),
+            area:string().required("Farm Size is required").matches(/^([0-9]*?(.[0-9])*)$/,"The Farm size must be number"),
+            location:string().required("Farm Location is required").min(3,"Farm Location must be at least 3 characters").max(100,"Farm Location can not be than 100 characters"),
+            soilType:string().required("Soil Type is required"),
+        });
+    function AddFarm(values){
+        setFarmData(prev => ({
+            ...prev,
+            name:values.name ,
+            area:values.area,
+            location:values.location,
+            soilType:values.soilType,
+        }));
+        setBasicInfo(null);
+        setTeam(true)
     }
-    useEffect(()=>{
-        openList()
-    },[]);
-    var forms=[1,2,3,4,5];
+    useEffect(() => {
+        console.log("ِafter");
+        console.log("farmData updated ===>", farmData);
+      }, [farmData]);
+    const formik=useFormik({
+        initialValues:{
+            name:"",
+            area:"",
+            location:"",
+            soilType:"",
+        },
+        validationSchema,
+        onSubmit:AddFarm,
+    });
+    {formik.values.soilType=indexBI}
     return (
         <section className="h-[100vh] flex justify-center items-center bg-black bg-opacity-70  font-manrope backdrop-blur-[blur(5)] absolute z-50 w-[100%]" onClick={(e)=>{
             if(e.target===e.currentTarget){
@@ -70,53 +79,35 @@ const BasicInfo = () => {
                     </div>
                 </div>
                 </div>
-                <form action="" className="w-[75%] my-5 flex flex-col text-[18px]">
+                <form action="" className="w-[75%] my-5 flex flex-col text-[18px]" onSubmit={formik.handleSubmit}>
                     <div className="">
                         <label htmlFor="" className='ms-1'>Farm Name</label>
-                        <input type="text" placeholder='Enter Farm Name' className='formControl mx-0 rounded-xl text-[16px] py-5 w-[100%] border-[#0d121c21] '/>
+                        <input type="text" placeholder='Enter Farm Name' className='formControl mx-0 rounded-xl text-[16px] py-5 w-[100%] border-[#0d121c21] ' name="name" value={formik.values.name} onChange={formik.handleChange} onBlur={formik.handleBlur}/>
                     </div>
                     
                     <div className="">
                         <label htmlFor="" className='ms-1'>Farm Size (acres)</label>
-                        <input type="text" placeholder='Enter Farm Size' className='formControl mx-0 rounded-xl text-[16px] py-5 w-[100%] border-[#0d121c21] '/>
+                        <input type="text" placeholder='Enter Farm Size' className='formControl mx-0 rounded-xl text-[16px] py-5 w-[100%] border-[#0d121c21] ' name="area" value={formik.values.area} onChange={formik.handleChange} onBlur={formik.handleBlur}/>
                     </div>
                     <div className="">
                         <label htmlFor="" className='ms-1'>Farm Location</label>
-                        <input type="text" placeholder='Enter Farm Location' className='formControl mx-0 rounded-xl text-[16px] py-5 w-[100%] border-[#0d121c21] '/>
+                        <input type="text" placeholder='Enter Farm Location' className='formControl mx-0 rounded-xl text-[16px] py-5 w-[100%] border-[#0d121c21] ' name="location"  value={formik.values.location} onChange={formik.handleChange} onBlur={formik.handleBlur}/>
                     </div>
-                    <div className="forms    transition-all duration-500  relative   ">
-                                    <label htmlFor=""  className=''>Soil Type</label>
-                                    <div className="flex justify-between  items-center rounded-xl border-2 mt-2 px-2 py-2 mb-[4px] border-[#0d121c21]  ">
-                                        
-                                        <p className="text-[16px] font-[400] select-none px-2 text-[#9F9F9F]">Soil Type</p>
-                                        <i className=" fa-solid" onClick={(e)=>{
-                                            openList()
-                                        }}></i>
-                                        
-                                    </div>
-                                    
-                                    <div className="list     transition-all duration-500 overflow-hidden rounded-lg  bg-[#ffffff] z-10 absolute left-0 right-0 ">
-                                    <div className="">
-                                    {
-                                        forms.map((e)=><Menu childern={e}/>)
-                                        
-                                        
-                                    }
-                                    </div>
-                                    </div>
-                                
+                    <div className="">
+                        <label htmlFor=""  className=''>Soil Type</label>
+                        <MenuElement Items={forms} name={"Soil Type"} width={100+"%"} nameChange={forms[indexBI]} setIndex={setIndexBI}  className={"my-2"} onList={onList} setOnList={setOnList} textColor={"#9F9F9F"} />
                     </div>
-                    
-                    <button className="btn self-end rounded-lg py-4 bg-mainColor text-[16px] text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium mt-12" onClick={()=>{
-                        setBasicInfo(false);
-                        setTeam(true);
-                    }}>Next <i className="fa-solid fa-angle-right ms-3"></i></button>
+                    <button type="submit" className="btn self-end rounded-lg py-4 bg-mainColor text-[16px] text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium mt-12">Next <i className="fa-solid fa-angle-right ms-3"></i></button>
                     
                 </form>
                 </div>
                 
             </section>)
 }
-
+// onClick={()=>{
+//     setBasicInfo(false);
+//     setTeam(true);
+//     console.log(formik.values)
+// }}
 
 export default BasicInfo;

@@ -12,6 +12,6 @@
     @apply w-28 h-9  flex justify-center items-center rounded-3xl bg-slate-200 hover:bg-slate-300 transition-colors duration-300 box-border border border-transparent;
   }
   .formControl{
-    @apply w-[90%] h-[40px] border-2 border-[#9F9F9F] rounded-3xl p-4 mx-5 my-2 text-[15px] outline-none  hover:border-mainColor  caret-mainColor   ;
+    @apply w-[90%] h-[40px] border-[1px] border-[#9F9F9F] rounded-3xl p-4 mx-5 my-2 text-[15px] outline-none  hover:border-mainColor  caret-mainColor   ;
   }
 }

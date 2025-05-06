@@ -6,10 +6,10 @@ const Loading = () => {
         <>
 
             <div className="w-screen h-screen flex justify-center items-center bg-[#fcfcfc]">
-                {/* <div className="flex flex-col justify-center items-center">
-                <img src={mainImage} alt="" className="w-[200px] mb-24" />
+                <div className="flex flex-col justify-center items-center">
+                {/* <img src={mainImage} alt="" className="w-[200px] mb-24" /> */}
                 <span className={styles.loader}></span>
-                </div> */}
+                </div>
             </div>
         </>
     );

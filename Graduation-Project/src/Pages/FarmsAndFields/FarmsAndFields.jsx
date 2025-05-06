@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import BasicInfo from '../../Components/BasicInfo/BasicInfo';
 import Team from '../../Components/Team/Team';
 import Review from '../../Components/Review/Review';
@@ -9,16 +9,16 @@ import Farms from '../Farms/Farms';
 import Fields from '../Fields/Fields';
 
 const FarmsAndFields = () => {
-    let {openFarmsOrFieled}=useContext(AllContext);
-    let {SetOpenFarmsOrFieled}=useContext(AllContext);
+    let {openFarmsOrFieled,SetOpenFarmsOrFieled}=useContext(AllContext);
+    let [clickFarm,setClickFarm]=useState(null);
     SetOpenFarmsOrFieled(1)
     return (
         
         <>
         
             {
-                openFarmsOrFieled==1?<Farms/>:
-                openFarmsOrFieled==2?<Fields/>:""
+                openFarmsOrFieled==1?<Farms  setClickFarm={setClickFarm}/>:
+                clickFarm?(openFarmsOrFieled==2?<Fields farmId={clickFarm}/>:""):openFarmsOrFieled==1
             }
         </>
     );
