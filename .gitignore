@@ -1,148 +1,24 @@
-# macOS system files
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# macOS thumbnail and metadata files
-._*
-.Spotlight-V100/
-.Trashes/
-.DS_Store
-.DS_Store?
-*.DS_Store
-*.AppleDouble
-.fseventsd
-.VolumeIcon.icns
-com.apple.timemachine.donotpresent
-
-# Windows system files
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-System Volume Information/
-*.lnk
-
-# Node.js dependencies
-node_modules/
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-.pnp/
-.pnp.js
-
-# Vite build and cache files
-dist/
-.vite/
-.vitepress/cache/
-
-# Build artifacts
-*.log
-*.gz
-*.zip
-*.tar
-*.tgz
-*.rar
-*.7z
-*.bak
-
-# Environment variables
-.env
-.env.local
-.env.development
-.env.production
-.env.test
-.env.*.local
-
-# Lock files (prevent unintended dependency issues)
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-
-# VS Code workspace settings
-.vscode/
-.vscode/**/*
-.history/
-*.code-workspace
-
-# JetBrains IDEs (WebStorm, IntelliJ, PhpStorm, etc.)
-.idea/
-.idea/**/*
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/dictionaries
-.idea/jsLibraryMappings.xml
-.idea/vcs.xml
-.idea/httpRequests/
-.idea/httpRequests/**
-.idea/shelf/
-
-# IntelliJ-based IDEs cache and logs
-*.iws
-*.iml
-*.ipr
-/out/
-target/
-.idea/
-*.iml
-*.ipr
-
-# TypeScript
-*.tsbuildinfo
-
-# Logs and debugging
-npm-debug.log
-yarn-debug.log
-yarn-error.log
-pnpm-debug.log
-lerna-debug.log
-*.log
-
-# Coverage directory (for Jest, Cypress, etc.)
-coverage/
-*.lcov
-
-# Editor backups
-*.swp
-*.swo
-*~
-*.bak
-*.orig
-*.rej
-
-# Miscellaneous
-.npm/
-.npmrc
-.npmignore
-.nodemon-debug.json
-*.pid
-*.seed
-*.pid.lock
-
-# Logs
-logs
-*.log
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
 lerna-debug.log*
-.npm/
 
-# ESLint and Prettier cache
-.eslintcache
-.prettierignore
-.prettiercache
+node_modules
+dist
+dist-ssr
+*.local
 
-# Cypress and Playwright test outputs
-cypress/screenshots/
-cypress/videos/
-playwright-report/
-test-results/
-
-# Jest and testing files
-jest/
-jest.config.js
-jest.config.ts
-jest.setup.js
-jest.setup.ts
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

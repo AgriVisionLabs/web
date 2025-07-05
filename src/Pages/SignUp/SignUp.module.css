@@ -1,0 +1,8 @@
+.SignUp :global(.contentAndbg){
+    /* background-image: url("../../assets/images/image 4.png");
+    background-position: center; */
+    background-image: url("../../../public/landing.png");
+        background-position: left;
+        background-size: cover;
+        background-repeat: no-repeat;
+}
