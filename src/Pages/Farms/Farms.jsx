@@ -7,7 +7,7 @@ import { MapPin, SquarePen, Trash2 } from "lucide-react";
 import { AllContext } from "../../Context/All.context";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import axios from "axios";
+import axios from "@axiosInstance";
 import { userContext } from "../../Context/User.context";
 import EditBasicInfo from "../../Components/EditBasicInfo/EditBasicInfo";
 import EditTeam from "../../Components/EditTeam/EditTeam";
@@ -28,8 +28,6 @@ const Farms = (children) => {
   let [edit, setEdit] = useState(null);
   let [farmIdEdit, setFarmIdEdit] = useState(null);
   let [farmId, setFarmId] = useState(null);
-  let editIcons = useRef(null);
-  let deleteIcons = useRef(null);
   let [farmData, setFarmData] = useState({
     name: "",
     area: "",
@@ -43,7 +41,6 @@ const Farms = (children) => {
     ],
   });
   var types = ["Sandy", "Clay", "Loamy"];
-  SetOpenFarmsOrFieled(1);
   async function getFarms() {
     console.log(token);
     try {
@@ -96,8 +93,10 @@ const Farms = (children) => {
 
       await axios(options);
     } catch (error) {
-      // toast.error("Incorrect email or password "+error);
-      console.log(error);
+      if(error.response.data){
+        if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
+        else{toast.error("There is an error");}
+      }else{console.log(error)}
     } finally {
       toast.dismiss("Incorrect");
       getFarms();
@@ -156,7 +155,7 @@ const Farms = (children) => {
                     animate={{ x: 0, y: 0, opacity: 1 }}
                     transition={{
                       delay: index * 0.35,
-                      duration: 0.8,
+                      duration: 0.5,
                       type: "spring",
                       bounce: 0.4,
                     }}
@@ -166,15 +165,8 @@ const Farms = (children) => {
                       <div
                         className="mt-2 px-[24px] py-2  grid grid-cols-1  "
                         onClick={(e) => {
-                          if (
-                            (e.target != editIcons.current) &
-                            (e.target != deleteIcons.current)
-                          ) {
+                          if ( e.target === e.currentTarget ) {
                             SetOpenFarmsOrFieled(2);
-                            console.log(
-                              "farm.farmId from farms :",
-                              farm.farmId
-                            );
                             children.setClickFarm(farm.farmId);
                           }
                         }}
@@ -230,10 +222,10 @@ const Farms = (children) => {
                               {farm.roleName}
                             </p>
                           </div>
-                          <div className="flex space-x-3">
+                          <div className="flex space-x-3" >
                             <SquarePen
                               strokeWidth={1.7}
-                              ref={editIcons}
+                              
                               className=" hover:text-mainColor transition-all  duration-150 cursor-pointer"
                               onClick={() => {
                                 setFarmIdEdit(farm.farmId);
@@ -242,7 +234,6 @@ const Farms = (children) => {
                             />
                             <Trash2
                               strokeWidth={1.7}
-                              ref={deleteIcons}
                               className="hover:text-red-700 transition-all  duration-150 cursor-pointer"
                               onClick={() => {
                                 deleteFarms(farm.farmId);

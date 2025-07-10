@@ -8,9 +8,9 @@ const DateDisplay = ({ dateStr }) => {
     const year = date.getFullYear();
 
     return (
-        <span>
+        day&&monthShort&&year?<span>
         {monthShort} {day} ,{year}
-        </span>
+        </span>:<span>No date</span>
     );
 };
 

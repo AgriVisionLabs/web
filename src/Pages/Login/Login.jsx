@@ -6,18 +6,20 @@ import { AllContext } from "../../Context/All.context";
 import OTP from "../../Components/OTP/OTP";
 import ResetPassword from "../../Components/ResetPassword/ResetPassword";
 //import OPTLogin from "../../Components/OPTLogin/OPTLogin";
-import { Helmet } from "react-helmet";
+
 import { userContext } from "../../Context/User.context";
 import { object, string } from "yup";
 import toast from "react-hot-toast";
-import axios from "axios";
+import axios from "@axiosInstance";
 import { useFormik } from "formik";
 import Google from "../../assets/logo/google-icon.svg"
 import Facebook from "../../assets/logo/facebook-logo-2.png"
 const Login = () => {
   let { forgetPassword, otp, setForgetPassword, resetPassword ,baseUrl} =useContext(AllContext);
+  let {setUserId}=useContext(userContext)
   // const [inCorrectEmailorPassword,setInCorrectEmailorPassword]=useState(null);
   let [emailOfForgotPassword, setEmailOfForgotPassword] = useState(null);
+  
   // let [otpOfForgotPassword,setOtpOfForgotPassword ]=useState(null);
   let [otpValue, setOtpValue] = useState(["", "", "", "", "", ""]);
   const navigate = useNavigate();
@@ -49,6 +51,7 @@ const Login = () => {
       if (data.token && data.refreshToken) {
         localStorage.setItem("token",data.token);
         localStorage.setItem("refreshToken",data.refreshToken);
+        localStorage.setItem("userId",data.id);
         setToken(data.token);
         setRefreshToken(data.refreshToken);
         setTimeout(() => {
@@ -110,9 +113,6 @@ const Login = () => {
   });
   return (
     <>
-      <Helmet>
-        <title>Login Page</title>
-      </Helmet>
       <section className={`${styles.Login} h-[100vh] w-[100vw] font-manrope`}>
         <div className="h-full w-full">
           <div className="w-full h-full grid lg:grid-cols-12">

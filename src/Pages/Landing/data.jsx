@@ -11,7 +11,6 @@ import {
   Scan,
   UsersRound,
 } from "lucide-react";
-
 export const features = [
   {
     icon: <Sprout className={"text-white"} />,

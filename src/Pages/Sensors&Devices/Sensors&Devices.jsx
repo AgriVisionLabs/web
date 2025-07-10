@@ -7,13 +7,14 @@ import ScheduleMaintenanceSD from "../../Components/ScheduleMaintenance(S&D)/Sch
 import LogMaintenanceSD from "../../Components/LogMaintenance(S&D)/LogMaintenance(S&D)";
 import ShowSensorUnit from "../../Components/ShowSensorUnit/ShowSensorUnit";
 import EditSensorUnit from "../../Components/EditSensorUnit/EditSensorUnit";
-import axios from "axios";
+import axios from "@axiosInstance";
 import { userContext } from "../../Context/User.context";
 import ShowSprinklerSystem from "../../Components/ShowSprinklerSystem/ShowSprinklerSystem";
 import EditSprinklerSystem from "../../Components/EditSprinklerSystem/EditSprinklerSystem";
+import toast from "react-hot-toast";
 
 const SensorsDevices = () => {
-  let { onListSenDev, setOnListSenDev, getPart, schedule, baseUrl } =
+  let { onListSenDev, setOnListSenDev, getPart, schedule, baseUrl ,index,setIndex } =
     useContext(AllContext);
   let { token } = useContext(userContext);
   let [irrigationUnit, setIrrigationUnit] = useState();
@@ -21,7 +22,7 @@ const SensorsDevices = () => {
   let [sensorUnitId, setSensorUnitId] = useState();
   // var forms=[4,5,6,7];
   let [partsSenDev, setPartsSenDev] = useState("sensors");
-  let [indexIRRSD, setIndexIRRSD] = useState(0);
+  // let [indexIRRSD, setIndexIRRSD] = useState(0);
   let [fieldID, setFieldID] = useState([]);
   let [farmID, setFarmID] = useState([]);
   let [Farms, setFarms] = useState([]);
@@ -51,8 +52,10 @@ const SensorsDevices = () => {
         setFarms(data);
       }
     } catch (error) {
-      // toast.error("Incorrect email or password "+error);
-      console.log(error);
+      if(error.response.data){
+        if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
+        else{toast.error("There is an error");}
+      }else{console.log(error)}
     }
   }
 
@@ -69,9 +72,9 @@ const SensorsDevices = () => {
       <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-[20px] mb-[44px]">
         <MenuElement
           Items={allFarms}
-          nameChange={allFarms[indexIRRSD]}
-          setIndex={setIndexIRRSD}
-          index={indexIRRSD}
+          nameChange={allFarms[index]}
+          setIndex={setIndex}
+          index={index}
           width={200 + "px"}
           className={"text-[15px]"}
           onList={onListSenDev}
@@ -117,9 +120,9 @@ const SensorsDevices = () => {
             setSensorUnitId={setSensorUnitId}
             setFieldID={setFieldID}
             setField={setField}
-            indexedDB={indexIRRSD}
-            farmName={Farms[indexIRRSD].name}
-            farmId={Farms[indexIRRSD].farmId}
+            indexedDB={index}
+            farmName={Farms[index].name}
+            farmId={Farms[index].farmId}
             setSensorUnit={setSensorUnit}
           />
         ) : Farms.length > 0 && partsSenDev === "irrigation units" ? (
@@ -127,9 +130,9 @@ const SensorsDevices = () => {
             setFarmID={setFarmID}
             setFieldID={setFieldID}
             setField={setField}
-            indexedDB={indexIRRSD}
-            farmName={Farms[indexIRRSD].name}
-            farmId={Farms[indexIRRSD].farmId}
+            indexedDB={index}
+            farmName={Farms[index].name}
+            farmId={Farms[index].farmId}
             setIrrigationUnit={setIrrigationUnit}
           />
         ) : null}

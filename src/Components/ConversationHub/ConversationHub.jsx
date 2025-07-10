@@ -2,16 +2,18 @@ import  { useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 import { useContext } from "react";
 import { userContext } from "../../Context/User.context";
+import { AllContext } from "../../Context/All.context";
 
 const ConversationHub = (children) => {
     let {token,userId}=useContext(userContext)
+    let {baseUrl}=useContext(AllContext)
     let conversations=children.conversations
     let setConversations = children.setConversations
     let connection=children.connection
     let setConnection=children.setConnection
 
     const jwtToken = token;
-    const hubUrl = "https://gigachat.tryasp.net/hubs/conversations";
+    const hubUrl = `${baseUrl}/hubs/conversations`;
 
     useEffect(() => {
         const newConnection = new signalR.HubConnectionBuilder()
@@ -64,6 +66,7 @@ const ConversationHub = (children) => {
 {
     console.log(conversations)
 }
+return null
 //   return (
 //     <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
 //       <h2>💬 Live Conversations</h2>

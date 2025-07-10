@@ -78,7 +78,15 @@ const EditBasicInfo = (Children) => {
         validationSchema,
         onSubmit:EditFarm,
     });
-    {formik.values.soilType=indexBI}
+    useEffect(()=>{
+        if(farm){
+            formik.setFieldValue("name",farm.name)
+            formik.setFieldValue("area",farm.area)
+            formik.setFieldValue("location",farm.location)
+            formik.setFieldValue("soilType",indexBI)}
+    },[farm]
+)
+
     return (
         <section className="h-[100vh] flex justify-center items-center bg-black bg-opacity-70  font-manrope backdrop-blur-[blur(5)] absolute z-50 w-[100%]" onClick={(e)=>{
             if(e.target===e.currentTarget){

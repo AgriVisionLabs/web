@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import * as signalR from "@microsoft/signalr";
 import { useContext } from 'react';
 import { userContext } from '../../Context/User.context';
+import { AllContext } from '../../Context/All.context';
 const ConversationMessage = (children) => {
     //  const [messages, setMessages] = useState([]);
+    let {baseUrl}=useContext(AllContext)
     let {token}=useContext(userContext)
         useEffect(() => {
+            
             const connection = new signalR.HubConnectionBuilder()
-            .withUrl('https://gigachat.tryasp.net/hubs/messages', {
+            .withUrl(`${baseUrl}/hubs/messages`, {
                 accessTokenFactory: () => token,
             })
             .withAutomaticReconnect()

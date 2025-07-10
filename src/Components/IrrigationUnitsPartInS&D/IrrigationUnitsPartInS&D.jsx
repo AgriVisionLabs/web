@@ -79,7 +79,7 @@ const IrrigationUnitsPartInSD = (children) => {
                             <p className="text-[17px]   font-semibold capitalize">irrigation units
                             </p>
                             <div className="flex justify-center  py-[15px]">
-                                <button className="py-[12px] px-[20px] border-[1px] border-transparent rounded-[45px] bg-mainColor text-[16px] text-[#FFFFFF] hover:bg-transparent hover:text-mainColor hover:border-mainColor transition-all duration-300 font-medium" onClick={()=>{setAddNewIrrigationUnit("Step1")}}>
+                                <button className="py-[8px] px-[15px] border-[1px] border-transparent rounded-[45px] bg-mainColor text-[16px] text-[#FFFFFF] hover:bg-transparent hover:text-mainColor hover:border-mainColor transition-all duration-300 font-medium" onClick={()=>{setAddNewIrrigationUnit("Step1")}}>
                                     <div className="flex justify-center items-center space-x-[10px]">
                                             <Plus size={19} />
                                             <p className=" capitalize">Add irrigation units</p>
@@ -127,7 +127,7 @@ const IrrigationUnitsPartInSD = (children) => {
                                             <div className="border-t-[1px] border-[rgba(13,18,28,0.25)] py-[24px] mt-[24px]">
                                                 <div className="px-[24px] flex justify-between items-center  text-[#0D121C]">
                                                 <div className="flex items-center space-x-[12px]">
-                                                        <Wrench size={25} className=' cursor-pointer ' onClick={()=>{setSchedule("ScheduleMaintenan")}}/>
+                                                        <Wrench size={25} className=' cursor-pointer ' />
                                                         <Eye size={25} className=' cursor-pointer ' onClick={()=>{
                                                             children.setFarmID(IrrigationUnit.farmId);
                                                             children.setFieldID(IrrigationUnit.fieldId);

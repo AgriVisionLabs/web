@@ -13,7 +13,7 @@ import Irrigation from "../IrrigationControl/Irrigation";
 import SensorsDevices from "../Sensors&Devices/Sensors&Devices";
 import HomeDiseaseDetection from "../../Pages/HomeDiseaseDetection/HomeDiseaseDetection";
 import toast from "react-hot-toast";
-import axios from "axios";
+import axios from "@axiosInstance";
 const Home = () => {
     
 

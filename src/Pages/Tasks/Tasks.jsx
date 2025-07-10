@@ -14,14 +14,15 @@ import MenuElement from "../../Components/MenuElement/MenuElement";
 import ShowTask from "../../Components/ShowTask/ShowTask";
 import NewTask from "../../Components/NewTask/NewTask";
 import { userContext } from "../../Context/User.context";
-import axios from "axios";
+import axios from "@axiosInstance";
 import DateDisplay from "../../Components/DateDisplay/DateDisplay";
+import toast from "react-hot-toast";
 const Tasks = () => {
-  let { pageSize, getPart, baseUrl } = useContext(AllContext);
+  let { getPart, baseUrl,index,setIndex  } = useContext(AllContext);
   let { token } = useContext(userContext);
   let [setPartsDetection] = useState("All Tasks");
   let [Farms, setFarms] = useState([]);
-  let [index, setIndex] = useState(0);
+  // let [index, setIndex] = useState(0);
   let [taskId, setTaskId] = useState();
   let [DisplayTask, setDisplayTask] = useState(null);
   let [CreateTask, setCreateTask] = useState(null);
@@ -48,11 +49,13 @@ const Tasks = () => {
           })
         );
         setFarms(data);
-        console.log(data);
+        // console.log(data);
       }
     } catch (error) {
-      // toast.error("Incorrect email or password "+error);
-      console.log(error);
+      if(error.response.data){
+        if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
+        else{toast.error("There is an error");}
+      }else{console.log(error)}
     }
   }
   useEffect(() => {
@@ -70,13 +73,11 @@ const Tasks = () => {
       };
       let { data } = await axios(options);
       setTasks(data);
-      getFarms()
     } catch (error) {
       // toast.error("Incorrect email or password "+error);
       console.log(error);
     }
   }
-
   useEffect(() => {
     getTasks();
   }, [index,Farms]);
@@ -133,7 +134,7 @@ const Tasks = () => {
               </button>
             </div>
           </div>
-          {tasks.length!=0?<>
+          
           <div className="flex space-x-[20px] mb-[20px]">
             <MenuElement
               Items={FarmNames}
@@ -144,6 +145,7 @@ const Tasks = () => {
               Pformat={"text-[#0D121C] font-[400]"}
             />
           </div>
+          {tasks.length!=0?<>
           <div
             className="flex items-center w-fit h-[70px] rounded-[10px] bg-[rgba(217,217,217,0.3)] space-x-[20px] px-[10px] text-[14px] md:text-[15px]      font-medium mb-[52px]"
             id="parts"
@@ -266,7 +268,11 @@ const Tasks = () => {
               );
             })}
           </div>
-          {DisplayTask ? (
+          </>:
+          <div className="h-[500px]  flex justify-center items-center">
+        <p className="text-[17px] text-[#333333] w-[480px] text-center font-medium">You don’t have any tasks yet</p>
+      </div>}
+      {DisplayTask ? (
             <div className="fixed z-50 inset-0 ">
               <ShowTask
                 setDisplayTask={setDisplayTask}
@@ -275,14 +281,11 @@ const Tasks = () => {
               />
             </div>
           ) : null}
-          {CreateTask ? (
+      {CreateTask ? (
             <div className="fixed z-50 inset-0">
-              <NewTask setCreateTask={setCreateTask} farmData={Farms[index]}  />
+              <NewTask setCreateTask={setCreateTask} farmData={Farms[index]}  getTasks={getTasks} />
             </div>
           ) : null}
-          </>:<div className="h-[500px]  flex justify-center items-center">
-        <p className="text-[17px] text-[#333333] w-[480px] text-center font-medium">You don’t have any tasks yet</p>
-      </div>}
         </div>
       ) :<div className="h-[80%]  flex justify-center items-center">
         <p className="text-[17px] text-[#333333] w-[480px] text-center font-medium">You don’t have any farms yet</p>

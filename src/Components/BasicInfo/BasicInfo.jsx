@@ -28,12 +28,7 @@ const BasicInfo = ({ farmData, setFarmData ,setTeamMemberList }) => {
   });
   function AddFarm(values) {
     setFarmData({
-      invitations: [
-      {
-        recipient: "",
-        roleName: "",
-      },
-    ],
+      invitations: [],
       name: values.name,
       area: values.area,
       location: values.location,

@@ -1,34 +1,30 @@
 import {
-  Calendar,
-  Camera,
   CircleAlert,
-  CircleCheckBig,
-  Leaf,
-  User,
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import MenuElement from "../MenuElement/MenuElement";
 import { AllContext } from "../../Context/All.context";
-import { Line } from "rc-progress";
-import { motion } from "framer-motion";
 import NewDetection from "../NewDetection/NewDetection";
 import AfterDetection from "../AfterDetection/AfterDetection";
 import axios from "axios";
 import { userContext } from "../../Context/User.context";
+import toast from "react-hot-toast";
+import Detection from "../Detection/Detection";
 
-const DiseaseDetection = () => {
-  let { detection, setDetection, setDetectionPage, getPart, baseUrl } =
+const DiseaseDetection = (children) => {
+  let { detection, setDetection, setDetectionPage, getPart, baseUrl,index,setIndex } =
     useContext(AllContext);
   let { token } = useContext(userContext);
   let [partsDetection, setPartsDetection] = useState("All Fields");
   let [fields, setFields] = useState([]);
-  let [index, setIndex] = useState(0);
+  // let [index, setIndex] = useState(0);
   let [Farms, setFarms] = useState([]);
   let [allFarms, setAllFarms] = useState([]);
   let [farmCheck, setFarmCheck] = useState(0);
   let [fieldCheck, setFieldCheck] = useState(0);
   let [Imagecheck, setImagecheck] = useState("");
   let [DataAfterDetection, setDataAfterDetection] = useState();
+  
   async function getFarms() {
     console.log(token);
     try {
@@ -50,8 +46,10 @@ const DiseaseDetection = () => {
         getFields()
       }
     } catch (error) {
-      // toast.error("Incorrect email or password "+error);
-      console.log(error);
+      if(error.response?.data){
+        if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
+        else{toast.error("There is an error");}
+      }else{console.log(error)}
     }
   }
   async function getFields() {
@@ -67,8 +65,10 @@ const DiseaseDetection = () => {
       setFields(data);
       console.log("getFields :", data);
     } catch (error) {
-      // toast.error("Incorrect email or password "+error);
-      console.log(error);
+      if(error.response?.data){
+        if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
+        else{toast.error("There is an error");}
+      }else{console.log(error)}
     }
   }
   useEffect(() => {
@@ -145,21 +145,10 @@ const DiseaseDetection = () => {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-[28px] font-manrope">
-          {fields.map((item, index) => {
+          {fields?.map((item, index) => {
             return (
-              <motion.div
-                key={index}
-                initial={{ x: 300, y: -50, opacity: 0 }}
-                animate={{ x: 0, y: 0, opacity: 1 }}
-                transition={{
-                  delay: index * 0.5,
-                  duration: 0.8,
-                  type: "spring",
-                  bounce: 0.4,
-                }}
-                className="rounded-[15px] border-[1px] border-[rgba(13,18,28,0.25)]"
-              >
-                <div
+              <div key={index} className="rounded-[15px] border-[1px] border-[rgba(13,18,28,0.25)]">
+                {/* <div
                   className="p-[24px]"
                   onClick={() => {
                     setDetectionPage("DiseaseDetectionOverviewpage");
@@ -245,8 +234,9 @@ const DiseaseDetection = () => {
                       <p className="">new detection</p>
                     </div>
                   </button>
-                </div>
-              </motion.div>
+                </div> */}
+                <Detection  setStateOverview={children.setStateOverview} setDiseaseDetections={children.setDiseaseDetections} setField={children.setField} setDetectionPage={setDetectionPage} setDetection={setDetection} fieldId={item.id} farmId={item.farmId} setFarmCheck={setFarmCheck} setFieldCheck={setFieldCheck}/>
+              </div>
             );
           })}
         </div>

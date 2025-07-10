@@ -24,8 +24,8 @@ import Tasks from "./Pages/Tasks/Tasks";
 import Analytics from "./Pages/Analytics/Analytics";
 import Settings from "./Pages/Settings/Settings";
 import Inventory from "./Pages/Inventory/Inventory";
-import ConversationMain from "./Pages/ConversationMain/ConversationMain";
-import Team from "./Components/Team/Team";
+// import ConversationMain from "./Pages/ConversationMain/ConversationMain";
+// import Team from "./Components/Team/Team";
 //Inventory
 function App() {
   const router = createBrowserRouter([

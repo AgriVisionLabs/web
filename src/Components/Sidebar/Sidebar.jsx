@@ -37,12 +37,12 @@ const Sidebar = () => {
         <img src="/public/blackLogo.png" className="w-[50%] mx-auto" />
       </div>
       <div className="space-y-2 mt-5 lg:mt-0">
-        {sidebarItems.map(({ path, label, icon: Icon }) => {
+        {sidebarItems.map(({ path, label, icon: Icon },index) => {
           const isActive = location.pathname === path;
 
           return (
             <div
-              key={path}
+              key={index}
               onClick={() => navigate(path)}
               className={`flex cursor-pointer items-center rounded-lg p-2 lg:p-3 space-x-3 text-[16px] transition duration-300 hover:text-[#1E6930] ${
                 isActive
@@ -57,7 +57,7 @@ const Sidebar = () => {
         })}
       </div>
       <div className="py-3 border-t-2 w-full">
-        <p
+        <div
           className="cursor-pointer font-medium text-[16px] flex items-center ml-2 lg:ml-6 lg:mt-3 lg:space-x-3 text-[#374151] transition duration-300 hover:text-[#C15B5B]"
           onClick={() => {
             logOut();
@@ -66,7 +66,7 @@ const Sidebar = () => {
         >
           <LogOut />
           <p className="hidden lg:block">Log out</p>
-        </p>
+        </div>
       </div>
     </div>
   );

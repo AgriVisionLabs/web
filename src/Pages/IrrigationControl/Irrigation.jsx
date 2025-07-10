@@ -17,7 +17,7 @@ import AutomationRuleStep1IrrigationPage from "../../Components/AutomationRuleSt
 import AutomationRuleStep2IrrigationPage from "../../Components/AutomationRuleStep2(IrrigationPage)/AutomationRuleStep2(IrrigationPage)";
 import FilteIrrigationAutomationRules from "../../Components/FilteIrrigation&AutomationRules/FilteIrrigation&AutomationRules";
 import { userContext } from "../../Context/User.context";
-import axios from "axios";
+import axios from "@axiosInstance";
 import { motion } from "framer-motion";
 const Irrigation = () => {
   let {
@@ -27,9 +27,10 @@ const Irrigation = () => {
     setIrrigationUnit,
     toggleButton,
     baseUrl,
+    index,setIndex 
   } = useContext(AllContext);
   let { token } = useContext(userContext);
-  let [indexIRR, setIndexIRR] = useState(0);
+  // let [indexIRR, setIndexIRR] = useState(0);
   let [indexAuto, setIndexAuto] = useState(0);
   let [indexIRRS1, setIndexIRRS1] = useState(0);
   let [fields, setFields] = useState([]);
@@ -67,7 +68,7 @@ const Irrigation = () => {
   async function getFields() {
     try {
       const options = {
-        url: `${baseUrl}/farms/${Farms[indexIRR].farmId}/Fields`,
+        url: `${baseUrl}/farms/${Farms[index].farmId}/Fields`,
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -84,7 +85,7 @@ const Irrigation = () => {
   async function getIrrigationUnits() {
     try {
       const options = {
-        url: `${baseUrl}/farms/${Farms[indexIRR].farmId}/IrrigationUnits`,
+        url: `${baseUrl}/farms/${Farms[index].farmId}/IrrigationUnits`,
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -156,11 +157,11 @@ const Irrigation = () => {
       getIrrigationUnits();
       getFields();
     }
-  }, [indexIRR, Farms]);
+  }, [index, Farms]);
   async function getAutomation() {
     try {
       const options = {
-        url: `${baseUrl}/farms/${Farms[indexIRR].farmId}/AutomationRules`,
+        url: `${baseUrl}/farms/${Farms[index].farmId}/AutomationRules`,
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -210,7 +211,7 @@ const Irrigation = () => {
       getAutomation();
       getFields();
     }
-  }, [indexIRR, Farms]);
+  }, [index, Farms]);
 
   return (
     <>
@@ -222,9 +223,9 @@ const Irrigation = () => {
             </p>
             <MenuElement
               Items={allFarms}
-              nameChange={allFarms[indexIRR]}
-              setIndex={setIndexIRR}
-              onList={irrigationUnit}
+              nameChange={allFarms[index]}
+              setIndex={setIndex}
+              index={index}
               width={200 + "px"}
               className={"py-[6px]"}
               setOnList={setIrrigationUnit}
@@ -319,16 +320,17 @@ const Irrigation = () => {
                         />
                       </div>
                       <div
-                        className=" w-[47px] h-[25px] rounded-2xl  flex items-center px-1 transition-all duration-300 bg-[#5e5e5f21]  cursor-pointer"
+                        className={` w-[47px] h-[25px] rounded-2xl  flex items-center px-1 transition-all duration-300 ${Irrigation.isOn?"bg-[#1E6930]":"bg-[#5e5e5f21]"}  cursor-pointer`}
                         onClick={(e) => {
                           toggleIrrigationUnits(
                             IrrigationUnit.farmId,
                             IrrigationUnit.fieldId
                           );
+
                           toggleButton(e);
                         }}
                       >
-                        <div className="h-[20px] w-[20px] bg-white rounded-full  transition-all duration-700  "></div>
+                        <div className={`h-[20px] w-[20px] bg-white rounded-full ${Irrigation.isOn?"ms-[19px]":""} transition-all duration-700  `}></div>
                       </div>
                     </div>
                   </div>
@@ -459,7 +461,7 @@ const Irrigation = () => {
         {controlIrrigationPage == "Step1Irrigation" ? (
           <div className=" fixed z-50 inset-0  ">
             <AddIrrigationStep1IrrigationPage
-              farm={Farms[indexIRR]}
+              farm={Farms[index]}
               fields={fields}
               indexIRRS1={indexIRRS1}
               setIndexIRRS1={setIndexIRRS1}
@@ -468,14 +470,14 @@ const Irrigation = () => {
         ) : controlIrrigationPage == "Step2Irrigation" ? (
           <div className=" fixed z-50 inset-0  ">
             <AddIrrigationStep2IrrigationPage
-              farm={Farms[indexIRR]}
+              farm={Farms[index]}
               field={fields[indexIRRS1]}
             />
           </div>
         ) : controlIrrigationPage == "Step1AutomationRule" ? (
           <div className=" fixed z-50 inset-0  ">
             <AutomationRuleStep1IrrigationPage
-              farm={Farms[indexIRR]}
+              farm={Farms[index]}
               fields={fields}
               indexAuto={indexAuto}
               setIndexAuto={setIndexAuto}
@@ -485,7 +487,7 @@ const Irrigation = () => {
           <div className=" fixed z-50 inset-0  ">
             <AutomationRuleStep2IrrigationPage
               getAutomation={getAutomation}
-              farm={Farms[indexIRR]}
+              farm={Farms[index]}
               field={fields[indexAuto]}
             />
           </div>

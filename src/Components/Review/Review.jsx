@@ -103,14 +103,16 @@ const Review = (children) => {
                 },
             }
             let {data}=await axios(options);
-                if(data){ console.log("data createFarm ",data)
+                if(data){ 
                     // children.setFarmId(data.farmId)
-                
-                    sendInvitation(data.farmId)}
-            // console.log("farmIdValue createFarm  ",children.farmId)
+            
+                    if(children.farmData.invitations.length>0){sendInvitation(data.farmId)}
+                    else{children.display()
+                        setReview(false)}
+                    }
                 }catch(error){
-            toast.error("Incorrect email or password "+error);
-            console.log("error createFarm",error)
+                    if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
+                    else{toast.error("error create farm");}
             }finally{
             toast.dismiss("Incorrect");
         

@@ -6,17 +6,18 @@ import Slider from "../../Components/Slider/Slider";
 import { motion } from "framer-motion";
 import MenuElement from "../../Components/MenuElement/MenuElement";
 import { userContext } from "../../Context/User.context";
-import axios from "axios";
+import axios from "@axiosInstance";
 import { AllContext } from "../../Context/All.context";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
-  let { baseUrl } = useContext(AllContext);
+  let { baseUrl ,index,setIndex } = useContext(AllContext);
   let { token } = useContext(userContext);
   let [fields, setFields] = useState([]);
-  let [index, setIndex] = useState(0);
+  // let [index, setIndex] = useState(0);
   let [Farms, setFarms] = useState([]);
   let [allFarms, setAllFarms] = useState([]);
-
+  
   async function getFarms() {
     console.log(token);
     try {
@@ -53,7 +54,10 @@ const Dashboard = () => {
       setFields(data);
       console.log("getFields :", data);
     } catch (error) {
-      console.log(error);
+      if(error.response?.data){
+        if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
+        else{toast.error("There is an error");}
+      }else{console.log(error)}
     }
   }
   useEffect(() => {
@@ -91,7 +95,7 @@ const Dashboard = () => {
                 animate={{ x: 0, y: 0, opacity: 1 }}
                 transition={{
                   delay: index * 0.35,
-                  duration: 0.8,
+                  duration: 0.5,
                   type: "spring",
                   bounce: 0.4,
                 }}

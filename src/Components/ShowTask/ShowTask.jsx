@@ -48,9 +48,9 @@ const ShowTask = (children) => {
     }
     return (<>
         {taskData?<section className='inset-0  flex justify-center items-center bg-black bg-opacity-70  font-manrope  absolute z-50 w-[100%]' onClick={(e)=>{if(e.target==e.currentTarget){children.setDisplayTask(null)}}}>
-            <div className="w-[700px] px-[40px] h-[730px] overflow-hidden   border-2 rounded-2xl bg-white pt-[40px] pb-[10px] text-[#0D121C] font-manrope">
+            <div className="w-[700px] px-[40px]  overflow-hidden   border-2 rounded-2xl bg-white pt-[20px] pb-[10px] text-[#0D121C] font-manrope">
                 <X size={33} className='  ms-auto cursor-pointer hover:text-red-500 transition-all duration-150' onClick={()=>{children.setDisplayTask(null)}}/>
-                <div className=" mt-[16px] space-y-[8px] mb-[5px]">
+                <div className=" mt-[10px] space-y-[8px] mb-[5px]">
                     <h1 className="text-[25px]  font-semibold capitalize">{taskData.title}</h1>
                     <p className="text-[15px] text-[#616161]  font-semibold ">Created on <DateDisplay dateStr={taskData.createdAt}/> by {taskData.createdBy}.</p>
                 </div>
@@ -85,7 +85,7 @@ const ShowTask = (children) => {
                         </div>
                     </div>
                 </div>
-                <div className="py-[18px] border-t-[2px] border-b-[2px] border-[#9F9F9F] my-[24px]">
+                <div className="py-[10px] border-y-[2px]  border-[#9F9F9F] mt-[20px] mb-[10px]">
                     <h3 className="text-[#616161] text-[18px]   font-semibold">Assigned To</h3>
                     <div className=" flex items-center  space-x-[20px] my-[8px] px-[24px]">
                         <img src={imageProfile} alt="" className='w-[50px]'/>

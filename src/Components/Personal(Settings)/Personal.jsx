@@ -30,23 +30,26 @@ const Personal = () => {
         setPhoneNumber({state:0 ,value:""})
     }
     async function getAccountData(){
-                    try {
-                        const options={
-                            url:`${baseUrl}/Accounts` ,
-                            method:"GET",
-                            headers:{
-                                Authorization:`Bearer ${token}`,
-                            },
-                        }
-                        let {data}=await axios(options);
-                        console.log(data)
-                        setData(data)
-                    }catch(error){
-                        toast.error("Incorrect email or password "+error);
-                    }finally{
-                        toast.dismiss("Incorrect");
-                        
-                    }
+        try {
+            const options={
+                url:`${baseUrl}/Accounts` ,
+                method:"GET",
+                headers:{
+                    Authorization:`Bearer ${token}`,
+                },
+            }
+            let {data}=await axios(options);
+            console.log(data)
+            setData(data)
+        }catch(error){
+            if(error.response.data){
+                if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
+                else{toast.error("There is an error");}
+            }else{console.log(error)}
+        }finally{
+            toast.dismiss("Incorrect");
+            
+        }
     }
     async function updateAccountData(){
         let values={
@@ -76,8 +79,10 @@ const Personal = () => {
                         }
                         console.log("updateAccountData",data)
                     }catch(error){
-                        toast.error("Incorrect email or password "+error);
-                        console.log("updateAccounterror",error)
+                        if(error.response.data){
+                            if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
+                            else{toast.error("There is an error");}
+                        }else{console.log(error)}
                     }finally{
                         toast.dismiss("Incorrect");
                         

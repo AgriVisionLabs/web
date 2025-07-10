@@ -5,11 +5,13 @@ import { useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { object, string } from 'yup';
 import { userContext } from '../../Context/User.context';
+import { AllContext } from '../../Context/All.context';
 
 const NewConversation = (children) => {
     const [conversationGroup, setConversationGroup] = useState();
     const [tags, setTags] = useState([]);
     const [inputValue, setInputValue] = useState("");
+    let {baseUrl}=useContext(AllContext)
     const { token } = useContext(userContext);
     const [nameData, setnameData] = useState(null);
     
@@ -27,7 +29,7 @@ const NewConversation = (children) => {
         console.log(payload)
         try {
             const options = {
-                url: "https://gigachat.tryasp.net/Conversations",
+                url: `${baseUrl}/Conversations`,
                 method: "POST",
                 data: payload,
                 headers: {
@@ -75,20 +77,21 @@ const NewConversation = (children) => {
     return (
         <div className="relative inset-0 bg-[rgba(0,0,0,0.5)] min-h-screen flex justify-center items-center" onClick={(e)=>{if(e.target==e.currentTarget){children.setNewConversations(null)}}}>
             <div className="flex flex-col items-center font-Inter z-10" >
-                <div className="bg-[#171717] w-[450px] min-h-[300px] rounded-[14px]" >
-                    <div className="px-[20px] mt-[25px] space-x-[14px] flex items-center text-[#FFFFFF]">
-                        <ChevronLeft size={35} className="cursor-pointer text-[#A1A1AA]" onClick={()=>{setConversationGroup(false)}}/>
-                        <p className="text-[20px] font-bold">NewConversation</p>
+                <div className="bg-white w-[450px] min-h-[300px] rounded-[14px]" >
+                    <div className="px-[20px] mt-[25px] space-x-[14px] flex items-center ">
+                        <ChevronLeft size={35} className="cursor-pointer text-[#A1A1AA] hover:text-black transition-all duration-300" onClick={()=>{setConversationGroup(false)}}/>
+                        <p className="text-[20px] font-bold text-mainColor">NewConversation</p>
                     </div>
                     <form className="px-[32px] mt-[32px]" onSubmit={formik.handleSubmit}>
                         {conversationGroup?<>
-                        <p className="px-[32px] mb-[12px] text-[14px] font-semibold text-[#A1A1AA]">Name</p>
-                        <input type="text" name='name' value={formik.values.name} className=" bg-[#27272A] flex flex-wrap gap-2 text-[#9CA3AF] p-2 rounded-[10px] mb-4 w-[386px] h-[48px] " onChange={formik.handleChange} onBlur={formik.handleBlur}/>
-                            </>:<>
-                        <p className="px-[32px] mb-[12px] text-[14px] font-semibold text-[#A1A1AA]">Add Members</p>
-                        <div className="bg-[#27272A] flex flex-wrap gap-2 p-2 rounded-[10px] mb-4 w-[386px] min-h-[48px]">
+                        <p className="px-2 mb-[12px] text-[16px] font-semibold text-[#A1A1AA]">Name</p>
+                        <input type="text" name='name' value={formik.values.name} className="  flex flex-wrap gap-2   border-[2px] border-[#9F9F9F] py-[10px] px-[10px]  rounded-[10px] mb-4 w-[386px] h-[48px] " onChange={formik.handleChange} onBlur={formik.handleBlur}/>
+                            </>
+                            :<>
+                        <p className="px-2 mb-[12px] text-[16px] font-semibold text-[#A1A1AA]">Add Members</p>
+                        <div className=" flex flex-wrap gap-2 p-2 border-[2px] border-[#9F9F9F] py-[10px] px-[10px] rounded-[15px]  mb-4 w-[386px] min-h-[48px]">
                             {tags.map((tag, index) => (
-                                <div key={index} className="flex items-center bg-[#39493E] text-[#F7F7F7] text-[16px] px-[17px] py-[3px] rounded-[13px]">
+                                <div key={index} className="flex items-center bg-[#202120] text-[#F7F7F7] text-[16px] px-[17px] py-[3px] rounded-[13px]">
                                     <span>{tag}</span>
                                 </div>
                             ))}
@@ -97,7 +100,7 @@ const NewConversation = (children) => {
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 onKeyDown={handleKeyDown}
-                                className="bg-transparent text-[#9CA3AF] outline-none flex-1 "
+                                className=" text-black    outline-none flex-1 "
                             />
                         </div>
                         </>}
@@ -108,15 +111,15 @@ const NewConversation = (children) => {
                         {/* <input type="hidden" name="membersList"  /> */}
                         {console.log("tags",tags.length)}
                         
-                        {tags.length>1?conversationGroup==true?<button type="submit" className="w-full text-[#27272A] text-[16px] font-semibold bg-mainColor2 mb-[16px] rounded-[10px] py-[12px]">
+                        {tags.length>1?conversationGroup==true?<button type="submit" className="w-full text-white text-[16px] mx-2 font-semibold bg-mainColor mb-[16px] rounded-[14px] py-[12px]">
                             Start Conversation
                         </button>:
-                        <button type='button' className="w-full text-[#27272A] text-[16px] font-semibold bg-mainColor2 mb-[16px] rounded-[10px] py-[12px]" onClick={(e)=>{setConversationGroup(true)
+                        <button type='button' className="w-full text-white text-[16px] font-semibold bg-mainColor mb-[16px] mx-2 rounded-[14px] py-[12px]" onClick={(e)=>{setConversationGroup(true)
                             e.preventDefault()
                         }}>
                             Start Conversation
                         </button>:
-                        <button type="submit" className="w-full text-[#27272A] text-[16px] font-semibold bg-mainColor2 mb-[16px] rounded-[10px] py-[12px]">
+                        <button type="submit" className="w-full text-white text-[16px] font-semibold bg-mainColor mb-[16px] mx-2 rounded-[14px] py-[12px]">
                             Start Conversation
                         </button>}
 

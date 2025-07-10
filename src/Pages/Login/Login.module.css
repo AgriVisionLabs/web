@@ -1,5 +1,5 @@
 .Login :global(.contentAndbg){
-    background-image: url("../../../public/landing.png");
+    background-image: url("/landing.png");
     background-position: left;
     background-size: cover;
     background-repeat: no-repeat;

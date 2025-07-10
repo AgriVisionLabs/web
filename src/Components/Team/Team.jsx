@@ -83,16 +83,21 @@ const Team = (children) => {
         const alreadyExists = children.teamMemberList.some(
             (member) => member.recipient === values.recipient
             );
-        if (alreadyExists) {
+            if (!values.recipient||!values.roleName) {
+                toast.error("the data is incomplete.");
+                return;
+            }
+            if (alreadyExists) {
                 toast.error("This user is already invited.");
                 return;
-        }
-            children.teamMemberList.push({recipient:values.recipient,roleName:values.roleName})
-            children.setFarmData(prev => ({
-                ...prev,
-                invitations:children.teamMemberList,
-            }));
-        }
+            }
+                children.teamMemberList.push({recipient:values.recipient,roleName:values.roleName})
+                children.setFarmData(prev => ({
+                    ...prev,
+                    invitations:children.teamMemberList,
+                }));
+                values.recipient=""
+            }
 
         useEffect(() => {
             console.log("children.farmData",children.farmData)
@@ -164,7 +169,7 @@ const Team = (children) => {
                             <form action="" className="grid grid-cols-4 gap-4 " onSubmit={formik.handleSubmit}>
                                 <div className=" col-span-2">
                                     <label htmlFor="" className='ms-1 '>Email or Username</label>
-                                    <input type="text" placeholder='Enter Email or Username' name='recipient' value={formik.values.recipient} onChange={formik.handleChange} onBlur={formik.handleBlur} className='formControl   h-[45px] mx-0 rounded-xl text-[16px]  w-[100%] border-[#0d121c21] '/>
+                                    <input type="email" placeholder='Enter Email or Username' name='recipient' value={formik.values.recipient} onChange={formik.handleChange} onBlur={formik.handleBlur} className='formControl   h-[45px] mx-0 rounded-xl text-[16px]  w-[100%] border-[#0d121c21] '/>
                                 </div>
                                 <div className="col-span-1 h-full ">
                                     <label htmlFor="" className='ms-1 ' >Role</label>

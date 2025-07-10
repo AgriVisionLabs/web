@@ -124,20 +124,22 @@ const EditTeam = (children) => {
                     </div>
                 </div>
                 </div>
-                <div className="w-[85%] mt-4 flex-grow  flex flex-col justify-between   text-[18px] h-[90%]">
+                <div className="w-[90%] mt-4 flex-grow  flex flex-col justify-between   text-[18px] h-[90%]">
                     <div className=" flex flex-col justify-between ">
-                        <form action="" className="flex items-end space-x-3  " onSubmit={formik.handleSubmit}>
-                            <div className=" ">
+                        <form action="" className="grid grid-cols-4 gap-6   " onSubmit={formik.handleSubmit}>
+                            <div className=" col-span-2 ">
                                 <label htmlFor="" className='ms-1 '>Email or Username</label>
-                                <input type="text" placeholder={emailOrNameField} name='recipient' value={formik.values.recipient} onChange={formik.handleChange} onBlur={formik.handleBlur} className='formControl   h-[45px] mx-0 rounded-xl text-[16px]  w-[100%] border-[#0d121c21] hover:border-[#0d121c21]  ' disabled/>
+                                <input type="text" placeholder={emailOrNameField} name='recipient' value={formik.values.recipient} onChange={formik.handleChange} onBlur={formik.handleBlur} className='formControl   h-[45px] mx-0 rounded-xl text-[16px] mb-0 my-2  w-[100%] border-[#0d121c21] hover:border-[#0d121c21]  ' disabled/>
                             </div>
                             <div className=" h-full ">
                                 <label htmlFor="" className='ms-1 ' >Role</label>
-                                <MenuElement Items={forms} name={role} width={140+"px"} Pformat={"text-[16px] font-[400]  select-none  text-[#9F9F9F]"} className={" rounded-xl border-[1px] mt-2  px-2 py-5 mb-[4px]  h-[45px] border-[#0d121c21]"}  onList={onListItem} setOnList={setOnListItem} nameChange={forms[indexBI]} setIndex={setIndexBI}  />
+                                <MenuElement Items={forms} name={role} width={130+"px"} Pformat={"text-[16px]  font-[400] my-0  select-none  text-[#9F9F9F]"} className={" rounded-xl border-[1px] mt-2  px-2 py-5 mb-[4px]  h-[45px] border-[#0d121c21]"}  onList={onListItem} setOnList={setOnListItem} nameChange={forms[indexBI]} setIndex={setIndexBI}  />
                                 
                             </div>
+                            <div className=" relative ">
+                                <button type="submit" className="btn absolute bottom-0   rounded-xl  h-[45px] self-end py-5 bg-mainColor text-[16px] text-white hover:bg-transparent hover:border-mainColor mb-[4px] border-2 hover:text-mainColor font-medium ">Add</button>
+                            </div>
                             
-                            <button type="submit" className="btn  rounded-xl mb-2 h-[45px] self-end py-5 bg-mainColor text-[16px] text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium ">Add</button>
                         </form>
                     </div>
                     <div className=" flex-grow  overflow-hidden  ">

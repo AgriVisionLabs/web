@@ -56,15 +56,15 @@ const NewTask = (children) => {
         );
       }
     } catch (error) {
-      // toast.error("Incorrect email or password "+error);
-      console.log(error);
+      if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
+      else{toast.error("Insufficient data");}
     }
   }
   useEffect(() => {
     getFields();
   }, []);
   async function sendNewTask(values) {
-    const loadingId = toast.loading("Waiting...", { position: "top-left" });
+    if(Fields.length){const loadingId = toast.loading("Waiting...", { position: "top-left" });
     try {
       const filteredValues = Object.fromEntries(
         Object.entries(values).filter(
@@ -82,11 +82,16 @@ const NewTask = (children) => {
       let data= await axios(option);
       if(data){
           children.setCreateTask(null)
+          children.getTasks()
       }
     } catch (error) {
-      console.log(error);
+      if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
+      else{toast.error("Insufficient data");}
     } finally {
       toast.dismiss(loadingId);
+    }}
+    else{
+      toast.error("No fields. A task cannot be created. Please create a field first.")
     }
   }
   const formik = useFormik({

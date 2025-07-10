@@ -12,8 +12,8 @@ const MenuElement = (children) => {
             const iconRef=useRef(null);
             const listRef=useRef(null);
             function openList(){
-                const element=iconRef.current.classList;
-                const element2=listRef.current.classList;
+                const element=iconRef.current?.classList;
+                const element2=listRef.current?.classList;
                 console.log(element)
                 if(onList){
                     setOnList(false);

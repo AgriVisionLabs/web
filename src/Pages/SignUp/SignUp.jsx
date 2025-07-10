@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import styles from "./SignUp.module.css";
 import { object, string } from "yup";
 import toast from "react-hot-toast";
-import axios from "axios";
+import axios from "@axiosInstance";
 import { useFormik } from "formik";
 // import { Helmet } from "react-helmet";
 import { useContext, useState } from "react";

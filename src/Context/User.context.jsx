@@ -20,7 +20,7 @@ export default function UserProvider(items){
             const loadingId =toast.loading("Waiting...")
             try {
                 const options={
-                    url:"https://agrivision.tryasp.net/Auth/refresh",
+                    url:"https://api.agrivisionlabs.tech/Auth/refresh",
                     method:"POST",
                     data:{
                         token:token,

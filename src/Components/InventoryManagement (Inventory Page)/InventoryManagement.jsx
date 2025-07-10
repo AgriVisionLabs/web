@@ -27,7 +27,7 @@ const InventoryManagement = (children) => {
         "PestAndHealthControl",
     ];
     const validationSchema = object({
-        fieldId: string().required("fieldId is required"),
+        fieldId: string(),
         name: string().required("title is required"),
         category: string().required("category is required"),
         quantity: string().required("quantity is required"),
@@ -89,15 +89,15 @@ const InventoryManagement = (children) => {
     async function sendNewInventory(values) {
         const loadingId = toast.loading("Waiting...", { position: "top-left" });
         try {
-        // const filteredValues = Object.fromEntries(
-        //     Object.entries(values).filter(
-        //     ([_, value]) => value !== "" && value !== null && value !== undefined
-        //     )
-        // );
+        const filteredValues = Object.fromEntries(
+            Object.entries(values).filter(
+            ([_, value]) => value !== "" && value !== null && value !== undefined
+            )
+        );
         const option = {
             url: `${baseUrl}/farms/${children.farms[indexFarm].farmId}/InventoryItems`,
             method: "POST",
-            data: values,
+            data: filteredValues,
             headers: {
             Authorization: `Bearer ${token}`,
             },
@@ -128,13 +128,15 @@ const InventoryManagement = (children) => {
         onSubmit: sendNewInventory,
     });
     useEffect(() => {
-        formik.setFieldValue("fieldId", fields[indexField]?.id);
-        formik.setFieldValue("category", Category[indexCategory]);
+        if (fields.length > 0 && fields[indexField]) {
+                formik.setFieldValue("fieldId", fields[indexField].id);
+            }
+        formik.setFieldValue("category",indexCategory);
         formik.setFieldValue("measurementUnit", MeasurementUnit[indexMeasurementUnit]);
-    }, [indexField, indexCategory,indexMeasurementUnit]);
+    }, [indexField, indexCategory,indexMeasurementUnit,children.farms[indexFarm]]);
 
     return (
-        <section
+        children.farms[indexFarm].farmId&&fields?<section
         className=" flex justify-center items-center bg-black bg-opacity-70 font-manrope absolute inset-0 z-50 w-[100%]"
         onClick={(e) => {
             if (e.target == e.currentTarget) {
@@ -172,6 +174,7 @@ const InventoryManagement = (children) => {
                         Items={children.farmNames ? children.farmNames : []}
                         nameChange={children.farmNames ? children.farmNames[indexFarm] : null}
                         setIndex={setIndexFarm}
+                        index={indexFarm}
                         Pformat={"text-[#0D121C] font-[400]"}
                     />
                 </div>
@@ -185,6 +188,7 @@ const InventoryManagement = (children) => {
                         Items={fieldNames ? fieldNames : []}
                         nameChange={fieldNames ? fieldNames[indexField] : null}
                         setIndex={setIndexField}
+                        index={indexField}
                         Pformat={"text-[#0D121C] font-[400]"}
                     />
                 </div>
@@ -194,7 +198,7 @@ const InventoryManagement = (children) => {
                         <input
                             type='text'
                             id="Name"
-                            className="border-[1px] border-[##0d121c21] rounded-lg px-5 py-2 text-[17px] font-[400] focus:outline-mainColor  "
+                            className="border-[1px] border-[#0d121c21] rounded-lg px-5 py-2 text-[17px] font-[400] focus:outline-mainColor  "
                             name="name"
                             value={formik.values.name}
                             onChange={formik.handleChange}
@@ -227,7 +231,7 @@ const InventoryManagement = (children) => {
                             Quantity
                         </label>
                         <input
-                            type='text'
+                            type="number"
                             id="Quantity"
                             className="border-[1px] border-[##0d121c21] rounded-lg px-5 py-2 text-[17px] font-[400] focus:outline-mainColor  "
                             name="quantity"
@@ -261,7 +265,7 @@ const InventoryManagement = (children) => {
                             Threshold Quantity
                         </label>
                         <input
-                            type='text'
+                            type="number"
                             id="Threshold Quantity"
                             className="border-[1px] border-[##0d121c21] rounded-lg px-5 py-2 text-[17px] font-[400] focus:outline-mainColor  "
                             name="thresholdQuantity"
@@ -279,7 +283,7 @@ const InventoryManagement = (children) => {
                             Unit Cost
                         </label>
                         <input
-                            type='text'
+                            type="number"
                             id="Unit Cost"
                             className="border-[1px] border-[##0d121c21] rounded-lg px-5 py-2 text-[17px] font-[400] focus:outline-mainColor  "
                             name="unitCost"
@@ -336,7 +340,7 @@ const InventoryManagement = (children) => {
             </div>
             </form>
         </div>
-        </section>
+        </section>:null
     );
 }
 

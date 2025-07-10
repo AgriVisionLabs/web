@@ -32,7 +32,7 @@ const Slider = () => {
           onSwiper={(swiper) => console.log(swiper)}
         >
           {days.map((e,index) => (
-            <>
+            
               <SwiperSlide key={`${e.day}-${index}`}>
                 <div className="mt-2  flex flex-col items-center  space-y-2    ">
                   <p className="">{e.day}</p>
@@ -40,7 +40,7 @@ const Slider = () => {
                   <p className=" ">{e.tem}</p>
                 </div>
               </SwiperSlide>
-            </>
+            
           ))}
         </Swiper>
       }

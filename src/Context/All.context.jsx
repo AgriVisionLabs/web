@@ -15,7 +15,7 @@ export default function AllProvider(items){
     let [onListItem,setOnListItem]=useState(false);
     let [review,setReview]=useState(null);
     let [addField,setAddField]=useState(null);
-    let [openFarmsOrFieled,SetOpenFarmsOrFieled]=useState(null);
+    let [openFarmsOrFieled,SetOpenFarmsOrFieled]=useState(1);
     let [OnMenu, setOnmenu] = useState(null);
     let [onListDisDet,setOnListDisDet]=useState(false);
     let [onListSenDev,setOnListSenDev]=useState(false);
@@ -30,6 +30,11 @@ export default function AllProvider(items){
     let [controlIrrigationPage,setControlIrrigationPage]=useState(null);
     let [schedule,setSchedule]=useState(null);
     let [indexBI,setIndexBI]=useState(false);
+    let [index, setIndex] = useState(0);
+    let [farmID, setFarmID] = useState(null);
+    let [fieldDetection, setFieldDetection] = useState(null);
+    let [diseaseDetection, setDiseaseDetection] = useState(null);
+    let [stateOverview,setStateOverview]= useState(null);
     function outClick(){
         setForgetPassword(false);
         setResetPassword(false);
@@ -119,7 +124,12 @@ export default function AllProvider(items){
                                         schedule,setSchedule,
                                         indexBI,setIndexBI,
                                         allFarms,setAllFarms,
+                                        index, setIndex,
                                         toggleButton,
+                                        farmID, setFarmID,
+                                        fieldDetection, setFieldDetection,
+                                        diseaseDetection, setDiseaseDetection,
+                                        stateOverview,setStateOverview
                                         }}>
         {children}
     </AllContext.Provider>
