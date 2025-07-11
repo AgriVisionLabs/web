@@ -53,7 +53,7 @@ const WeeklyWeather = () => {
     }, []);
 
 return (
-    <div className=" w-[570px] shadow-md px-3 pt-4 rounded-xl border-2 border-[#0d121c21] ">
+    <div className=" w-[570px] shadow-md px-3 pt-4 pb-[6px] rounded-xl border-2 border-[#0d121c21] ">
         <h2 className="font-[500] text-[20px] mb-1">Weather Forecast</h2>
         {loading ? (
             <p className="text-center">Loading...</p>
@@ -74,8 +74,8 @@ return (
 
                 return (
                 <SwiperSlide key={index}>
-                    <div className="p-4 rounded  text-center ">
-                    <h3 className="font-semibold mb-[2px]">{dayName}</h3>
+                    <div className={`p-2 rounded text-black  text-center ${index==0?"bg-mainColor/10":""} `}>
+                    <h3 className={`font-semibold mb-[2px] ${index==0?"text-mainColor":""}`}>{dayName}</h3>
                     <div className="text-3xl mb-[2px]">{weather.icon}</div>
                     <p className="text-sm mb-[2px]">{weather.text}</p>
                     <p>

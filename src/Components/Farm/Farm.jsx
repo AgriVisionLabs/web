@@ -5,6 +5,9 @@ import { userContext } from '../../Context/User.context';
 import { AllContext } from '../../Context/All.context';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
 
 const Farm = (children) => {
     let {baseUrl,SetOpenFarmsOrFieled,setFarmID}=useContext(AllContext)
@@ -60,16 +63,22 @@ const Farm = (children) => {
                                 soil type : {children.types[children.farm.soilType]}
                             </p>
                             </div>
-                            {fields.length?<div className="grid grid-cols-3 justify-center gap-6 my-2 w-[100%]  h-[150px]  overflow-y-auto text-[#2a2929]  ">
-                            {fields.map((field, index) => {
+                            {fields.length?
+                            <div className="flex justify-center ">
+                            <Swiper
+                                spaceBetween={20}
+                                breakpoints={{
+                                    320: { slidesPerView: 3 },
+                                    640: { slidesPerView: 4 },
+                                    1024:{slidesPerView: 3 }
+                                }}
+                                className='flex justify-center items-center  w-fit   my-2  h-[150px]   text-[#2a2929] '
+                                >{fields.map((field, index) => {
                                 return (
-                                <div
-                                    key={index}
-                                    className="flex flex-col items-center "
-                                >
+                                <SwiperSlide key={index}>
                                     <div 
                                     data-progress={`${field.progress}%`}
-                                    className={`before:content-[attr(data-progress)]  before:text-[#2a2929] before:font-medium before:absolute  before:left-1/2 before:-translate-x-1/2 before:top-1/2 before:-translate-y-1/2 relative`}
+                                    className={`before:content-[attr(data-progress)]   flex flex-col  w-fit  before:text-[#2a2929] before:font-medium before:absolute  before:left-1/2 before:-translate-x-1/2 before:top-1/2 before:-translate-y-1/2 relative`}
                                     >
                                     <Circle
                                         percent={field.progress}
@@ -82,14 +91,15 @@ const Farm = (children) => {
                                         className={`w-[90px] h-[90px]`}
                                     />
                                     </div>
-                                    <p className="text-[16px] font-medium capitalize ">
+                                    <p className="text-[16px] w-[90px]  font-medium text-center capitalize ">
                                     {field.cropName}
                                     </p>
-                                </div>
+                                </SwiperSlide>
                                 );
                             })}
-                            
-                            </div> :<div className='h-[150px] w-full my-2 flex justify-center items-center '>
+                            </Swiper>
+                            </div>
+                            :<div className='h-[150px] w-full my-2 flex justify-center items-center '>
                                 <p className=" text-[18px]">There are no fields on this farm.</p>
                             </div>}
                             <div className="flex justify-between items-center mt-2 mb-5">
@@ -102,17 +112,20 @@ const Farm = (children) => {
                                 <SquarePen
                                 strokeWidth={1.7}
                                 
-                                className=" hover:text-mainColor transition-all  duration-150 cursor-pointer"
-                                onClick={() => {
+                                className={`  transition-all ${children.farm.roleName!="Owner"?"text-[#1111115f]":" hover:text-mainColor cursor-pointer "}  duration-150 `}
+                                onClick={() => { 
+                                    if(children.farm.roleName=="Owner"){
                                     children.setFarmIdEdit(children.farm.farmId);
                                     children.setEdit("BasicInfo");
+                                    }
                                 }}
                                 />
                                 <Trash2
                                 strokeWidth={1.7}
-                                className="hover:text-red-700 transition-all  duration-150 cursor-pointer"
+                                className={`  transition-all  ${children.farm.roleName!="Owner"?"text-[#1111115f]":" hover:hover:text-red-700 cursor-pointer "}   duration-150`}
                                 onClick={() => {
-                                    children.deleteFarms(children.farm.farmId);
+                                    if(children.farm.roleName=="Owner"){
+                                    children.deleteFarms(children.farm.farmId);}
                                 }}
                                 />
                             </div>

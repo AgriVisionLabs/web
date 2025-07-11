@@ -130,9 +130,10 @@ const Tasks = () => {
             <p className="text-[23px] font-semibold capitalize">Tasks</p>
             <div className="flex justify-center">
               <button
-                className="py-2 px-5 border-[1px] border-transparent rounded-[45px] bg-mainColor text-[15px] text-[#FFFFFF] hover:bg-transparent hover:text-mainColor hover:border-mainColor transition-all duration-300 font-medium"
+                className={`py-2 px-5 border-[1px] border-transparent rounded-[45px] text-[15px] text-[#FFFFFF]    ${["Owner","Maneger"].includes(Farms[index].roleName)?"bg-mainColor  hover:text-mainColor hover:border-mainColor  hover:bg-transparent":" bg-mainColor/40 cursor-default"} transition-all duration-300 font-medium`}
                 onClick={() => {
-                  setCreateTask(true);
+                  if(["Owner","Maneger"].includes(Farms[index].roleName)){
+                  setCreateTask(true);}
                 }}
               >
                 <div className="flex justify-center items-center space-x-[10px]">
@@ -258,9 +259,9 @@ const Tasks = () => {
                         /> */}
                         <CircleCheckBig
                             size={23}
-                            className=" cursor-pointer text-[#25C462]"
+                            className={` ${Farms[index].roleName=="Worker"?"cursor-pointer text-[#25C462]":"cursor-default text-[#25c4625c]"}`}
                             onClick={() => {
-                              CompleteTask(task.farmId, task.id);
+                              if(Farms[index].roleName=="Worker"){CompleteTask(task.farmId, task.id);}
                             }}
                           />
                         <div className=" flex items-center space-x-3">
@@ -274,38 +275,38 @@ const Tasks = () => {
                           <div className=" relative ">
                             <EllipsisVertical className=" cursor-pointer" onClick={(e)=>{e.currentTarget.nextElementSibling.classList.toggle("hidden")}}/>
                             <div className=" absolute -left-14 top-8 flex-1  rounded-[15px] text-[#0D121C] bg-[#FFFFFF] border border-[#0d121c4f] py-[4px] px-[8px] hidden w-[150px] ">
-                              <div className="flex items-center space-x-2 py-[5px]" onClick={() => {
+                              <div className="flex items-center space-x-2 py-[5px] cursor-pointer" onClick={() => {
                                     setTaskId(task.id);
                                     setDisplayTask(true);
                                   }}>
                                 <FileText
                                   strokeWidth={1.5}
                                   size={20}
-                                  className="bg- cursor-pointer "
+                                  className=" "
                                   />
                                   <p className="">View details</p>
                               </div>
-                              <div className="flex items-center space-x-2 py-[5px]" onClick={() => {
-                                    setTaskId(task.id);
-                                    setEditTask(true)
+                              <div className={`flex items-center space-x-2 py-[5px] ${["Owner","Maneger"].includes(Farms[index].roleName)?" cursor-pointer":"text-[#4f4d4dbb] cursor-default"}`} onClick={() => {
+                                    if(["Owner","Maneger"].includes(Farms[index].roleName)){setTaskId(task.id);
+                                    setEditTask(true)}
                                   }} >
                                 <Edit
                                   strokeWidth={1.5}
                                   size={20}
-                                  className="bg- cursor-pointer "
+                                  className=" X "
                                   />
                                   <p className="">Edit</p>
                               </div>
-                              <div className="flex items-center space-x-2 py-[5px]"onClick={() => {
-                                    DeleteTask(task.farmId, task.id);
+                              <div className={`flex items-center space-x-2 py-[5px] ${["Owner","Maneger"].includes(Farms[index].roleName)?" cursor-pointer text-[#dc3636]":"text-[#4f4d4dbb] cursor-default"}`}onClick={() => {
+                                    if(["Owner","Maneger"].includes(Farms[index].roleName)){DeleteTask(task.farmId, task.id);}
                                   }}>
                                 <Trash2
                                   strokeWidth={1.5}
                                   size={20}
-                                  className=" cursor-pointer text-[#dc3636]"
+                                  className=" "
                                   
                                 />
-                                <p className="text-[#dc3636]">Delete</p>
+                                <p className="">Delete</p>
                               </div>
                             </div>
                           </div>                          

@@ -14,7 +14,6 @@ const InventoryManagementUpdateItem = (children) => {
     let [inventoryItems, setInventoryItems] = useState(null);
     let [fields, setFields] = useState([]);
     let [fieldNames, setFieldNames] = useState(null);
-    let [indexFarm, setIndexFarm] = useState(0);
     let [indexField, setIndexField] = useState(0);
     let [indexMeasurementUnit, setIndexMeasurementUnit] = useState(0);
     let [indexCategory, setIndexCategory] = useState(0);
@@ -85,7 +84,7 @@ const InventoryManagementUpdateItem = (children) => {
     useEffect(() => {
         getInventoryItems()
         getFields();
-    }, [indexFarm,children.farmId]);
+    }, [children.farmId]);
     async function sendUpdateInventory(values) {
         const loadingId = toast.loading("Waiting...", { position: "top-left" });
         try {
@@ -136,11 +135,11 @@ const InventoryManagementUpdateItem = (children) => {
     }, [indexField, indexCategory,indexMeasurementUnit,children.farmId]);
 
     return (
-        children.farmId&&fields?<section
+        children.farmId&&fields.length>0?<section
         className=" flex justify-center items-center bg-black bg-opacity-70 font-manrope absolute inset-0 z-50 w-[100%]"
         onClick={(e) => {
             if (e.target == e.currentTarget) {
-            children.setAddNewInventory(null);
+            children.setPageInventory(null);
             }
         }}
         >
@@ -149,7 +148,7 @@ const InventoryManagementUpdateItem = (children) => {
             size={33}
             className="ms-auto cursor-pointer hover:text-red-500 transition-all duration-150"
             onClick={() => {
-                children.setAddNewInventory(null);
+                children.setPageInventory(null);
             }}
             />
             <div className="space-y-[8px]">
@@ -320,7 +319,7 @@ const InventoryManagementUpdateItem = (children) => {
                 className="py-[10px] px-[15px]  border-[1px] border-[#616161] rounded-[12px] text-[#333333]  text-[17px]  hover:bg-mainColor hover:text-[#FFFFFF] hover:border-mainColor transition-all duration-300 font-semibold"
                 onClick={(e) => {
                     if (e.target == e.currentTarget) {
-                    children.setAddNewInventory(null);
+                    children.setPageInventory(null);
                     }
                 }}
                 >

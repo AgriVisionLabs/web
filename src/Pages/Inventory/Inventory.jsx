@@ -16,10 +16,10 @@ import { userContext } from "../../Context/User.context";
 import axios from "@axiosInstance";
 import InventoryManagement from "../../Components/InventoryManagement (Inventory Page)/InventoryManagement";
 import InventoryManagementUpdateItem from "../../Components/InventoryManagementUpdateItem/InventoryManagementUpdateItem";
+import toast from "react-hot-toast";
 
   
 const Inventory = () => {
-  console.log("Axios:", axios.defaults)
   let { baseUrl,getPart,index,setIndex  } = useContext(AllContext);
   let { token } = useContext(userContext);
   let [part,setPart] = useState("all items");
@@ -59,7 +59,8 @@ const Inventory = () => {
             console.log("getFarms",data);
         }
         } catch (error) {
-        console.log(error);
+          if(error.response.data.errors[0].description){toast.error(error.response.data.errors[0].description, { position: "top-left" })}
+          else{toast.error("Invalid Data", { position: "top-left" })}
         }
     }
   async function getInventory() {
@@ -74,11 +75,11 @@ const Inventory = () => {
         let { data } = await axios(options);
         if (data) {
             setInventory(data)
-            
             console.log("getInventory",data);
         }
         } catch (error) {
-        console.log(error);
+          if(error.response?.data?.errors[0].description){toast.error(error.response.data.errors[0].description, { position: "top-left" })}
+          else{toast.error("Invalid Data", { position: "top-left" })}
         }
     }
     useEffect(()=>{getFarms()},[])
@@ -103,7 +104,7 @@ const Inventory = () => {
             Pformat={"text-[#0D121C] font-[400]  px-[12px]"}
           />
 
-          <button className="border-[1px] border-mainColor bg-mainColor hover:bg-transparent hover:text-mainColor  rounded-[8px] px-[15px] py-[9px] text-white hover " onClick={()=>{setPageInventory("AddNewInventory")}}>
+          <button className="border-[1px] border-mainColor bg-mainColor hover:bg-transparent hover:text-mainColor  rounded-[8px] px-[15px] py-[7px] text-white hover " onClick={()=>{setPageInventory("AddNewInventory")}}>
             <div className="flex items-center space-x-1">
               <Plus strokeWidth={1.7} />
               <p className="">Add Item</p>
@@ -287,11 +288,11 @@ const Inventory = () => {
       
       {pageInventory=="AddNewInventory"?
       <div className="flex absolute inset-0 justify-center items-center">
-        <InventoryManagement setAddNewInventory={setPageInventory} farmNames={farmNames} farms={farms}/>
+        <InventoryManagement setPageInventory={setPageInventory}  getInventory={getInventory} farmNames={farmNames} farms={farms}/>
       </div>:
       pageInventory=="UpdateItem"?
       <div className="flex absolute inset-0 justify-center items-center">
-        <InventoryManagementUpdateItem farmName={farmNames[index]} itemId={inventoryId} farmId={inventoryFarmId} />
+        <InventoryManagementUpdateItem setPageInventory={setPageInventory} farmName={farmNames[index]} getInventory={getInventory} itemId={inventoryId} farmId={inventoryFarmId} />
       </div>:
       null}
     </section>

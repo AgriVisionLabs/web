@@ -252,7 +252,7 @@ const NewTask = (children) => {
             </div>
           </div>
 
-          <div className="flex justify-start space-x-3 items-cente">
+          <div className="flex justify-end space-x-3 items-cente">
             <button
               type="button"
               className="py-[10px] px-[15px]  border-[1px] border-[#616161] rounded-[12px] text-[#333333]  text-[17px]  hover:bg-mainColor hover:text-[#FFFFFF] hover:border-mainColor transition-all duration-300 font-semibold"

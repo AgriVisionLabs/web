@@ -12,7 +12,7 @@ const InventoryManagement = (children) => {
     let { baseUrl } = useContext(AllContext);
     let { token } = useContext(userContext);
     let [fields, setFields] = useState([]);
-    let [fieldNames, setFieldNames] = useState(null);
+    let [fieldNames, setFieldNames] = useState([]);
     let [indexFarm, setIndexFarm] = useState(0);
     let [indexField, setIndexField] = useState(0);
     let [indexMeasurementUnit, setIndexMeasurementUnit] = useState(0);
@@ -79,7 +79,8 @@ const InventoryManagement = (children) => {
         );
         console.log("data",fields[indexField].id)
         } catch (error) {
-        // toast.error("Incorrect email or password "+error);
+            if(error.response.data.errors[0].description){toast.error(error.response.data.errors[0].description, { position: "top-left" })}
+            else{toast.error("Invalid Data", { position: "top-left" })}
         console.log(error);
         }
     }
@@ -103,12 +104,11 @@ const InventoryManagement = (children) => {
             },
         };
         let data= await axios(option);
-        console.log(data);
-        // if(data){
-        //     children.setCreateTask(null)
-        // }
+        children.setPageInventory(null)
+        children.getInventory()
         } catch (error) {
-        console.log(error);
+            if(error.response.data.errors[0].description){toast.error(error.response.data.errors[0].description, { position: "top-left" })}
+            else{toast.error("Invalid Data", { position: "top-left" })}
         } finally {
         toast.dismiss(loadingId);
         }
@@ -136,11 +136,11 @@ const InventoryManagement = (children) => {
     }, [indexField, indexCategory,indexMeasurementUnit,children.farms[indexFarm]]);
 
     return (
-        children.farms[indexFarm].farmId&&fields?<section
+        children.farms[indexFarm].farmId?<section
         className=" flex justify-center items-center bg-black bg-opacity-70 font-manrope absolute inset-0 z-50 w-[100%]"
         onClick={(e) => {
             if (e.target == e.currentTarget) {
-            children.setAddNewInventory(null);
+            children.setPageInventory(null);
             }
         }}
         >
@@ -149,7 +149,7 @@ const InventoryManagement = (children) => {
             size={33}
             className="ms-auto cursor-pointer hover:text-red-500 transition-all duration-150"
             onClick={() => {
-                children.setAddNewInventory(null);
+                children.setPageInventory(null);
             }}
             />
             <div className="space-y-[8px]">
@@ -184,13 +184,13 @@ const InventoryManagement = (children) => {
                     >
                         Field
                     </label>
-                    <MenuElement
-                        Items={fieldNames ? fieldNames : []}
-                        nameChange={fieldNames ? fieldNames[indexField] : null}
+                    {fieldNames&&<MenuElement
+                        Items={fieldNames.length>0 ? fieldNames : []}
+                        nameChange={fieldNames.length>0 ? fieldNames[indexField] : null}
                         setIndex={setIndexField}
                         index={indexField}
                         Pformat={"text-[#0D121C] font-[400]"}
-                    />
+                    />}
                 </div>
                 <div className="grid grid-cols-2 gap-x-[40px] ">
                     <div className=" flex flex-col">
@@ -319,7 +319,7 @@ const InventoryManagement = (children) => {
                 className="py-[10px] px-[15px]  border-[1px] border-[#616161] rounded-[12px] text-[#333333]  text-[17px]  hover:bg-mainColor hover:text-[#FFFFFF] hover:border-mainColor transition-all duration-300 font-semibold"
                 onClick={(e) => {
                     if (e.target == e.currentTarget) {
-                    children.setAddNewInventory(null);
+                    children.setPageInventory(null);
                     }
                 }}
                 >

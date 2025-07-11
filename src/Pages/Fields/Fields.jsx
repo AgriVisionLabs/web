@@ -94,6 +94,7 @@ const Fields = (children) => {
                 }
             }
             let {data}=await axios(options);
+            console.log("getmembers",data)
             setMembersData(data)
         }catch(error){
             if(error.response.data){
@@ -159,8 +160,9 @@ const Fields = (children) => {
                     </div>
                     <div className="flex justify-between my-10 items-center">
                         <p className="text-[20px] md:text-[25px] font-medium">Fields</p>
-                        <button className="btn self-end py-4 w-auto px-2 md:px-4 bg-mainColor text-[13px] md:text-[15px]  text-white hover:bg-transparent hover:border-mainColor border-2 capitalize hover:text-mainColor font-medium z-30 "onClick={()=>{
-                            setAddField(1);
+                        <button className={`btn self-end py-4 w-auto px-2 md:px-4  text-[13px] md:text-[15px]  text-white  border-2 capitalize ${farmData.roleName=="Owner"?"bg-mainColor  hover:text-mainColor hover:border-mainColor  hover:bg-transparent":" bg-mainColor/40 cursor-default hover:bg-mainColor/40 "}  font-medium z-30 `} onClick={()=>{
+                            if(farmData.roleName=="Owner"){
+                            setAddField(1);}
                         }}><i className="fa-solid fa-plus pe-2"></i> add Field </button>
                     </div>
                     
