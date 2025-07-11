@@ -9,6 +9,7 @@ import { userContext } from "../../Context/User.context";
 import axios from "@axiosInstance";
 import { AllContext } from "../../Context/All.context";
 import toast from "react-hot-toast";
+import WeeklyWeather from "../../Components/WeeklyWeather/WeeklyWeather";
 
 const Dashboard = () => {
   let { baseUrl ,index,setIndex } = useContext(AllContext);
@@ -111,14 +112,14 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div className="mt-2">
-                    <p className="font-[600] text-[21px] my-2">Corn</p>
+                    <p className="font-[600] text-[18px] my-2">{field.cropName||"No Crop"}</p>
                     <Line
-                      percent={65}
+                      percent={field.progress}
                       strokeLinecap="round"
                       strokeColor="#1E6930"
                       className="h-[6.5px] text-mainColor w-full rounded-lg"
                     />
-                    <p className="pt-2 pb-2 font-[400] ">progress: {65}%</p>
+                    <p className="pt-2 pb-2 font-[400] ">progress: {field.progress}%</p>
                   </div>
                 </div>
               </motion.div>
@@ -149,12 +150,13 @@ const Dashboard = () => {
             </p>
           </div>
         </div>
-        <div className="shadow-md px-3 py-4 rounded-xl border-2 border-[#0d121c21] ">
+        {/* <div className="shadow-md px-3 py-4 rounded-xl border-2 border-[#0d121c21] ">
           <p className="font-[500] text-[20px] mb-5">Weather Forecast</p>
           <div className="gap-5 text-[16px] font-semibold ">
             <Slider />
           </div>
-        </div>
+        </div> */}
+        <WeeklyWeather/>
       </div>
 
       <div>
@@ -232,7 +234,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 md:px-4 gap-6">
         <div className=" shadow-md px-3 py-4  rounded-xl border-2 space-y-4 border-[#0d121c21] ">
           <p className=" font-[500] text-[21px] mb-5 capitalize ">

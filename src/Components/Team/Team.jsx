@@ -193,8 +193,6 @@ const Team = (children) => {
                                         <div className="flex items-baseline space-x-4">
                                             <p className=" capitalize ">{item.roleName}</p>
                                             <i className="fa-solid fa-x text-[16px] hover:text-red-700  transition-all duration-300" onClick={()=>{
-                                                console.log("children.farmData",children.farmData)
-                                                console.log("children.teamMembersList",children.teamMemberList)
                                                 children.farmData.invitations=children.farmData.invitations.filter((_,index2)=>index2!==index)
                                                 children.setTeamMemberList(children.farmData.invitations)
                                                 displayInvitations()

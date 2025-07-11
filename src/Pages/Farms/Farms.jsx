@@ -11,6 +11,8 @@ import axios from "@axiosInstance";
 import { userContext } from "../../Context/User.context";
 import EditBasicInfo from "../../Components/EditBasicInfo/EditBasicInfo";
 import EditTeam from "../../Components/EditTeam/EditTeam";
+import EditReview from "../../Components/EditReview/EditReview";
+import Farm from "../../Components/Farm/Farm";
 
 const Farms = (children) => {
   let {
@@ -62,6 +64,7 @@ const Farms = (children) => {
       console.log(error);
     }
   }
+  
   // async function editFarms(){
   //     try {
   //         const options={
@@ -142,9 +145,7 @@ const Farms = (children) => {
           </button>
         </div>
         {farms.length?<div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {console.log(farms)}
-          {farms
-            ? farms.map((farm, index) => {
+          {farms?farms.map((farm, index) => {
                 {
                   console.log(farm);
                 }
@@ -161,7 +162,7 @@ const Farms = (children) => {
                     }}
                     className="rounded-[15px] border-[1px] border-[rgba(13,18,28,0.25)]"
                   >
-                    <div className=" shadow-md rounded-xl border-[1px]  border-[#0d121c21] ">
+                    {/* <div className=" shadow-md rounded-xl border-[1px]  border-[#0d121c21] ">
                       <div
                         className="mt-2 px-[24px] py-2  grid grid-cols-1  "
                         onClick={(e) => {
@@ -242,7 +243,8 @@ const Farms = (children) => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
+                    <Farm farm={farm} deleteFarms={deleteFarms} ClickFarm={children.ClickFarm} setFarmIdEdit={setFarmIdEdit} setEdit={setEdit} S types={types}/>
                   </motion.div>
                 );
               })
@@ -293,12 +295,15 @@ const Farms = (children) => {
             farmId={farmIdEdit}
             teamMemberList={teamMemberList}
             setFarmId={setFarmId}
+            setFarmData={setFarmData}
             display={getFarms}
           />
         </div>
       ) : edit == "Team" ? (
         <div className=" fixed z-50 inset-0  ">
           <EditTeam
+            setFarmData={setFarmData}
+            farmData={farmData}
             setEdit={setEdit}
             farmId={farmIdEdit}
             setTeamMemberList={setTeamMemberList}
@@ -306,7 +311,9 @@ const Farms = (children) => {
         </div>
       ) : edit == "Review" ? (
         <div className=" fixed z-50 inset-0  ">
-          <Review
+          <EditReview
+            setFarmData={setFarmData}
+            farmData={farmData}
             setEdit={setEdit}
             farmId={farmIdEdit}
             teamMemberList={teamMemberList}

@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AllContext } from '../../Context/All.context';
 import { userContext } from '../../Context/User.context';
 import axios from 'axios';
@@ -7,9 +7,10 @@ import { motion } from 'framer-motion';
 // import Menu from "../../Components/Menu/Menu";
 // import { useState } from "react";
 // import { useEffect } from "react";
-const Review = (children) => {
+const EditReview = (children) => {
     let {outClick,setReview,setTeam,baseUrl}=useContext(AllContext);
     let {token}=useContext(userContext);
+    let [invitations,setInvitations]=useState([]);
     // let [farmId, setFarmId] = useState("");
     let soilTypes=["Sandy","Clay","Loamy"];
     // var types2=["Owner","Manager","Expert","Worker"]; 
@@ -85,7 +86,52 @@ const Review = (children) => {
                         
         //             }
         //         }
-    async function createFarm(){
+    async function getInvitations(){
+        try {
+            const options={
+                url:`${baseUrl}/farms/${children.farmId}/Invitations/pending` ,
+                method:"GET",
+                headers:{
+                    Authorization:`Bearer ${token}`,
+                },
+            }
+            let {data}=await axios(options);
+            console.log("getUsers")
+            console.log(data)
+            setInvitations(data)
+            children.setTeamMemberList(data)
+        }catch(error){
+            toast.error("Incorrect email or password "+error);
+            console.log(error)
+        }finally{
+            toast.dismiss("Incorrect");
+        }
+    }
+    function deleteAllInvitations(){
+        invitations.map((invitation)=>{
+            deleteInvitations(invitation.farmId,invitation.invitationId)
+        })
+    }
+    async function deleteInvitations(farmId,invitationId){
+    try {
+        const options={
+            url:`${baseUrl}/farms/${farmId}/Invitations/${invitationId}` ,
+            method:"DELETE",
+            headers:{
+                Authorization:`Bearer ${token}`,
+            },
+        }
+        let {data}=await axios(options);
+        getInvitations()
+    }catch(error){
+        toast.error("Incorrect email or password "+error);
+    }finally{
+        toast.dismiss("Incorrect");
+        getInvitations()
+        
+    }
+    }
+    async function EditFarm(){
             try {
             const options={
                 url:`${baseUrl}/Farms` ,
@@ -104,7 +150,7 @@ const Review = (children) => {
                 if(data){ 
                     // children.setFarmId(data.farmId)
             
-                    if(children.farmData.invitations.length>0){sendInvitation(data.farmId)}
+                    if(children.farmData.invitations.length>0){EditInvitation(data.farmId)}
                     else{children.display()
                         setReview(false)}
                     }
@@ -116,13 +162,13 @@ const Review = (children) => {
         
             }
     }
-    function sendInvitation(farmId){
+    function EditInvitation(farmId){
                 console.log("sendInvitation farmId " ,farmId)
                 children.farmData.invitations.map((item)=>{
-                    sendInvitationToUser(item.recipient,item.roleName,farmId)
+                    EditInvitationToUser(item.recipient,item.roleName,farmId)
                 })
     }
-    async function sendInvitationToUser(recipient,roleName,farmId){
+    async function EditInvitationToUser(recipient,roleName,farmId){
         try {
         const options={
             url:`${baseUrl}/farms/${farmId}/Invitations` ,
@@ -173,7 +219,7 @@ const Review = (children) => {
                     }} ></i>
                 </div>
                 <div className="flex flex-col justify-center items-center mt-8 mb-5">
-                <div className=" capitalize mb-5 text-[20px] font-semibold text-mainColor">add new farm</div>
+                <div className=" capitalize mb-5 text-[20px] font-semibold text-mainColor">Edit Farm</div>
                 <div className="w-[100%] rounded-xl flex gap-4  items-center">
                     <div className=" flex flex-col items-center ">
                     <div className="w-[35px] h-[35px] text-[20px] text-white flex justify-center items-center bg-mainColor rounded-full"><p className="">1</p>
@@ -234,7 +280,7 @@ const Review = (children) => {
                             setReview(false)
                             setTeam(true)
                         }} ></i>
-                        <button type="button" className="btn w-fit px-[20px]  self-end rounded-lg py-4 bg-mainColor text-[16px] text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium "onClick={()=>{createFarm()}}>Create Farm</button>
+                        <button type="button" className="btn w-fit px-[20px]  self-end rounded-lg py-4 bg-mainColor text-[16px] text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium "onClick={()=>{EditFarm()}}>Create Farm</button>
                     </div>
                     
                 </form>
@@ -242,4 +288,4 @@ const Review = (children) => {
                 
             </section>)
 }
-export default Review;
+export default EditReview;

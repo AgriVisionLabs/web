@@ -117,19 +117,19 @@ const AutomationRuleStep2IrrigationPage = (children) => {
                             bounce: 0.4,
                             }} className="w-[650px] px-[40px] min-h-[500px]   border-2 rounded-2xl bg-white p-[20px]">
                 <X size={33} className='  ms-auto cursor-pointer hover:text-red-500 transition-all duration-150' onClick={()=>{setControlIrrigationPage(null)}}/>
-                <div className="text-center mt-[16px] space-y-[15px]">
-                    <h1 className="text-[24px] text-mainColor font-medium capitalize">add new Automation rule</h1>
-                    <p className="text-[22px] text-[#616161] font-medium ">Add or edit an automation rule</p>
+                <div className="text-center  space-y-[15px]">
+                    <h1 className="text-[23px] text-mainColor font-medium capitalize">add new Automation rule</h1>
+                    <p className="text-[21px] text-[#616161] font-medium ">Add or edit an automation rule</p>
                 </div>
-                <form action="" className="w-[100%] mt-[30px] flex flex-col justify-between  pe-[10px] text-[18px] font-s flex-grow" onSubmit={formik.handleSubmit}>
-                        <div className="flex flex-col gap-3 my-5">
+                <form action="" className="w-[100%] mt-[20px] flex flex-col justify-between  pe-[10px] text-[18px] font-s flex-grow" onSubmit={formik.handleSubmit}>
+                        <div className="flex flex-col gap-3 ">
                             <div className="">
                                 <label htmlFor="" className='ms-1'>Rule Name</label>
                                 <input type="text" placeholder='Enter a name for the rule ' className='formControl mx-0 rounded-xl text-[16px] py-5 w-[100%] border-[#0d121c21] ' name='name' value={formik.values.name} onChange={formik.handleChange} onBlur={formik.handleBlur}/>
                             </div>
                             <div className="">
                                 <label htmlFor="" className='ms-1 '>Rule Type</label>
-                                <MenuElement Items={type} nameChange={type[typeId]} index={typeId} setIndex={setTypeId} onList={onList} width={100+"%"} name={"Check Fields"} setOnList={setOnList} Pformat={"text-[#616161]"}/>
+                                <MenuElement Items={type} nameChange={type[typeId]} className={"mt-[10px]"} index={typeId} setIndex={setTypeId} onList={onList} width={100+"%"} name={"Check Fields"} setOnList={setOnList} Pformat={"text-[#616161]"}/>
                             </div>
                             {typeId==1?<div className="">
                                 <div className="">

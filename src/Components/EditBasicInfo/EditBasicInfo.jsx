@@ -13,7 +13,8 @@ const EditBasicInfo = (Children) => {
     let {token}=useContext(userContext);
     let [onList,setOnList]=useState(false);
     let [farm,setFarm]=useState(null)
-    var forms=["","Sandy","Clay","Loamy"];
+    var forms=["Sandy","Clay","Loamy"];
+
     async function getOldFarmDetails(){
                 try {
                     const options={
@@ -42,32 +43,43 @@ const EditBasicInfo = (Children) => {
         location:string().required("Farm Location is required").min(3,"Farm Location must be at least 3 characters").max(100,"Farm Location can not be than 100 characters"),
         soilType:string().required("Soil Type is required"),
     });
-    async function EditFarm(values){
-    const loadingId =toast.loading("Waiting...")
-    try {
-        console.log("farmIdEdit : "+Children.farmId)
-        const options={
+    // async function EditFarm(values){
+    // const loadingId =toast.loading("Waiting...")
+    // try {
+    //     console.log("farmIdEdit : "+Children.farmId)
+    //     const options={
             
-            url:`${baseUrl}/Farms/${Children.farmId}`,
-            method:"PUT",
-            data:values,
-            headers:{
-                Authorization:`Bearer ${token}`,
-            }
-        }
-        let {data}=await axios(options);
-        console.log(data)
-        setFarm(data)
-        // Children.setFarmId(data)
-    }catch(error){
-        toast.error("Incorrect email or password ("+error+")");
-        console.log(error)
-    }finally{
-        toast.dismiss(loadingId);
-        Children.setEdit("Team")
-        Children.display()
+    //         url:`${baseUrl}/Farms/${Children.farmId}`,
+    //         method:"PUT",
+    //         data:values,
+    //         headers:{
+    //             Authorization:`Bearer ${token}`,
+    //         }
+    //     }
+    //     let {data}=await axios(options);
+    //     console.log(data)
+    //     setFarm(data)
+    //     // Children.setFarmId(data)
+    // }catch(error){
+    //     toast.error("Incorrect email or password ("+error+")");
+    //     console.log(error)
+    // }finally{
+    //     toast.dismiss(loadingId);
+    //     Children.setEdit("Team")
+    //     Children.display()
+    // }
+    // }
+    function EditFarm(values){
+        Children.setFarmData({
+        invitations: [],
+        name: values.name,
+        area: values.area,
+        location: values.location,
+        soilType: values.soilType,
+        });
+        Children.setEdit("Team");
     }
-    }
+
     const formik=useFormik({
         initialValues:{
             name:"",
@@ -83,10 +95,9 @@ const EditBasicInfo = (Children) => {
             formik.setFieldValue("name",farm.name)
             formik.setFieldValue("area",farm.area)
             formik.setFieldValue("location",farm.location)
-            formik.setFieldValue("soilType",indexBI)}
-    },[farm]
-)
-
+            formik.setFieldValue("soilType",indexBI)
+        }
+    },[farm])
     return (
         <section className="h-[100vh] flex justify-center items-center bg-black bg-opacity-70  font-manrope backdrop-blur-[blur(5)] absolute z-50 w-[100%]" onClick={(e)=>{
             if(e.target===e.currentTarget){
@@ -137,7 +148,7 @@ const EditBasicInfo = (Children) => {
                     </div>
                     <div className="">
                         <label htmlFor=""  className=''>Soil Type</label>
-                        <MenuElement Items={forms} name={forms[farm.soilType]} width={100+"%"} nameChange={forms[indexBI]} setIndex={setIndexBI}  className={"my-2"} onList={onList} setOnList={setOnList} textColor={"#9F9F9F"} />
+                        <MenuElement Items={forms} name={forms[farm.soilType]} width={100+"%"} nameChange={forms[indexBI]} index={indexBI} setIndex={setIndexBI}  className={"my-2 text-black"} onList={onList} setOnList={setOnList} />
                     </div>
                     <button type="submit" className="btn self-end rounded-lg py-4 bg-mainColor text-[16px] text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium mt-12" >Next <i className="fa-solid fa-angle-right ms-3"></i></button>
                     

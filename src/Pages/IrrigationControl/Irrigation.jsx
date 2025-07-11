@@ -215,8 +215,8 @@ const Irrigation = () => {
 
   return (
     <>
-      <section className="transition-all duration-500 space-y-10">
-        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 items-start md:justify-between md:items-center px-3 ">
+      <section className="transition-all duration-500 ">
+        <div className="flex flex-col md:flex-row space-y-2 mb-[30px]   md:space-y-0 items-start md:justify-between md:items-center px-3 ">
           <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 justify-between md:items-center md:gap-x-12">
             <p className="text-[23px] capitalize font-medium">
               Irrigation Control
@@ -247,7 +247,7 @@ const Irrigation = () => {
                 <p className="text-[#1f1f1f96]">No irrigation units found . Try adding a irrigation unit.</p>
         </div>:
       <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:justify-between md:items-center px-3">
-          <p className="text-[20px] capitalize font-medium text-[#333333d4]">
+          <p className="text-[20px] mb-[10px] capitalize font-medium text-[#333333d4]">
             Irrigation Units
           </p>
           <button
@@ -341,7 +341,7 @@ const Irrigation = () => {
         ) : (
           ""
         )}
-        <div className=" flex flex-col md:flex-row space-y-2 md:space-y-0 md:justify-between md:items-center px-3">
+        <div className=" flex flex-col md:flex-row space-y-2 mt-[30px] md:space-y-0 md:justify-between md:items-center px-3">
           <p className="text-[20px] capitalize font-medium text-[#333333d4]">
             automation rules
           </p>
@@ -355,7 +355,7 @@ const Irrigation = () => {
           </button>
         </div>
 
-        {Automation.length==0?<div className="h-[150px] rounded-md text-[16px] font-medium space-y-1  border-2 border-dashed border-[#0d121c21] mx-3 mt-[40px] flex flex-col justify-center items-center ">
+        {Automation.length==0?<div className="h-[150px]  rounded-md text-[16px] font-medium space-y-1  border-2 border-dashed border-[#0d121c21] mx-3 mt-[40px] flex flex-col justify-center items-center ">
                 <TriangleAlert size={40} color='#FFAC33' className='my-2'/>
                 <p className="">No Rules Found</p>
                 <p className="text-[#1f1f1f96]">No automation rules found . Try adding a new rule or adjusting your filters.</p>
@@ -484,7 +484,7 @@ const Irrigation = () => {
             />
           </div>
         ) : controlIrrigationPage == "Step2AutomationRule" ? (
-          <div className=" fixed z-50 inset-0  ">
+          <div className=" fixed z-[50] inset-0  ">
             <AutomationRuleStep2IrrigationPage
               getAutomation={getAutomation}
               farm={Farms[index]}

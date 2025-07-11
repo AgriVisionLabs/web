@@ -33,7 +33,6 @@ const SensorsDevices = () => {
   let [allFarms, setAllFarms] = useState([]);
   // let status=["Active","Idle","Maintenance"]
   async function getFarms() {
-    console.log(token);
     try {
       const options = {
         url: `${baseUrl}/Farms`,

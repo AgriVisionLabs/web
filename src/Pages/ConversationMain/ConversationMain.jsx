@@ -17,6 +17,7 @@ const ConversationMain = (children) => {
     const [conversations, setConversations] = useState([]);
     const [allconversations, setAllConversations] = useState([]);
     const [connection, setConnection] = useState(null);
+    let [search, setSearch] = useState("");
     let {token} =useContext(userContext);
     let [userId]=useState(localStorage.getItem("userId"))
     let {baseUrl}=useContext(AllContext)
@@ -64,12 +65,12 @@ const ConversationMain = (children) => {
                     </div>
                     <div className="flex h-[6%] mt-[15px] mb-[2px] px-[10px] mx-[5px]  space-x-3 items-center bg-[#FFFFFF] rounded-[14px]">
                         <Search size={20}/>
-                        <input type="text" className="  flex items-center  border-0 border-[#D1D5DB]  text-[15px] placeholder:text-[14px] outline-none" placeholder={`Search conversations...`}/>
+                        <input type="text" className="  flex items-center  border-0 border-[#D1D5DB]  text-[15px] placeholder:text-[14px] outline-none" placeholder={`Search conversations...`} onChange={(e)=>{setSearch(e.target.value)}}/>
                     </div>
                     <div className="flex-grow h-[87%]  py-[10px]">
                         <div className="listItems flex justify-between items-center  text-black py-[5px] ">
                             <ConversationHub conversations={conversations}  setConversations={setConversations} connection={connection} setConnection={setConnection} />
-                            {userId&&allconversations?allconversations.map((conversation ,index)=>{
+                            {userId&&allconversations?allconversations.filter((conversation) => conversation.membersList.find(m => m.id !== userId).userName.toLowerCase().includes(search.toLowerCase())).map((conversation ,index)=>{
                                 const member = conversation?.membersList?.find(m => m.id !== userId)|| {};
                         return <div key={index} className="h-[50px] py-[4px] px-[5px] hover:bg-[#F0FDF4] transition-all duration-200 rounded-[8px]  flex  items-center space-x-3 cursor-pointer" onClick={(e)=>{
                             selectElement(e.currentTarget)

@@ -2,7 +2,10 @@ import { motion } from "framer-motion";
 import {
   Calendar,
   CircleCheckBig,
+  Edit,
+  EllipsisVertical,
   Eye,
+  FileText,
   MapPin,
   Plus,
   Trash2,
@@ -17,17 +20,21 @@ import { userContext } from "../../Context/User.context";
 import axios from "@axiosInstance";
 import DateDisplay from "../../Components/DateDisplay/DateDisplay";
 import toast from "react-hot-toast";
+import EditTask from "../../Components/EditTask/EditTask";
 const Tasks = () => {
   let { getPart, baseUrl,index,setIndex  } = useContext(AllContext);
   let { token } = useContext(userContext);
-  let [setPartsDetection] = useState("All Tasks");
+  let [partsDetection,setPartsDetection] =useState("All Tasks");
   let [Farms, setFarms] = useState([]);
   // let [index, setIndex] = useState(0);
   let [taskId, setTaskId] = useState();
   let [DisplayTask, setDisplayTask] = useState(null);
   let [CreateTask, setCreateTask] = useState(null);
+  let [editTask, setEditTask] = useState(null);
   let [FarmNames, setFarmNames] = useState([]);
   let [tasks, setTasks] = useState([]);
+  let [search, setSearch] = useState(1);
+  
   let Priority = ["Low", "Medium", "High"];
   let PriorityColor = ["#25C462", "#F4731C", "#F04444"];
 
@@ -72,6 +79,7 @@ const Tasks = () => {
         },
       };
       let { data } = await axios(options);
+      console.log("getTask",data)
       setTasks(data);
     } catch (error) {
       // toast.error("Incorrect email or password "+error);
@@ -157,6 +165,7 @@ const Tasks = () => {
               className="py-[12px] px-[12px] bg-[#FFFFFF] text-mainColor rounded-[10px] cursor-pointer "
               onClick={() => {
                 setPartsDetection("All Tasks");
+                setSearch(1)
               }}
             >
               All Tasks
@@ -165,6 +174,7 @@ const Tasks = () => {
               className="py-[12px] px-[12px]   rounded-[10px] cursor-pointer text-[#9F9F9F]"
               onClick={() => {
                 setPartsDetection("My Tasks");
+                setSearch(2)
               }}
             >
               My Tasks
@@ -173,13 +183,14 @@ const Tasks = () => {
               className="py-[12px] px-[12px]   rounded-[10px] cursor-pointer text-[#9F9F9F]"
               onClick={() => {
                 setPartsDetection("completed tasks");
+                setSearch(3)
               }}
             >
               completed tasks
             </p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3  gap-[28px] font-manrope">
-            {tasks?.map((task, taskIndex) => {
+            {tasks?.filter((task)=> ((search==1&&task.createdById==localStorage.getItem("userId"))||(search==2&&task.completedAt!=null)||search==2)).map((task, taskIndex) => {
               return (
                 <motion.div
                   key={taskIndex}
@@ -235,7 +246,7 @@ const Tasks = () => {
                     </div>
                     <div className="border-t-[1px] border-[rgba(13,18,28,0.25)] py-[24px] mt-[24px]">
                       <div className="px-[24px] flex justify-between items-center  text-[#0D121C]">
-                        <Eye
+                        {/* <Eye
                           size={23}
                           className="bg- cursor-pointer "
                           onClick={() => {
@@ -244,22 +255,60 @@ const Tasks = () => {
 
                             // setSchedule("ShowSensorUnit")
                           }}
-                        />
-                        <div className=" flex items-center space-x-3">
-                          <Trash2
-                            size={23}
-                            className=" cursor-pointer text-[#dc3636]"
-                            onClick={() => {
-                              DeleteTask(task.farmId, task.id);
-                            }}
-                          />
-                          <CircleCheckBig
+                        /> */}
+                        <CircleCheckBig
                             size={23}
                             className=" cursor-pointer text-[#25C462]"
                             onClick={() => {
                               CompleteTask(task.farmId, task.id);
                             }}
                           />
+                        <div className=" flex items-center space-x-3">
+                          {/* <Trash2
+                            size={23}
+                            className=" cursor-pointer text-[#dc3636]"
+                            onClick={() => {
+                              DeleteTask(task.farmId, task.id);
+                            }}
+                          /> */}
+                          <div className=" relative ">
+                            <EllipsisVertical className=" cursor-pointer" onClick={(e)=>{e.currentTarget.nextElementSibling.classList.toggle("hidden")}}/>
+                            <div className=" absolute -left-14 top-8 flex-1  rounded-[15px] text-[#0D121C] bg-[#FFFFFF] border border-[#0d121c4f] py-[4px] px-[8px] hidden w-[150px] ">
+                              <div className="flex items-center space-x-2 py-[5px]" onClick={() => {
+                                    setTaskId(task.id);
+                                    setDisplayTask(true);
+                                  }}>
+                                <FileText
+                                  strokeWidth={1.5}
+                                  size={20}
+                                  className="bg- cursor-pointer "
+                                  />
+                                  <p className="">View details</p>
+                              </div>
+                              <div className="flex items-center space-x-2 py-[5px]" onClick={() => {
+                                    setTaskId(task.id);
+                                    setEditTask(true)
+                                  }} >
+                                <Edit
+                                  strokeWidth={1.5}
+                                  size={20}
+                                  className="bg- cursor-pointer "
+                                  />
+                                  <p className="">Edit</p>
+                              </div>
+                              <div className="flex items-center space-x-2 py-[5px]"onClick={() => {
+                                    DeleteTask(task.farmId, task.id);
+                                  }}>
+                                <Trash2
+                                  strokeWidth={1.5}
+                                  size={20}
+                                  className=" cursor-pointer text-[#dc3636]"
+                                  
+                                />
+                                <p className="text-[#dc3636]">Delete</p>
+                              </div>
+                            </div>
+                          </div>                          
                         </div>
                       </div>
                     </div>
@@ -269,7 +318,7 @@ const Tasks = () => {
             })}
           </div>
           </>:
-          <div className="h-[500px]  flex justify-center items-center">
+          <div className="h-[40px]  flex justify-center items-center">
         <p className="text-[17px] text-[#333333] w-[480px] text-center font-medium">You don’t have any tasks yet</p>
       </div>}
       {DisplayTask ? (
@@ -284,6 +333,11 @@ const Tasks = () => {
       {CreateTask ? (
             <div className="fixed z-50 inset-0">
               <NewTask setCreateTask={setCreateTask} farmData={Farms[index]}  getTasks={getTasks} />
+            </div>
+          ) : null}
+          {editTask ? (
+            <div className="fixed z-50 inset-0">
+              <EditTask setEditTask={setEditTask} taskId={taskId} farmData={Farms[index]}  getTasks={getTasks} />
             </div>
           ) : null}
         </div>

@@ -19,7 +19,7 @@ const InventoryManagementUpdateItem = (children) => {
     let [indexMeasurementUnit, setIndexMeasurementUnit] = useState(0);
     let [indexCategory, setIndexCategory] = useState(0);
     let MeasurementUnit= ["Kg", "L", "g","mL","Ibs","oz"];
-    console.log("setInventoryItems",children.itemId);
+    console.log("children.itemId",children.itemId)
     let Category = [
         "Irrigation",
         "Fertilization",
@@ -55,7 +55,7 @@ const InventoryManagementUpdateItem = (children) => {
         //     children.setCreateTask(null)
         // }
         } catch (error) {
-        console.log(error);
+        console.log("getInventoryItems",error);
         } finally {
         toast.dismiss(loadingId);
         }
@@ -77,10 +77,9 @@ const InventoryManagementUpdateItem = (children) => {
                 return field.name;
             })
         );
-        console.log("data",fields[indexField].id)
         } catch (error) {
         // toast.error("Incorrect email or password "+error);
-        console.log(error);
+        console.log("getFields",error);
         }
     }
     useEffect(() => {
@@ -171,13 +170,14 @@ const InventoryManagementUpdateItem = (children) => {
                     >
                         Farm
                     </label>
-                    <MenuElement
-                        Items={children.farmNames ? children.farmNames : []}
-                        nameChange={children.farmNames ? children.farmNames[indexFarm] : null}
-                        setIndex={setIndexFarm}
-                        index={indexFarm}
-                        Pformat={"text-[#0D121C] font-[400]"}
-                    />
+                    <input
+                            type='text'
+                            id="Name"
+                            className="border-[1px] border-[#0d121c21] bg-[#e7e7e7] rounded-lg px-5 py-2 text-[17px] font-[400] focus:outline-mainColor  "
+                            name="name"
+                            value={children?.farmName}
+                            disabled
+                />
                 </div>
                 <div className="flex flex-col">
                     <label

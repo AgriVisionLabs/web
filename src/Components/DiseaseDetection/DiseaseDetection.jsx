@@ -24,7 +24,8 @@ const DiseaseDetection = (children) => {
   let [fieldCheck, setFieldCheck] = useState(0);
   let [Imagecheck, setImagecheck] = useState("");
   let [DataAfterDetection, setDataAfterDetection] = useState();
-  
+  let [search,setSearch]=useState("")
+  let [searchInput,setSearchInput]=useState("")
   async function getFarms() {
     console.log(token);
     try {
@@ -101,6 +102,7 @@ const DiseaseDetection = (children) => {
               type="text"
               placeholder="Search Fields or crops ..."
               className=" text-[14px] md:text-[15px]   text-[#616161] font-[400] font-manrope h-[43px]  py-[8px] px-[22px] rounded-[8px] border-[1px] border-[#D9D9D9] w-[200px] sm:w-[300px] md:w-[400px] focus:outline-mainColor"
+              onChange={(e)=>{setSearchInput(e.target.value)}}
             />
           </form>
         </div>
@@ -115,6 +117,7 @@ const DiseaseDetection = (children) => {
             className="py-[12px] px-[12px] bg-[#FFFFFF] text-mainColor rounded-[10px] cursor-pointer "
             onClick={() => {
               setPartsDetection("All Fields");
+              setSearch(3)
             }}
           >
             All Fields
@@ -123,6 +126,7 @@ const DiseaseDetection = (children) => {
             className="py-[12px] px-[12px]   rounded-[10px] cursor-pointer text-[#9F9F9F]"
             onClick={() => {
               setPartsDetection("Healthy");
+              setSearch(0)
             }}
           >
             Healthy
@@ -131,6 +135,7 @@ const DiseaseDetection = (children) => {
             className="py-[12px] px-[12px]   rounded-[10px] cursor-pointer text-[#9F9F9F]"
             onClick={() => {
               setPartsDetection("At Risk");
+              setSearch(1)
             }}
           >
             At Risk
@@ -139,13 +144,14 @@ const DiseaseDetection = (children) => {
             className="py-[12px] px-[12px]   rounded-[10px] cursor-pointer text-[#9F9F9F]"
             onClick={() => {
               setPartsDetection("Infected");
+              setSearch(2)
             }}
           >
             Infected
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-[28px] font-manrope">
-          {fields?.map((item, index) => {
+          {fields?.filter((field)=> (field.name?.toLowerCase().includes(searchInput.toLowerCase())||field.cropName?.toLowerCase().includes(searchInput.toLowerCase()))).map((item, index) => {
             return (
               <div key={index} className="rounded-[15px] border-[1px] border-[rgba(13,18,28,0.25)]">
                 {/* <div
@@ -235,7 +241,7 @@ const DiseaseDetection = (children) => {
                     </div>
                   </button>
                 </div> */}
-                <Detection  setStateOverview={children.setStateOverview} setDiseaseDetections={children.setDiseaseDetections} setField={children.setField} setDetectionPage={setDetectionPage} setDetection={setDetection} fieldId={item.id} farmId={item.farmId} setFarmCheck={setFarmCheck} setFieldCheck={setFieldCheck}/>
+                <Detection search={search}  setStateOverview={children.setStateOverview} setDiseaseDetections={children.setDiseaseDetections} setField={children.setField} setDetectionPage={setDetectionPage} setDetection={setDetection} fieldId={item.id} farmId={item.farmId} setFarmCheck={setFarmCheck} setFieldCheck={setFieldCheck}/>
               </div>
             );
           })}

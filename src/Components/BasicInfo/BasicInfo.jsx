@@ -89,7 +89,7 @@ const BasicInfo = ({ farmData, setFarmData ,setTeamMemberList }) => {
               <div className="w-[35px] h-[35px] text-[20px] text-white flex justify-center items-center bg-mainColor rounded-full">
                 <p className="">1</p>
               </div>
-              <p className="mt-2">Basic Info</p>
+              <p className="mt-2">Edit Farm</p>
             </div>
 
             <div className="w-[30px] -ml-2 lg:ml-0 lg:w-[100px] h-[1.6px] rounded-full bg-mainColor opacity-[0.3]"></div>

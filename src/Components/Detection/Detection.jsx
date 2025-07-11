@@ -13,6 +13,7 @@ const Detection = (children) => {
     let { token } = useContext(userContext);
     let [field, setField] = useState();
     let [healthyList, setHealthyList] = useState([]);
+    let [healthyListState, setHealthyListState] = useState([]);
     let [diseaseDetections, setDiseaseDetections] = useState([]);
     let healthStatus=[{name:"Healthy",color:"#25C462"},{name:"At Risk",color:"#EBB212"},{name:"Infected",color:"#E13939"}]
     let isHealthy=[{name:"Healthy",color:"#25C462"},{name:"Infected",color:"#E13939"}]
@@ -45,13 +46,16 @@ const Detection = (children) => {
             },
         };
         let { data } = await axios(options);
+        console.log(data)
         if (data) {
         setHealthyList(
             data.map((item) => {
                 return item.isHealthy;
             })
             );}
+        
         children.setStateOverview(healthyList.includes(false))
+        setHealthyListState(data.map((item)=>{return item.healthStatus}))
         setDiseaseDetections(data);
         children.setDiseaseDetections(data)
         console.log("setDiseaseDetections :", data);
@@ -65,7 +69,7 @@ const Detection = (children) => {
     useEffect(()=>{
         getField()
         getDiseaseDetections()
-    },[children.farmId,children.fieldId])
+    },[children.farmId,children.fieldId,children.search])
     return (
         
         field?<div>
@@ -105,9 +109,9 @@ const Detection = (children) => {
                     </div>
                     <div className="text-[16px] font-medium my-[20px] ">
                         <h3 className="capitalize">recent detections</h3>
-                        <div className="mt-[12px] pb-[24px] space-y-[8px]  h-[130px] overflow-y-auto">
+                        {diseaseDetections.length>0?<div className="mt-[12px] pb-[24px] space-y-[8px]  h-[130px] overflow-y-auto">
                         {diseaseDetections.map((item, i) => (
-                            <div
+                            children.search==healthyListState[i]||children.search==3?<div
                             key={i}
                             className="flex justify-between items-center"
                             >
@@ -135,9 +139,12 @@ const Detection = (children) => {
                             <h3 className={`bg-[${healthStatus[item.healthStatus].color}] rounded-[15px] px-[12px] py-[2px] text-[15px] font-semibold text-[#FFFFFF] capitalize`}>
                                 {healthStatus[item.healthStatus].name}
                             </h3>
-                            </div>
+                            </div>:null
                         ))}
                         </div>
+                        :<div className="h-[130px] flex justify-center items-center">
+                            <p className="">No Detection</p>
+                        </div>}
                     </div>
                     <div className="text-[#9F9F9F] border-t-[1px] pt-[15px] border-[#9F9F9F] space-y-[15px]">
                         <div className="flex items-center space-x-[7px]">
@@ -146,7 +153,7 @@ const Detection = (children) => {
                         </div>
                         <div className="flex items-center space-x-[7px]">
                         <User />
-                        <p className="capitalize text-[15px]">by: {diseaseDetections[0]?.createdBy}</p>
+                        <p className="capitalize text-[15px]">by: {diseaseDetections[0]?.createdBy||"No one"}</p>
                         </div>
                     </div>
                 </div>

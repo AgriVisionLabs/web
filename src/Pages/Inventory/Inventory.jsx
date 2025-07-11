@@ -291,7 +291,7 @@ const Inventory = () => {
       </div>:
       pageInventory=="UpdateItem"?
       <div className="flex absolute inset-0 justify-center items-center">
-        <InventoryManagementUpdateItem itemId={inventoryId} farmId={inventoryFarmId} />
+        <InventoryManagementUpdateItem farmName={farmNames[index]} itemId={inventoryId} farmId={inventoryFarmId} />
       </div>:
       null}
     </section>
