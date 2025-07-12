@@ -12,6 +12,20 @@
     @apply w-full h-9  flex justify-center items-center rounded-3xl bg-slate-200 hover:bg-slate-300 transition-colors duration-300 box-border border border-transparent;
   }
   .formControl{
-    @apply w-full h-[40px] border-[1px] border-[#9F9F9F] rounded-3xl px-4 py-5 mx-auto my-3 text-[15px] outline-none  hover:border-mainColor  caret-mainColor   ;
+    @apply w-full h-[40px] border-[1px] border-[#9F9F9F] rounded-3xl px-4 py-5 mx-auto my-3 text-[15px] hover:border-mainColor caret-mainColor focus:border-mainColor focus:ring-2 focus:ring-mainColor focus:ring-opacity-20 focus:outline-none;
   }
+}
+
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #4B5563;
+  border-radius: 10000px;
+  -webkit-border-radius: 10000px;
+  -moz-border-radius: 10000px;
+  -ms-border-radius: 10000px;
+  -o-border-radius: 10000px;
 }

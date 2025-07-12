@@ -16,7 +16,6 @@ const AddNewIrrigationUnitStep2 = (children) => {
                 name:string().required("Name is required").min(3,"Farm Location must be at least 3 characters").max(100,"Farm Location can not be than 100 characters"),
             });
             async function sendIrrigationUnit(values){
-                
                 console.log(children.farmId)
                 try {
                     const options={

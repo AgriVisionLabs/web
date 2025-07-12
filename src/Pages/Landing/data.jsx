@@ -11,44 +11,45 @@ import {
   Scan,
   UsersRound,
 } from "lucide-react";
+
 export const features = [
   {
-    icon: <Sprout className={"text-white"} />,
+    icon: <Sprout className={"text-[#1E6930]"} />,
     title: "Crop Selection",
     desc: "Choose the right crop at the right time – no guesswork, just data.",
   },
   {
-    icon: <Droplet className="text-white" />,
+    icon: <Droplet className="text-[#1E6930]" />,
     title: "Smart Irrigation",
     desc: "Connect field devices to remotely control and monitor irrigation units in real time.",
   },
   {
-    icon: <Bug className="text-white" />,
+    icon: <Bug className="text-[#1E6930]" />,
     title: "Disease Detection",
     desc: "AI models detect signs of disease from images and video data.",
   },
   {
-    icon: <UsersRound className="text-white" />,
+    icon: <UsersRound className="text-[#1E6930]" />,
     title: "Multi-Tenant",
     desc: "Seamlessly manage multiple farms under one account with robust tenant separation.",
   },
   {
-    icon: <Cpu className="text-white" />,
+    icon: <Cpu className="text-[#1E6930]" />,
     title: "Sensor Integration",
-    desc: "Real-time monitoring of soil moisture, temperature, and envrionmental data.",
+    desc: "Real-time monitoring of soil moisture, temperature, and environmental data.",
   },
   {
-    icon: <ClipboardCheck className="text-white" />,
+    icon: <ClipboardCheck className="text-[#1E6930]" />,
     title: "Task Management",
     desc: "Stay ahead of the season with streamlined task scheduling – no confusion, just coordination.",
   },
   {
-    icon: <Archive className="text-white" />,
+    icon: <Archive className="text-[#1E6930]" />,
     title: "Inventory Logging",
     desc: "Record actual harvest and compare against forecasts.",
   },
   {
-    icon: <ChartColumn className="text-white" />,
+    icon: <ChartColumn className="text-[#1E6930]" />,
     title: "Reports & Analytics",
     desc: "Generate detailed reports and gain actionable insights with ease.",
   },
@@ -91,10 +92,10 @@ export const how_it_work = [
   {
     icon: <ClipboardCheck className={"text-white"} />,
     title: "Manage Tasks & Inventory",
-    desc: "Organize your daily operations with comprehensive task management and inventory tracking to optimize your farm’s productivity and efficiency",
+    desc: "Organize your daily operations with comprehensive task management and inventory tracking to optimize your farm's productivity and efficiency",
     steps: [
       "Task scheduling",
-      "inventory management",
+      "Inventory management",
       "Progress tracking",
       "Resource optimization",
     ],
@@ -121,7 +122,7 @@ export const pricing = [
     features: [
       "All Free Plan Features",
       "Advanced Analytics And Predictive Insights",
-      "Unlimited AI-Powered Disease Dtetection",
+      "Unlimited AI-Powered Disease Detection",
       "Customizable Automation Rules For Irrigation And Sensor Integration",
     ],
   },
@@ -163,7 +164,7 @@ export const reviews = [
   },
 ];
 
-export const footerFeatuers = [
+export const footerFeatures = [
   {
     title: "Disease Detection",
     href: "#features",

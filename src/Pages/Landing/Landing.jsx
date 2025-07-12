@@ -8,12 +8,11 @@ import {
 } from "lucide-react";
 import { Button } from "../../Components/ui/Button";
 import LandingNavBar from "../../Components/Navbar/LandingNavBar";
-import ScrollMenu from "../../Components/ScrollMenu/ScrollMenu";
 import Title from "../../Components/Landing/Title";
 import Feature from "../../Components/Landing/Feature/Feature";
 import {
   features,
-  footerFeatuers,
+  footerFeatures,
   footerSupport,
   how_it_work,
   pricing,
@@ -26,18 +25,17 @@ import { Testimonials } from "../../Components/Landing/testimonials/Testimonials
 const Landing = () => {
   return (
     <div>
+      {/* Fixed Navigation Bar */}
+      <LandingNavBar />
+
       {/* Landing */}
       <section className="relative min-h-screen bg-[url('/landing.png')] bg-cover bg-no-repeat">
         <div className="absolute inset-0 bg-black/40 z-0"></div>
 
-        <ScrollMenu />
-
         <div className="relative z-40 min-h-screen">
-          <LandingNavBar />
-
           <section
-            id="#home"
-            className="text-center space-y-8 grid place-content-center min-h-[calc(100vh-100px)] p-5"
+            id="home"
+            className="text-center space-y-8 grid place-content-center min-h-screen p-5"
           >
             <h1 className="text-6xl md:text-7xl font-bold text-white">
               Smarter Farming
@@ -59,7 +57,7 @@ const Landing = () => {
 
       {/* features */}
       <section
-        id="#features"
+        id="features"
         className="bg-[#F9FAFB] space-y-14 py-10 px-5 md:px-10"
       >
         <Title
@@ -70,7 +68,7 @@ const Landing = () => {
           }
         />
 
-        <div className="bg-[#F9FAFB] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-10 lg:gap-14 lg:w-[90%] mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-10 lg:gap-14 lg:w-[90%] mx-auto">
           {features.map((feature, index) => (
             <Feature
               key={index}
@@ -83,7 +81,7 @@ const Landing = () => {
       </section>
 
       {/* how it Works */}
-      <section id="#how_it_works" className="space-y-14 py-10 px-5 md:px-10">
+      <section id="how_it_works" className="space-y-14 py-10 px-5 md:px-10">
         <Title
           title={"How It"}
           greenTitle={"Works"}
@@ -137,7 +135,7 @@ const Landing = () => {
 
       {/* pricing */}
       <section
-        id="#pricing"
+        id="pricing"
         className="bg-[#F9FAFB] space-y-14 py-10 px-5 md:px-10"
       >
         <Title
@@ -162,7 +160,7 @@ const Landing = () => {
       </section>
 
       {/* testimonials */}
-      <section id="#testimonials" className="space-y-14 py-10 px-5 md:px-10">
+      <section id="testimonials" className="space-y-14 py-10 px-5 md:px-10">
         <Title
           title={"Trusted By"}
           greenTitle={"Farmers"}
@@ -195,9 +193,9 @@ const Landing = () => {
           </section>
           <section className="space-y-3">
             <h4 className="text-base font-semibold capitalize">features</h4>
-            {footerFeatuers.map((link) => (
+            {footerFeatures.map((link, index) => (
               <a
-                key={link}
+                key={index}
                 href={link.href}
                 className="text-sm font-medium text-[#4B5563] block"
               >
@@ -207,9 +205,9 @@ const Landing = () => {
           </section>
           <section className="space-y-3">
             <h4 className="text-base font-semibold capitalize">support</h4>
-            {footerSupport.map((link) => (
+            {footerSupport.map((link, index) => (
               <a
-                key={link}
+                key={index}
                 href={link.href}
                 className="text-sm font-medium text-[#4B5563] block"
               >

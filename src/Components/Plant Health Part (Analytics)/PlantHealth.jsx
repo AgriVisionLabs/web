@@ -1,4 +1,3 @@
-
 import {Line as LineDrow} from 'rc-progress';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -13,12 +12,12 @@ const PlantHealth = () => {
     return (
         <section className='mb-[30px]'>
             <div className="grid grid-cols-3 gap-[30px]">
-                <div className="col-span-3 border-[1px] border-[rgba(13,18,28,0.25)] rounded-[15px]  p-[20px] ">
+                <div className="col-span-3 border-[1px] border-[rgba(13,18,28,0.25)] rounded-[15px] p-[20px]">
                     <div className="p-[20px]">
-                        <h2 className="text-[#0D121C] text-[20px] font-medium mb-[12px]">Water Usage History</h2>
-                        <p className="text-[#616161] text-[17px] font-medium">Total water used by field over time</p>
+                        <h2 className="text-[#0D121C] text-[20px] font-medium mb-[12px]">Disease Detection History</h2>
+                        <p className="text-[#616161] text-[17px] font-medium">Recent disease detections and treatment status</p>
                     </div>
-                    <div className="grid grid-rows-4  w-[90%] mx-auto gap-[20px] my-[30px] ">
+                    <div className="grid grid-rows-4 w-[90%] mx-auto gap-[20px] my-[30px]">
                         <div className="grid grid-cols-6 text-[#0D121C] md:text-[19px] font-medium">
                             <p className="">Date</p>
                             <p className="">Field</p>
@@ -34,8 +33,8 @@ const PlantHealth = () => {
                             <p className="flex justify-center">92%</p>
                             <p className="flex justify-center">View</p>
                             <div className="flex justify-center">
-                                <div className=" px-[12px] py-[2px] w-fit rounded-[15px] bg-[rgba(37,196,98,0.10)] border-[1px] border-[#25C462]">
-                                    <p className=" capitalize text-[15px] text-mainColor font-bold ">Treated</p>
+                                <div className="px-[12px] py-[2px] w-fit rounded-[15px] bg-[rgba(37,196,98,0.10)] border-[1px] border-[#25C462]">
+                                    <p className="capitalize text-[15px] text-mainColor font-bold">Treated</p>
                                 </div>
                             </div>
                         </div>
@@ -46,8 +45,8 @@ const PlantHealth = () => {
                             <p className="flex justify-center">87%</p>
                             <p className="flex justify-center">View</p>
                             <div className="flex justify-center">
-                                <div className=" px-[12px] py-[2px] w-fit rounded-[15px] bg-[rgba(205,155,16,0.20)] border-[1px] border-[#CD9B10]">
-                                    <p className=" capitalize text-[15px] text-[#CD9B10] font-bold ">In progress</p>
+                                <div className="px-[12px] py-[2px] w-fit rounded-[15px] bg-[rgba(205,155,16,0.20)] border-[1px] border-[#CD9B10]">
+                                    <p className="capitalize text-[15px] text-[#CD9B10] font-bold">In progress</p>
                                 </div>
                             </div>
                         </div>
@@ -58,8 +57,8 @@ const PlantHealth = () => {
                             <p className="flex justify-center">78%</p>
                             <p className="flex justify-center">View</p>
                             <div className="flex justify-center">
-                                <div className=" px-[12px] py-[2px] w-fit rounded-[15px] bg-[rgba(225,57,57,0.10)] border-[1px] border-[#E13939]">
-                                    <p className=" capitalize text-[15px] text-[#E13939] font-bold ">not treated</p>
+                                <div className="px-[12px] py-[2px] w-fit rounded-[15px] bg-[rgba(225,57,57,0.10)] border-[1px] border-[#E13939]">
+                                    <p className="capitalize text-[15px] text-[#E13939] font-bold">Not treated</p>
                                 </div>
                             </div>
                         </div>
@@ -86,7 +85,7 @@ const PlantHealth = () => {
                             <div className="mt-[30px] space-y-[20px]">
                                 <div className="flex justify-between items-center text-[#0D121C] text-[17px] font-medium">
                                     <p className="">Bacterial Spot</p>
-                                    <p className="">78</p>
+                                    <p className="">78%</p>
                                 </div>
                                 <LineDrow percent={78} strokeLinecap="round" strokeColor="#1E6930" className="h-[6.5px] text-mainColor w-full  rounded-lg" />
                             </div>

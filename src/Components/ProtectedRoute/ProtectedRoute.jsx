@@ -9,7 +9,7 @@ const ProtectedRoute = ({children}) => {
     if(token){
         return children;
     }else{
-        return <Navigate to="/Login"/>;
+        return <Navigate to="/login"/>;
     }
 }
 

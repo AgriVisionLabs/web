@@ -20,9 +20,7 @@ const Security = () => {
                         <p className="text-[#9F9F9F] text-[15px] font-medium">Add an extra layer of security to your account</p>
                     </div>
                     <div className=' w-[50px] h-[28px] rounded-2xl  flex items-center px-1 transition-all duration-300 bg-[#5e5e5f21]  cursor-pointer'onClick={(e)=>{
-                                        // toggleIrrigationUnits(IrrigationUnit.farmId,IrrigationUnit.fieldId)
                                         toggleButton(e)
-
                                     }} >
                         <div className="h-[23px] w-[23px] bg-white rounded-full  transition-all duration-700  "></div>
                     </div>

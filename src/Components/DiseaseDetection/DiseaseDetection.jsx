@@ -1,33 +1,44 @@
 import {
+  Calendar,
+  Camera,
   CircleAlert,
+  CircleCheckBig,
+  Leaf,
+  User,
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import MenuElement from "../MenuElement/MenuElement";
 import { AllContext } from "../../Context/All.context";
+import { Line } from "rc-progress";
+import { motion } from "framer-motion";
 import NewDetection from "../NewDetection/NewDetection";
 import AfterDetection from "../AfterDetection/AfterDetection";
 import axios from "axios";
 import { userContext } from "../../Context/User.context";
-import toast from "react-hot-toast";
-import Detection from "../Detection/Detection";
 
-const DiseaseDetection = (children) => {
-  let { detection, setDetection, setDetectionPage, getPart, baseUrl,index,setIndex } =
+const DiseaseDetection = () => {
+  const { detection, setDetection, setDetectionPage, getPart, baseUrl } =
     useContext(AllContext);
-  let { token } = useContext(userContext);
-  let [partsDetection, setPartsDetection] = useState("All Fields");
-  let [fields, setFields] = useState([]);
-  // let [index, setIndex] = useState(0);
-  let [Farms, setFarms] = useState([]);
-  let [allFarms, setAllFarms] = useState([]);
-  let [farmCheck, setFarmCheck] = useState(0);
-  let [fieldCheck, setFieldCheck] = useState(0);
-  let [Imagecheck, setImagecheck] = useState("");
-  let [DataAfterDetection, setDataAfterDetection] = useState();
-  let [search,setSearch]=useState("")
-  let [searchInput,setSearchInput]=useState("")
+  const { token } = useContext(userContext);
+  const [partsDetection, setPartsDetection] = useState("All Fields");
+  const [fields, setFields] = useState([]);
+  const [index, setIndex] = useState(0);
+  const [Farms, setFarms] = useState([]);
+  const [allFarms, setAllFarms] = useState([]);
+  const [farmCheck, setFarmCheck] = useState(0);
+  const [fieldCheck, setFieldCheck] = useState(0);
+  const [Imagecheck, setImagecheck] = useState("");
+  const [DataAfterDetection, setDataAfterDetection] = useState();
+
+  // const [health, setHealth] = useState([]);
+  // const [risk, setRisk] = useState([]);
+  // const [infected, setInfected] = useState([]);
+
   async function getFarms() {
-    console.log(token);
+    if (!token) {
+      console.error("No token available for getFarms");
+      return;
+    }
     try {
       const options = {
         url: `${baseUrl}/Farms`,
@@ -44,16 +55,21 @@ const DiseaseDetection = (children) => {
           })
         );
         setFarms(data);
-        getFields()
+        getFields();
       }
     } catch (error) {
-      if(error.response?.data){
-        if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
-        else{toast.error("There is an error");}
-      }else{console.log(error)}
+      console.error("Error fetching farms:", error);
     }
   }
+
   async function getFields() {
+    if (!token && Farms.length === 0) {
+      console.error("No token or farm data available");
+      return;
+    }
+
+    console.log(Farms[index]);
+
     try {
       const options = {
         url: `${baseUrl}/farms/${Farms[index].farmId}/Fields`,
@@ -64,23 +80,25 @@ const DiseaseDetection = (children) => {
       };
       let { data } = await axios(options);
       setFields(data);
-      console.log("getFields :", data);
+      console.log(data);
     } catch (error) {
-      if(error.response?.data){
-        if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
-        else{toast.error("There is an error");}
-      }else{console.log(error)}
+      console.error("Error fetching fields:", error);
     }
   }
+
   useEffect(() => {
     getFarms();
   }, []);
+
   useEffect(() => {
-    getFields();
-  }, [index,Farms]);
+    if (Farms.length) {
+      getFields();
+    }
+  }, [Farms, index]);
+
   return (
     <>
-      {Farms.length!=0?<div>
+      <div>
         <div className="mb-[35px] flex items-center space-x-[15px]">
           <p className="text-[23px] text-[#0D121C] font-semibold font-manrope ">
             Disease Detection
@@ -88,7 +106,6 @@ const DiseaseDetection = (children) => {
           <CircleAlert strokeWidth={3} size={23} />
         </div>
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-[20px] mb-[44px]">
-          {/* <MenuElement Items={forms} name={"green farm"} width={300+"px"} onList={onListDisDet} setOnList={setOnListDisDet}/> */}
           <MenuElement
             Items={allFarms}
             nameChange={allFarms[index]}
@@ -102,7 +119,6 @@ const DiseaseDetection = (children) => {
               type="text"
               placeholder="Search Fields or crops ..."
               className=" text-[14px] md:text-[15px]   text-[#616161] font-[400] font-manrope h-[43px]  py-[8px] px-[22px] rounded-[8px] border-[1px] border-[#D9D9D9] w-[200px] sm:w-[300px] md:w-[400px] focus:outline-mainColor"
-              onChange={(e)=>{setSearchInput(e.target.value)}}
             />
           </form>
         </div>
@@ -117,7 +133,6 @@ const DiseaseDetection = (children) => {
             className="py-[12px] px-[12px] bg-[#FFFFFF] text-mainColor rounded-[10px] cursor-pointer "
             onClick={() => {
               setPartsDetection("All Fields");
-              setSearch(3)
             }}
           >
             All Fields
@@ -126,7 +141,6 @@ const DiseaseDetection = (children) => {
             className="py-[12px] px-[12px]   rounded-[10px] cursor-pointer text-[#9F9F9F]"
             onClick={() => {
               setPartsDetection("Healthy");
-              setSearch(0)
             }}
           >
             Healthy
@@ -135,7 +149,6 @@ const DiseaseDetection = (children) => {
             className="py-[12px] px-[12px]   rounded-[10px] cursor-pointer text-[#9F9F9F]"
             onClick={() => {
               setPartsDetection("At Risk");
-              setSearch(1)
             }}
           >
             At Risk
@@ -144,17 +157,27 @@ const DiseaseDetection = (children) => {
             className="py-[12px] px-[12px]   rounded-[10px] cursor-pointer text-[#9F9F9F]"
             onClick={() => {
               setPartsDetection("Infected");
-              setSearch(2)
             }}
           >
             Infected
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-[28px] font-manrope">
-          {fields?.filter((field)=> (field.name?.toLowerCase().includes(searchInput.toLowerCase())||field.cropName?.toLowerCase().includes(searchInput.toLowerCase()))).map((item, index) => {
+          {fields.map((item, index) => {
             return (
-              <div key={index} className="rounded-[15px] border-[1px] border-[rgba(13,18,28,0.25)]">
-                {/* <div
+              <motion.div
+                key={index}
+                initial={{ x: 300, y: -50, opacity: 0 }}
+                animate={{ x: 0, y: 0, opacity: 1 }}
+                transition={{
+                  delay: index * 0.5,
+                  duration: 0.8,
+                  type: "spring",
+                  bounce: 0.4,
+                }}
+                className="rounded-[15px] border-[1px] border-[rgba(13,18,28,0.25)]"
+              >
+                <div
                   className="p-[24px]"
                   onClick={() => {
                     setDetectionPage("DiseaseDetectionOverviewpage");
@@ -214,11 +237,15 @@ const DiseaseDetection = (children) => {
                   <div className="text-[#9F9F9F] space-y-[15px]">
                     <div className="flex items-center space-x-[7px]">
                       <Calendar />
-                      <p className="capitalize text-[15px]">last: 15 mar, 2025</p>
+                      <p className="capitalize text-[15px]">
+                        last: 15 mar, 2025
+                      </p>
                     </div>
                     <div className="flex items-center space-x-[7px]">
                       <User />
-                      <p className="capitalize text-[15px]">by: hussein mohamed</p>
+                      <p className="capitalize text-[15px]">
+                        by: hussein mohamed
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -240,9 +267,8 @@ const DiseaseDetection = (children) => {
                       <p className="">new detection</p>
                     </div>
                   </button>
-                </div> */}
-                <Detection search={search}  setStateOverview={children.setStateOverview} setDiseaseDetections={children.setDiseaseDetections} setField={children.setField} setDetectionPage={setDetectionPage} setDetection={setDetection} fieldId={item.id} farmId={item.farmId} setFarmCheck={setFarmCheck} setFieldCheck={setFieldCheck}/>
-              </div>
+                </div>
+              </motion.div>
             );
           })}
         </div>
@@ -266,11 +292,7 @@ const DiseaseDetection = (children) => {
         ) : (
           ""
         )}
-      </div>:
-      <div className="h-[80%]  flex justify-center items-center">
-        <p className="text-[17px] text-[#333333] w-[480px] text-center font-medium">You don’t have any farms yet</p>
       </div>
-      }
     </>
   );
 };

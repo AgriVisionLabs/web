@@ -73,7 +73,7 @@ const IrrigationPartAnalytics = () => {
                         <div className="mt-[25px] space-y-[15px]">
                             <div className="flex justify-between items-center text-[#0D121C] text-[19px] font-medium">
                                 <p className="">Grape Field</p>
-                                <p className="">85</p>
+                                <p className="">85%</p>
                             </div>
                             <LineDrow percent={85} strokeLinecap="round" strokeColor="#1E6930" className="h-[6.5px] text-mainColor w-full  rounded-lg" />
                         </div>

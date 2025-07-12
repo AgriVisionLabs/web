@@ -1,20 +1,21 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import DiseaseDetectionOverview from "../../Components/DiseaseDetectionOverview/DiseaseDetectionOverview";
 import DiseaseDetection from "../../Components/DiseaseDetection/DiseaseDetection";
 import { AllContext } from "../../Context/All.context";
+import { Helmet } from "react-helmet";
 
 const HomeDiseaseDetection = () => {
-  let { detectionPage ,setDetectionPage,fieldDetection, setFieldDetection,diseaseDetection, setDiseaseDetection,stateOverview,setStateOverview} = useContext(AllContext);
-  // let [field, setField] = useState();
-  // let [diseaseDetections, setDiseaseDetections] = useState([]);
-  // let [stateOverview, setStateOverview] = useState([]);
+  let { detectionPage } = useContext(AllContext);
   return (
     <>
-      <section className="transition-all duration-500 h-full">
+      <Helmet>
+        <title>Disease Detection</title>
+      </Helmet>
+      <section className="transition-all duration-500">
         {detectionPage == "DiseaseDetectionpage" ? (
-          <DiseaseDetection  setField={setFieldDetection} setStateOverview={setStateOverview} setDiseaseDetections={setDiseaseDetection}/>
+          <DiseaseDetection />
         ) : (
-          <DiseaseDetectionOverview stateOverview={stateOverview} field={fieldDetection} diseaseDetections={diseaseDetection}/>
+          <DiseaseDetectionOverview />
         )}
       </section>
     </>

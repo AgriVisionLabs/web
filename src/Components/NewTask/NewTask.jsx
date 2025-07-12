@@ -2,12 +2,12 @@ import { X } from "lucide-react";
 import MenuElement from "../MenuElement/MenuElement";
 import { useContext, useState } from "react";
 import { date, object, string } from "yup";
-import toast from "react-hot-toast";
 import axios from "axios";
 import { useFormik } from "formik";
 import { useEffect } from "react";
 import { userContext } from "../../Context/User.context";
 import { AllContext } from "../../Context/All.context";
+
 const NewTask = (children) => {
   let { baseUrl } = useContext(AllContext);
   let { token } = useContext(userContext);
@@ -36,7 +36,13 @@ const NewTask = (children) => {
     itemPriority: string().required("item Priority is required"),
     category: string().required("category is required"),
   });
+
   async function getFields() {
+    if (!token) {
+      console.error("No token available for authentication");
+      return;
+    }
+
     try {
       const options = {
         url: `${baseUrl}/farms/${children.farmData.farmId}/Fields`,
@@ -56,15 +62,21 @@ const NewTask = (children) => {
         );
       }
     } catch (error) {
-      if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
-      else{toast.error("Insufficient data");}
+      console.error("Error fetching fields:", error);
     }
   }
   useEffect(() => {
     getFields();
   }, []);
+
   async function sendNewTask(values) {
-    if(Fields.length){const loadingId = toast.loading("Waiting...", { position: "top-left" });
+    if (!token) {
+      console.error("No token available for authentication");
+      return;
+    }
+
+    console.log(values);
+
     try {
       const filteredValues = Object.fromEntries(
         Object.entries(values).filter(
@@ -79,19 +91,13 @@ const NewTask = (children) => {
           Authorization: `Bearer ${token}`,
         },
       };
-      let data= await axios(option);
-      if(data){
-          children.setCreateTask(null)
-          children.getTasks()
+      let data = await axios(option);
+      if (data) {
+        children.setCreateTask(null);
       }
+      children.display();
     } catch (error) {
-      if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
-      else{toast.error("Insufficient data");}
-    } finally {
-      toast.dismiss(loadingId);
-    }}
-    else{
-      toast.error("No fields. A task cannot be created. Please create a field first.")
+      console.error("Error creating new task:", error);
     }
   }
   const formik = useFormik({
@@ -113,9 +119,9 @@ const NewTask = (children) => {
 
   return (
     <section
-      className=" flex justify-center items-center bg-black bg-opacity-70 font-manrope absolute inset-0 z-50 w-[100%]"
+      className="flex justify-center items-center bg-black bg-opacity-70 font-manrope absolute inset-0 z-50 w-[100%]"
       onClick={(e) => {
-        if (e.target == e.currentTarget) {
+        if (e.target === e.currentTarget) {
           children.setCreateTask(null);
         }
       }}
@@ -129,10 +135,10 @@ const NewTask = (children) => {
           }}
         />
         <div className="space-y-[8px]">
-          <h1 className="text-[25px]  font-semibold capitalize">
+          <h1 className="text-[25px] font-semibold capitalize">
             create new task
           </h1>
-          <p className="text-[17px] text-[#616161]  font-semibold ">
+          <p className="text-[17px] text-[#616161] font-semibold">
             Add a new task to the selected farm.
           </p>
         </div>
@@ -141,17 +147,17 @@ const NewTask = (children) => {
           className="my-[20px] space-y-[25px]"
           onSubmit={formik.handleSubmit}
         >
-          <div className=" flex flex-col">
+          <div className="flex flex-col">
             <label
               htmlFor="taskTitle"
-              className="text-[19px] text-[#0D121C]  font-semibold mb-[8px]"
+              className="text-[19px] text-[#0D121C] font-semibold mb-[8px]"
             >
               Task title
             </label>
             <input
               type="text"
               id="taskTitle"
-              className="border-[2px] border-[#9F9F9F] rounded-[12px] px-[20px] py-[12px] focus:outline-mainColor  "
+              className="border-[2px] border-[#9F9F9F] rounded-[12px] px-[20px] py-[12px] focus:outline-mainColor"
               placeholder="Enter a descriptive title"
               name="title"
               value={formik.values.title}
@@ -159,10 +165,10 @@ const NewTask = (children) => {
               onBlur={formik.handleBlur}
             />
           </div>
-          <div className=" flex flex-col">
+          <div className="flex flex-col">
             <label
               htmlFor="description"
-              className="text-[19px] text-[#0D121C]  font-semibold mb-[8px]"
+              className="text-[19px] text-[#0D121C] font-semibold mb-[8px]"
             >
               description
             </label>
@@ -170,7 +176,7 @@ const NewTask = (children) => {
               href=""
               alt=""
               id="description"
-              className="min-h-[100px] max-h-min border-[2px] border-[#9F9F9F] rounded-[12px] px-[20px] py-[12px] focus:outline-mainColor  "
+              className="min-h-[100px] max-h-min border-[2px] border-[#9F9F9F] rounded-[12px] px-[20px] py-[12px] focus:outline-mainColor"
               placeholder="Provide details about the task"
               name="description"
               value={formik.values.description}
@@ -182,7 +188,7 @@ const NewTask = (children) => {
             <div className="space-y-1">
               <label
                 htmlFor="Field"
-                className="text-[19px] text-[#0D121C]  font-semibold"
+                className="text-[19px] text-[#0D121C] font-semibold"
               >
                 Field
               </label>
@@ -200,7 +206,7 @@ const NewTask = (children) => {
             <div className="space-y-1">
               <label
                 htmlFor="Priority"
-                className="text-[19px] text-[#0D121C]  font-semibold mb-[8px]"
+                className="text-[19px] text-[#0D121C] font-semibold mb-[8px]"
               >
                 Priority
               </label>
@@ -218,14 +224,14 @@ const NewTask = (children) => {
             <div className="flex flex-col space-y-1 w-[250px]">
               <label
                 htmlFor="Due Date"
-                className="text-[19px] text-[#0D121C]  font-semibold"
+                className="text-[19px] text-[#0D121C] font-semibold"
               >
                 Due Date
               </label>
               <input
                 type="datetime-local"
                 id="task title"
-                className="border-[1px] border-[##0d121c21] rounded-lg px-5 py-2 text-[17px] font-[400] focus:outline-mainColor  "
+                className="border-[1px] border-[##0d121c21] rounded-lg px-5 py-2 text-[17px] font-[400] focus:outline-mainColor"
                 name="dueDate"
                 value={formik.values.dueDate}
                 onChange={formik.handleChange}
@@ -235,7 +241,7 @@ const NewTask = (children) => {
             <div className="space-y-1">
               <label
                 htmlFor="Category"
-                className="text-[19px] text-[#0D121C]  font-semibold mb-[8px]"
+                className="text-[19px] text-[#0D121C] font-semibold mb-[8px]"
               >
                 Category
               </label>
@@ -252,10 +258,10 @@ const NewTask = (children) => {
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3 items-cente">
+          <div className="flex justify-start space-x-3 items-cente">
             <button
               type="button"
-              className="py-[10px] px-[15px]  border-[1px] border-[#616161] rounded-[12px] text-[#333333]  text-[17px]  hover:bg-mainColor hover:text-[#FFFFFF] hover:border-mainColor transition-all duration-300 font-semibold"
+              className="py-[10px] px-[15px] border-[1px] border-[#616161] rounded-[12px] text-[#333333] text-[17px] hover:bg-mainColor hover:text-[#FFFFFF] hover:border-mainColor transition-all duration-300 font-semibold"
               onClick={(e) => {
                 if (e.target == e.currentTarget) {
                   children.setDisplayTask(null);

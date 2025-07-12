@@ -7,14 +7,14 @@ import ScheduleMaintenanceSD from "../../Components/ScheduleMaintenance(S&D)/Sch
 import LogMaintenanceSD from "../../Components/LogMaintenance(S&D)/LogMaintenance(S&D)";
 import ShowSensorUnit from "../../Components/ShowSensorUnit/ShowSensorUnit";
 import EditSensorUnit from "../../Components/EditSensorUnit/EditSensorUnit";
-import axios from "@axiosInstance";
+import axios from "axios";
 import { userContext } from "../../Context/User.context";
 import ShowSprinklerSystem from "../../Components/ShowSprinklerSystem/ShowSprinklerSystem";
 import EditSprinklerSystem from "../../Components/EditSprinklerSystem/EditSprinklerSystem";
-import toast from "react-hot-toast";
+import { Helmet } from "react-helmet";
 
 const SensorsDevices = () => {
-  let { onListSenDev, setOnListSenDev, getPart, schedule, baseUrl ,index,setIndex } =
+  let { onListSenDev, setOnListSenDev, getPart, schedule, baseUrl } =
     useContext(AllContext);
   let { token } = useContext(userContext);
   let [irrigationUnit, setIrrigationUnit] = useState();
@@ -22,7 +22,7 @@ const SensorsDevices = () => {
   let [sensorUnitId, setSensorUnitId] = useState();
   // var forms=[4,5,6,7];
   let [partsSenDev, setPartsSenDev] = useState("sensors");
-  // let [indexIRRSD, setIndexIRRSD] = useState(0);
+  let [indexIRRSD, setIndexIRRSD] = useState(0);
   let [fieldID, setFieldID] = useState([]);
   let [farmID, setFarmID] = useState([]);
   let [Farms, setFarms] = useState([]);
@@ -33,6 +33,11 @@ const SensorsDevices = () => {
   let [allFarms, setAllFarms] = useState([]);
   // let status=["Active","Idle","Maintenance"]
   async function getFarms() {
+    if (!token) {
+      console.error("No token available for authentication");
+      return;
+    }
+
     try {
       const options = {
         url: `${baseUrl}/Farms`,
@@ -51,29 +56,30 @@ const SensorsDevices = () => {
         setFarms(data);
       }
     } catch (error) {
-      if(error.response.data){
-        if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
-        else{toast.error("There is an error");}
-      }else{console.log(error)}
+      console.error("Error fetching farms:", error);
     }
   }
 
   useEffect(() => {
     getFarms();
   }, []);
-  return Farms.length!=0 ? (
+
+  return Farms ? (
     <div className="transition-all duration-500">
+      <Helmet>
+        <title>Sensors And Devices</title>
+      </Helmet>
       <div className="mb-[35px] flex items-center space-x-[15px]">
-        <p className="text-[23px] text-[#0D121C] font-semibold font-manrope capitalize ">
+        <p className="text-[23px] text-[#0D121C] font-semibold font-manrope capitalize">
           sensors & devices
         </p>
       </div>
       <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-[20px] mb-[44px]">
         <MenuElement
           Items={allFarms}
-          nameChange={allFarms[index]}
-          setIndex={setIndex}
-          index={index}
+          nameChange={allFarms[indexIRRSD]}
+          setIndex={setIndexIRRSD}
+          index={indexIRRSD}
           width={200 + "px"}
           className={"text-[15px]"}
           onList={onListSenDev}
@@ -83,19 +89,19 @@ const SensorsDevices = () => {
           <input
             type="text"
             placeholder="Search devices by name or serial number ..."
-            className=" text-[14px] sm:text-[16px]   text-[#616161] font-[400] font-manrope h-[45px]  py-[8px] px-[22px] rounded-[8px] border-[1px] border-[#D9D9D9] w-[200px] sm:w-[300px] md:w-[400px] focus:outline-mainColor "
+            className="text-[14px] sm:text-[16px] text-[#616161] font-[400] font-manrope h-[45px] py-[8px] px-[22px] rounded-[8px] border-[1px] border-[#D9D9D9] w-[200px] sm:w-[300px] md:w-[400px] focus:outline-mainColor"
           />
         </form>
       </div>
       <div
-        className="flex w-fit items-center  h-[70px] rounded-[10px] bg-[rgba(217,217,217,0.3)] space-x-[20px] px-[10px] text-[14px] md:text-[15px]   font-medium mb-[52px] capitalize"
+        className="flex w-fit items-center h-[70px] rounded-[10px] bg-[rgba(217,217,217,0.3)] space-x-[20px] px-[10px] text-[14px] md:text-[15px] font-medium mb-[52px] capitalize"
         id="parts"
         onClick={(e) => {
           getPart(e.target);
         }}
       >
         <p
-          className="py-[12px] px-[12px]  rounded-[10px] cursor-pointer bg-[#FFFFFF] text-mainColor"
+          className="py-[12px] px-[12px] rounded-[10px] cursor-pointer bg-[#FFFFFF] text-mainColor"
           onClick={() => {
             setPartsSenDev("sensors");
           }}
@@ -103,7 +109,7 @@ const SensorsDevices = () => {
           sensors
         </p>
         <p
-          className="py-[12px] px-[12px]   rounded-[10px] cursor-pointer text-[#9F9F9F]"
+          className="py-[12px] px-[12px] rounded-[10px] cursor-pointer text-[#9F9F9F]"
           onClick={() => {
             setPartsSenDev("irrigation units");
           }}
@@ -119,9 +125,9 @@ const SensorsDevices = () => {
             setSensorUnitId={setSensorUnitId}
             setFieldID={setFieldID}
             setField={setField}
-            indexedDB={index}
-            farmName={Farms[index].name}
-            farmId={Farms[index].farmId}
+            indexedDB={indexIRRSD}
+            farmName={Farms[indexIRRSD].name}
+            farmId={Farms[indexIRRSD].farmId}
             setSensorUnit={setSensorUnit}
           />
         ) : Farms.length > 0 && partsSenDev === "irrigation units" ? (
@@ -129,22 +135,22 @@ const SensorsDevices = () => {
             setFarmID={setFarmID}
             setFieldID={setFieldID}
             setField={setField}
-            indexedDB={index}
-            farmName={Farms[index].name}
-            farmId={Farms[index].farmId}
+            indexedDB={indexIRRSD}
+            farmName={Farms[indexIRRSD].name}
+            farmId={Farms[indexIRRSD].farmId}
             setIrrigationUnit={setIrrigationUnit}
           />
         ) : null}
-        {schedule == "ScheduleMaintenan" ? (
-          <div className=" fixed z-50 inset-0  ">
+        {schedule === "ScheduleMaintenan" ? (
+          <div className="fixed z-50 inset-0">
             <ScheduleMaintenanceSD />
           </div>
-        ) : schedule == "Log Completed" ? (
-          <div className=" fixed z-50 inset-0  ">
+        ) : schedule === "Log Completed" ? (
+          <div className="fixed z-50 inset-0">
             <LogMaintenanceSD />
           </div>
-        ) : schedule == "ShowSensorUnit" ? (
-          <div className=" fixed z-50 inset-0  ">
+        ) : schedule === "ShowSensorUnit" ? (
+          <div className="fixed z-50 inset-0">
             <ShowSensorUnit
               setShowIrr={setShowIrr}
               sensorUnitId={sensorUnitId}
@@ -154,8 +160,8 @@ const SensorsDevices = () => {
               farmID={farmID}
             />
           </div>
-        ) : schedule == "EditSensorUnit" ? (
-          <div className=" fixed z-50 inset-0  ">
+        ) : schedule === "EditSensorUnit" ? (
+          <div className="fixed z-50 inset-0">
             <EditSensorUnit
               Fields={Field}
               getSensorUnit={getSensorUnit}
@@ -168,8 +174,8 @@ const SensorsDevices = () => {
         ) : (
           ""
         )}
-        {irrigationUnit == "step1" ? (
-          <div className=" fixed z-50 inset-0  ">
+        {irrigationUnit === "step1" ? (
+          <div className="fixed z-50 inset-0">
             <ShowSprinklerSystem
               setShowIrr={setShowIrr}
               setShowIrrMember={setShowIrrMember}
@@ -178,8 +184,8 @@ const SensorsDevices = () => {
               farmID={farmID}
             />
           </div>
-        ) : irrigationUnit == "step2" ? (
-          <div className=" fixed z-50 inset-0  ">
+        ) : irrigationUnit === "step2" ? (
+          <div className="fixed z-50 inset-0">
             <EditSprinklerSystem
               Fields={Field}
               ShowIrr={ShowIrr}
@@ -193,9 +199,7 @@ const SensorsDevices = () => {
       </div>
     </div>
   ) : (
-    <div className="h-[80%]  flex justify-center items-center">
-        <p className="text-[17px] text-[#333333] w-[480px] text-center font-medium">You don’t have any farms yet</p>
-      </div>
+    ""
   );
 };
 

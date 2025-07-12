@@ -1,57 +1,216 @@
 import axios from "axios";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useRef, useCallback } from "react";
 import toast from "react-hot-toast";
 
-export const userContext =createContext("");
-export default function UserProvider(items){
-    let children=items.children
-    const [token,setToken]=useState(localStorage.getItem("token"));
-    const [verification,setVerification]=useState(false);
-    const [refreshToken,setRefreshToken]=useState(null);
-    const [expiresIn,setExpiresIn]=useState(null)
-    function logOut(){
-        setToken(null);
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
-        localStorage.setItem("index",0);
+export const userContext = createContext("");
+
+export default function UserProvider(items) {
+  let children = items.children;
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [verification, setVerification] = useState(false);
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem("refreshToken"));
+  const [expiresIn, setExpiresIn] = useState(localStorage.getItem("expiresIn"));
+  const [userId, setUserId] = useState(localStorage.getItem("userId"));
+  const [tokenExpiration, setTokenExpiration] = useState(localStorage.getItem("tokenExpiration"));
+  const [refreshTokenExpiration, setRefreshTokenExpiration] = useState(localStorage.getItem("refreshTokenExpiration"));
+  
+  const refreshIntervalRef = useRef(null);
+  const lastActivityRef = useRef(Date.now());
+  const isRefreshingRef = useRef(false);
+
+  // Track user activity
+  const updateActivity = useCallback(() => {
+    lastActivityRef.current = Date.now();
+  }, []);
+
+  // Setup activity listeners
+  useEffect(() => {
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    
+    events.forEach(event => {
+      document.addEventListener(event, updateActivity, true);
+    });
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, updateActivity, true);
+      });
+    };
+  }, [updateActivity]);
+
+  // Redirect to login
+  const redirectToLogin = useCallback(() => {
+    logOut();
+    window.location.href = '/login';
+  }, []);
+
+  // Check if user is active (activity within last 5 minutes)
+  const isUserActive = useCallback(() => {
+    const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+    return lastActivityRef.current > fiveMinutesAgo;
+  }, []);
+
+  // Updated logout function
+  function logOut() {
+    // Clear refresh interval
+    if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
+      refreshIntervalRef.current = null;
     }
-    async function RefreshToken(){
-        console.log("RefreshToken : ")
-            const loadingId =toast.loading("Waiting...")
-            try {
-                const options={
-                    url:"https://api.agrivisionlabs.tech/Auth/refresh",
-                    method:"POST",
-                    data:{
-                        token:token,
-                        refreshToken:refreshToken,
-                    },
-                }
-                let {data}=await axios(options);
-                    setToken(data.token);
-                    localStorage.setItem("token",data.token);
-                    setRefreshToken(data.refreshToken);
-                    console.log("RefreshToken : end :"+token)
-                    
-                }
-                catch(error){
-                toast.error("Incorrect email or password ("+error+")");
-                console.log(error)
-                
-            }finally{
-                toast.dismiss(loadingId);
-            }
+    
+    // Clear state
+    setToken(null);
+    setRefreshToken(null);
+    setExpiresIn(null);
+    setUserId(null);
+    setTokenExpiration(null);
+    setRefreshTokenExpiration(null);
+    
+    // Clear localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("expiresIn");
+    localStorage.removeItem("tokenExpiration");
+    localStorage.removeItem("refreshTokenExpiration");
+    localStorage.setItem("index", 0);
+  }
+
+  // Refresh token function
+  async function refreshTokens() {
+    if (isRefreshingRef.current) {
+      return false;
+    }
+
+    isRefreshingRef.current = true;
+    
+    try {
+      const currentRefreshToken = refreshToken || localStorage.getItem("refreshToken");
+      const currentToken = token || localStorage.getItem("token");
+      
+      if (!currentRefreshToken || !currentToken) {
+        throw new Error("No refresh token available");
+      }
+
+      // Check if refresh token is expired
+      const refreshExpiry = refreshTokenExpiration || localStorage.getItem("refreshTokenExpiration");
+      if (refreshExpiry && new Date(refreshExpiry) <= new Date()) {
+        throw new Error("Refresh token expired");
+      }
+
+      const options = {
+        url: "https://api.agrivisionlabs.tech/Auth/refresh",
+        method: "POST",
+        data: {
+          token: currentToken,
+          refreshToken: currentRefreshToken,
+        },
+      };
+      
+      const { data } = await axios(options);
+      
+      // Calculate new expiration time
+      const newExpirationTime = new Date(Date.now() + (data.expiresIn * 60 * 1000));
+      
+      // Update state and localStorage
+      setToken(data.token);
+      setRefreshToken(data.refreshToken);
+      setExpiresIn(data.expiresIn);
+      setTokenExpiration(newExpirationTime.toISOString());
+      setRefreshTokenExpiration(data.refreshTokenExpiration);
+      
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("expiresIn", data.expiresIn);
+      localStorage.setItem("tokenExpiration", newExpirationTime.toISOString());
+      localStorage.setItem("refreshTokenExpiration", data.refreshTokenExpiration);
+      
+      console.log("Token refreshed successfully");
+      return true;
+      
+    } catch (error) {
+      console.error("Token refresh failed:", error);
+      toast.error("Session expired. Please log in again.");
+      
+      // Redirect to login on refresh failure
+      setTimeout(() => {
+        redirectToLogin();
+      }, 1000);
+      
+      return false;
+    } finally {
+      isRefreshingRef.current = false;
+    }
+  }
+
+  // Setup automatic token refresh
+  useEffect(() => {
+    // Clear any existing interval
+    if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
+      refreshIntervalRef.current = null;
+    }
+
+    if (token && refreshToken) {
+      // Check token expiration on mount
+      const expiration = tokenExpiration || localStorage.getItem("tokenExpiration");
+      if (expiration) {
+        const expiryTime = new Date(expiration);
+        const now = new Date();
+        
+        // If token is already expired, try to refresh immediately
+        if (expiryTime <= now) {
+          refreshTokens();
+          return;
         }
-        useEffect(()=>{
-            let intervalId;
-            if(token&&refreshToken){
-                intervalId=setInterval(() => {RefreshToken()}
-                ,(expiresIn*1000*6-3))
-            }
-            clearInterval(intervalId)
+      }
+
+      // Set up refresh interval for 27 minutes (1620000 ms)
+      const refreshInterval = 27 * 60 * 1000; // 27 minutes
+      
+      refreshIntervalRef.current = setInterval(() => {
+        // Only refresh if user is active
+        if (isUserActive()) {
+          console.log("Auto-refreshing token...");
+          refreshTokens();
+        } else {
+          console.log("User inactive, skipping token refresh");
         }
-        ,[token,refreshToken])
-    return <userContext.Provider value={{token,setToken,logOut,verification,setVerification,refreshToken,setRefreshToken,expiresIn,setExpiresIn}}>
-        {children}
+      }, refreshInterval);
+
+      console.log("Token refresh interval set for 27 minutes");
+    }
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+        refreshIntervalRef.current = null;
+      }
+    };
+  }, [token, refreshToken, tokenExpiration, isUserActive]);
+  return (
+    <userContext.Provider
+      value={{
+        token,
+        setToken,
+        logOut,
+        verification,
+        setVerification,
+        refreshToken,
+        setRefreshToken,
+        expiresIn,
+        setExpiresIn,
+        userId,
+        setUserId,
+        tokenExpiration,
+        setTokenExpiration,
+        refreshTokenExpiration,
+        setRefreshTokenExpiration,
+        refreshTokens,
+        isUserActive,
+      }}
+    >
+      {children}
     </userContext.Provider>
+  );
 }

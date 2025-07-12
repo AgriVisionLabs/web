@@ -6,7 +6,6 @@ export default {
     container:{
       center:true,
     },
-    
     extend: {
       colors:{
         mainColor:"#1E6930",

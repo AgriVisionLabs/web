@@ -1,156 +1,224 @@
-import axios from 'axios';
-import {Activity, AlertCircle, Calendar, ChevronLeft, Edit, Trash2 } from 'lucide-react';
-import { Line } from 'rc-progress';
-import React, { useContext, useEffect, useState } from 'react';
-import { AllContext } from '../../Context/All.context';
-import { userContext } from '../../Context/User.context';
-import toast from 'react-hot-toast';
-import DateDisplay from '../DateDisplay/DateDisplay';
+/* eslint-disable react/prop-types */
+import axios from "axios";
+import {
+  Activity,
+  AlertCircle,
+  ArrowLeft,
+  Calendar,
+  Edit,
+  Sprout,
+  Trash2,
+} from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+import { AllContext } from "../../Context/All.context";
+import { userContext } from "../../Context/User.context";
+import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
-const FieldOverview = (children) => {
-    let {baseUrl}=useContext(AllContext);
-    let {token}=useContext(userContext);
-    // let [fieldData,setFieldData]=useState(null)
-    //let [editfield,setEditField]=useState(null)
-    //let [cropType,setCropType]=useState(null)
-    // let [data,setData]=useState(null)
-    // let [fieldData,setFieldData]=useState({
-    //     FieldName:"",
-    //     FieldSize:"",
-    //     CropType:"",
-    //     IrrigationUnit:null,
-    //     SensorUnit:null,
-    // })   
-    async function getField(){
-            try {
-                const options={
-                    url:`${baseUrl}/farms/${children.farmId}/Fields/${children.fieldId}`,
-                    method:"GET",
-                    headers:{
-                        Authorization:`Bearer ${token}`,
-                    }
-                }
-                let {data}=await axios(options);
-                children.setData(data)
-                console.log("data",data)
-            }catch(error){
-                if(error.response.data){
-                    if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
-                    else{toast.error("There is an error");}
-                }else{console.log(error)}
-            }
+const FieldOverview = ({ farmId, fieldId, setShowField, userRole }) => {
+  const { baseUrl } = useContext(AllContext);
+  const { token } = useContext(userContext);
+  const [field, setField] = useState(null);
+
+  useEffect(() => {
+    async function getField() {
+      if (!token && !farmId) return;
+
+      try {
+        const options = {
+          url: `${baseUrl}/farms/${farmId}/Fields/${fieldId}`,
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        let { data } = await axios(options);
+        console.log(data);
+        setField(data);
+      } catch (error) {
+        console.error("Error fetching farm:", error);
+      }
     }
-    async function deleteField(){
-            try {
-                const options={
-                    url:`${baseUrl}/farms/${children.farmId}/Fields/${children.fieldId}`,
-                    method:"DELETE",
-                    headers:{
-                        Authorization:`Bearer ${token}`,
-                    }
-                }
-                let {data}=await axios(options);
-                children.getFields()
-                children.setFieldOverview(null)
-            }catch(error){
-                if(error.response.data){
-                    if(error.response.data.errors.length>0){toast.error(error.response.data.errors[0].description);}
-                    else{toast.error("There is an error");}
-                }else{console.log(error)}
-            }
+    getField();
+  }, []);
+
+  const handleDeleteField = async () => {
+    try {
+      const options = {
+        url: `${baseUrl}/farms/${farmId}/fields/${fieldId}`,
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      
+      await axios(options);
+      toast.success("Field deleted successfully!");
+      setShowField(false); // Close the popup
+      // Optionally refresh the parent component here
+      window.location.reload(); // Simple refresh - you might want to use a callback prop instead
+    } catch (error) {
+      console.error("Error deleting field:", error);
+      toast.error("Failed to delete field. Please try again.");
     }
-    useEffect(()=>{children.setReview(getField)})
-    useEffect(()=>{getField()},[children.farmId,children.fieldId])
+  };
+
+  const handleEditField = () => {
+    // TODO: Implement edit functionality
+    toast.info("Edit functionality will be implemented soon!");
+  };
+
+  if (!field) {
     return (
-        children.data?<section className="h-[100vh] flex justify-center items-center bg-black bg-opacity-70  font-manrope backdrop-blur-[blur(5)] absolute z-50 w-[100%]" onClick={()=>{children.setFieldOverview(null)}}>
-                <div className=" w-[660px] pb-[15px] border-2 rounded-2xl bg-white flex  flex-col items-center">
-                    <div className=" py-[16px] w-full px-4  border-b border-[#9f9f9f81] flex justify-between ">
-                        <div className="flex items-center space-x-3">
-                            <ChevronLeft size={30} className='text-[#0d121cb9] hover:text-black transition-all duration-300' onClick={()=>{children.setFieldOverview(null)}}/>
-                            <p className="text-mainColor text-[22px] font-medium">{children.data.name}</p>
-                        </div>
-                        <div className=" px-3 flex justify-center items-center border-2 rounded-2xl border-[#0d121c21] ">
-                            <p className="">{children.data.isActive?"Active":"Idel"}</p>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 px-4 w-full gap-[30px] my-[20px]">
-                        <div className="bg-[#F5F5F5] rounded-[15px] py-[8px] px-[10px] w-full h-fit">
-                            <div className="flex space-x-3 items-center">
-                                <AlertCircle className="text-mainColor" size={22}/>
-                                <h3 className="text-[19px] font-medium">Field Information</h3>
-                            </div>
-                            <div className="mx-[10px] my-[15px] flex flex-col space-y-[15px] ">
-                                <div className="text-[17px] font-medium flex flex-col space-y-[5px] ">
-                                    <h4 className="text-[#6A6C76]">Area</h4>
-                                    <p className="">{children.data.area} acres</p>
-                                </div>
-                                <div className="text-[17px] font-medium flex flex-col space-y-[5px] ">
-                                    <h4 className="text-[#6A6C76]">Crop Name</h4>
-                                    <p className="">{children.data.cropName}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-[#F5F5F5] rounded-[15px] py-[8px] px-[10px] w-full h-fit">
-                            <div className="flex space-x-3 items-center">
-                                <Activity className="text-mainColor" size={22}/>
-                                <h3 className="text-[19px] font-medium">Progress & Status</h3>
-                            </div>
-                            <div className="mx-[10px] my-[15px] flex flex-col space-y-[15px] ">
-                                <div className="">
-                                    <h4 className="text-[#6A6C76] font-medium text-[17px]">Growth Progress</h4>
-                                    <p className="pt-2 pb-2 font-[400] ">{children.data.progress}%</p>
-                                    <Line percent={children.data.progress} strokeLinecap="round" strokeColor="#1E6930"  className="h-[6.5px] text-mainColor w-full rounded-lg"/>
-                                    
-                                </div>
-                                <div className="text-[17px] font-medium flex flex-col space-y-[5px] ">
-                                    <h4 className="text-[#6A6C76]">Days Until Harvest</h4>
-                                    <p className="text-mainColor">65 days</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-[#F5F5F5] rounded-[15px] py-[8px] px-[10px] w-full h-fit">
-                            <div className="flex space-x-3 items-center">
-                                <Calendar className="text-mainColor" size={22}/>
-                                <h3 className="text-[19px] font-medium">Timeline</h3>
-                            </div>
-                            <div className="mx-[10px] my-[15px] flex flex-col space-y-[15px] ">
-                                <div className="text-[17px] font-medium flex flex-col space-y-[5px] ">
-                                    <h4 className="text-[#6A6C76]">Planting Date</h4>
-                                    <p className=""><DateDisplay dateStr={children.data.plantingDate}/></p>
-                                </div>
-                                <div className="text-[17px] font-medium flex flex-col space-y-[5px] ">
-                                    <h4 className="text-[#6A6C76]">Expected Harvest Date</h4>
-                                    <p className=""><DateDisplay dateStr={children.data.expectedHarvestDate}/></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-[#F5F5F5] rounded-[15px] py-[8px] px-[10px] w-full h-fit">
-                            <div className="flex space-x-3 items-center">
-                                <Calendar className="text-mainColor" size={22}/>
-                                <h3 className="text-[19px] font-medium">Description</h3>
-                            </div>
-                            <div className="mx-[10px] my-[15px] flex flex-col space-y-[15px] ">
-                                <p className="text-[17px] text-[#6A6C76]">{children.data.description}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex justify-between w-full items-center px-4">
-                        <button className="flex space-x-2 items-center px-[30px] py-[5px] bg-[#FFFFFF] text-[#E13939] border-[1px] border-[#E13939] rounded-[12px] font-medium hover:bg-[#E13939] hover:text-white transition-all duration-300" onClick={()=>{deleteField()}}>
-                            <Trash2/>
-                            <p className="">Delete Field</p>
-                        </button>
-                        <button type="button" className="flex space-x-2 items-center px-[20px] py-[5px]  border-[1px] border-[#C9C9C9]  rounded-[12px] font-medium bg-mainColor hover:bg-transparent hover:border-mainColor text-white hover:text-mainColor transition-all duration-300" onClick={()=>{
-                            children.setFieldOverview(null)
-                            children.setEditField(1)
-                            }}>
-                            <Edit/>
-                            <p className="">Edit</p>
-                        </button>
-                    </div>
-                </div>
-                
-        </section>:null
+      <div className="h-[200px] rounded-md text-[18px] font-medium space-y-3 mx-3 mt-20 flex flex-col justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-mainColor"></div>
+        <p className="text-[#808080]">Loading field...</p>
+      </div>
     );
-}
+  }
+
+  const today = new Date();
+  const harvestDate = new Date(field.expectedHarvestDate);
+  const timeDiff = harvestDate.getTime() - today.getTime();
+  const daysLeft = Math.max(Math.ceil(timeDiff / (1000 * 60 * 60 * 24)), 0);
+
+  return (
+    <div className="h-[100vh] flex justify-center items-center bg-black bg-opacity-70 font-manrope backdrop-blur-[blur(5)] fixed z-50 w-[100%] px-2 inset-0">
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        transition={{
+          duration: 0.4,
+          ease: [0.23, 1, 0.32, 1],
+        }}
+        className="w-[800px] h-min border-2 rounded-2xl bg-white flex flex-col items-center py-4"
+      >
+        <header className="w-full flex items-center justify-between px-4 pb-4 border-b border-[#0D121C40]">
+          <div className="flex items-end space-x-4">
+            <ArrowLeft
+              onClick={() => setShowField(false)}
+              className="text-[#757575] cursor-pointer"
+            />{" "}
+            <span className="text-mainColor text-2xl font-medium">
+              {field.name}
+            </span>
+          </div>
+          <div className="flex items-center space-x-4">
+            {userRole === "owner" && (
+              <div className="flex items-center space-x-3">
+                <Edit 
+                  onClick={handleEditField}
+                  className="text-gray-600 hover:text-blue-600 cursor-pointer transition-colors" 
+                  size={24}
+                  title="Edit Field"
+                />
+                <Trash2 
+                  onClick={handleDeleteField}
+                  className="text-gray-600 hover:text-red-600 cursor-pointer transition-colors" 
+                  size={24}
+                  title="Delete Field"
+                />
+              </div>
+            )}
+            <span className="rounded-xl border border-[#0D121C40] p-1.5">
+              {field.isActive ? "Active" : "Inactive"}
+            </span>
+          </div>
+        </header>
+        <section className="p-4 grid grid-cols-3 gap-4">
+          <div className="space-y-3 bg-[#F5F5F5] rounded-xl p-5 col-span-1">
+            <div className="flex items-center space-x-2 ">
+              <AlertCircle className="text-mainColor" size={18} />
+              <span className="font-semibold text-xl">Field Information</span>
+            </div>
+            <div>
+              <span className="text-[#6A6C76] font-medium text-lg">Area</span>
+              <span className="block font-semibold text-lg">{field.area}</span>
+            </div>
+            <div>
+              <span className="text-[#6A6C76] font-medium text-lg">
+                Crop Name
+              </span>
+              <span className="block font-semibold text-lg">
+                {field.cropName}
+              </span>
+            </div>
+          </div>
+          <div className="space-y-3 bg-[#F5F5F5] rounded-xl p-5 col-span-2">
+            <div className="flex items-center space-x-2 ">
+              <Activity className="text-mainColor" size={18} />
+              <span className="font-semibold text-xl">Progress & Status</span>
+            </div>
+            <div>
+              <span className="text-[#6A6C76] font-medium text-lg">
+                Growth Progress
+              </span>
+              <span className="block font-semibold text-lg">
+                {field.progress}
+              </span>
+              <div className="w-full bg-[#6A6C76] rounded-full h-3">
+                <span
+                  className="h-full bg-mainColor rounded-full block"
+                  style={{ inlineSize: `${field.progress}%` }}
+                />
+              </div>
+            </div>
+            <div>
+              <span className="text-[#6A6C76] font-medium text-lg">
+                Days Until Harvest
+              </span>
+              <span className="block font-semibold text-lg">{daysLeft}</span>
+            </div>
+          </div>
+          <div className="space-y-3 bg-[#F5F5F5] rounded-xl p-5 col-span-1">
+            <div className="flex items-center space-x-2 ">
+              <Calendar className="text-mainColor" size={18} />
+              <span className="font-semibold text-xl">Timeline</span>
+            </div>
+            <div>
+              <span className="text-[#6A6C76] font-medium text-lg">
+                Planting Date
+              </span>
+              <span className="block font-semibold text-lg">
+                {new Date(field.plantingDate).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
+            <div>
+              <span className="text-[#6A6C76] font-medium text-lg">
+                Expected Harvest Date
+              </span>
+              <span className="block font-semibold text-lg">
+                {new Date(field.expectedHarvestDate).toLocaleDateString(
+                  "en-GB",
+                  {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  }
+                )}
+              </span>
+            </div>
+          </div>
+          <div className="space-y-3 bg-[#F5F5F5] rounded-xl p-5 col-span-2">
+            <div className="flex items-center space-x-2 ">
+              <Sprout className="text-mainColor" size={18} />
+              <span className="font-semibold text-xl">Description</span>
+            </div>
+            <div>
+              <span className="text-[#6A6C76] font-medium text-lg">
+                {field.description}
+              </span>
+            </div>
+          </div>
+        </section>
+      </motion.div>
+    </div>
+  );
+};
 
 export default FieldOverview;
