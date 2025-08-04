@@ -1,16 +1,16 @@
-import { useContext } from "react";
-import { userContext  } from "../../Context/User.context";
+/* eslint-disable react/prop-types */
+
 import { Navigate } from "react-router-dom";
 
+const ProtectedRoute = ({ children }) => {
+  const token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
 
-
-const ProtectedRoute = ({children}) => {
-    const {token}=useContext(userContext );
-    if(token){
-        return children;
-    }else{
-        return <Navigate to="/login"/>;
-    }
-}
+  if (token) {
+    return children;
+  } else {
+    return <Navigate to="/login" />;
+  }
+};
 
 export default ProtectedRoute;

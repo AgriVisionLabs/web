@@ -7,6 +7,7 @@ import { userContext } from '../../Context/User.context';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import QRFromImage from '../QRFromImage/QRFromImage';
+import { motion } from 'framer-motion';
 const AddNewIrrigationUnitStep2 = (children) => {
     let {setAddNewIrrigationUnit,baseUrl}=useContext(AllContext)
     let {token}=useContext(userContext)
@@ -44,7 +45,15 @@ const AddNewIrrigationUnitStep2 = (children) => {
         });
     return (
         <section className='h-[100vh]  flex justify-center items-center bg-black bg-opacity-70  font-manrope  absolute z-50 w-[100%] ' onClick={(e)=>{if(e.target==e.currentTarget){setAddNewIrrigationUnit(null)}}}>
-            <div className="w-[650px] px-[40px] h-[480px]   border-2 rounded-2xl bg-white p-[20px]">
+            <motion.div
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                transition={{
+                    duration: 0.4,
+                    ease: [0.23, 1, 0.32, 1],
+                }}
+                className="w-[650px] px-[40px] h-[480px]   border-2 rounded-2xl bg-white p-[20px]">
                 <X size={33} className='  ms-auto cursor-pointer hover:text-red-500 transition-all duration-150' onClick={()=>{setAddNewIrrigationUnit(null)}}/>
                 <div className="text-center mt-[16px] space-y-[20px]">
                     <h1 className="text-[24px] text-mainColor font-medium capitalize">add new Irrigation Unite</h1>
@@ -81,7 +90,7 @@ const AddNewIrrigationUnitStep2 = (children) => {
                         </div>
                 </form>
                 
-            </div>
+            </motion.div>
             
                 
                 

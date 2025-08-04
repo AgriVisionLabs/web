@@ -30,25 +30,25 @@ const MenuElement = ({
     <div className="forms relative cursor-pointer" style={{ width }}>
       {/* Header */}
       <div
-        className={`icon flex justify-between items-center rounded-lg border px-5 py-2 border-[#0d121c21] transition-colors ${className}`}
+        className={`icon flex justify-between items-center rounded-lg border px-4 py-2 border-[#0d121c21] transition-colors ${className}`}
         onClick={toggleList}
       >
         {nameChange || name ? (
           <>
             <p
-              className={`text-[17px] font-[400] capitalize ${Pformat}`}
+              className={Pformat || `text-[17px] font-[400] capitalize`}
               style={{ color: textColor }}
             >
               {nameChange ? nameChange : name}
             </p>
             <i
-              className={`fa-solid cursor-pointer transition-transform duration-300 ${
+              className={`fa-solid cursor-pointer transition-transform duration-300 text-sm ${
                 open ? "fa-angle-up" : "fa-angle-down"
               }`}
             ></i>
           </>
         ) : (
-          <p className={`text-[17px] font-[400] capitalize ${Pformat}`}>
+          <p className={Pformat || `text-[17px] font-[400] capitalize`}>
             Data is not available
           </p>
         )}

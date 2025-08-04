@@ -2,10 +2,13 @@ import { motion } from "framer-motion";
 import {
   Calendar,
   CircleCheckBig,
+  Edit3,
   Eye,
+  Hand,
   MapPin,
   Plus,
   Trash2,
+  TriangleAlert,
   UserRound,
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
@@ -13,6 +16,7 @@ import { AllContext } from "../../Context/All.context";
 import MenuElement from "../../Components/MenuElement/MenuElement";
 import ShowTask from "../../Components/ShowTask/ShowTask";
 import NewTask from "../../Components/NewTask/NewTask";
+import EditTask from "../../Components/EditTask/EditTask";
 import { userContext } from "../../Context/User.context";
 import axios from "axios";
 import DateDisplay from "../../Components/DateDisplay/DateDisplay";
@@ -21,26 +25,33 @@ import { Helmet } from "react-helmet";
 
 const Tasks = () => {
   const { getPart, baseUrl } = useContext(AllContext);
-  const { token } = useContext(userContext);
+  const { token, userId } = useContext(userContext);
   const [partsDetection, setPartsDetection] = useState("All Tasks");
   const [Farms, setFarms] = useState([]);
   const [index, setIndex] = useState(0);
   const [taskId, setTaskId] = useState();
   const [DisplayTask, setDisplayTask] = useState(null);
   const [CreateTask, setCreateTask] = useState(null);
+  const [EditTaskModal, setEditTaskModal] = useState(null);
+  const [taskToEdit, setTaskToEdit] = useState(null);
   const [FarmNames, setFarmNames] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [isLoadingFarms, setIsLoadingFarms] = useState(true);
   const Priority = ["Low", "Medium", "High"];
   const PriorityColor = ["#25C462", "#F4731C", "#F04444"];
 
   const [completedTasks, setCompletedTasks] = useState([]);
+  const [myTasks, setMyTasks] = useState([]);
+  const [claimableTasks, setClaimableTasks] = useState([]);
 
   async function getFarms() {
     if (!token) {
       console.error("No token available for authentication");
+      setIsLoadingFarms(false);
       return;
     }
 
+    setIsLoadingFarms(true);
     try {
       const options = {
         url: `${baseUrl}/Farms`,
@@ -51,23 +62,36 @@ const Tasks = () => {
       };
       let { data } = await axios(options);
       console.log({ data });
-      setFarms(data);
-      console.log({ Farms });
 
-      if (data) {
+      // Filter out farms where user is an expert (experts cannot access tasks)
+      const filteredFarms = data
+        ? data.filter((farm) => farm.roleName?.toLowerCase() !== "expert")
+        : [];
+
+      setFarms(filteredFarms);
+      console.log({ Farms: filteredFarms });
+
+      if (filteredFarms.length > 0) {
         setFarmNames(
-          data.map((farm) => {
+          filteredFarms.map((farm) => {
             return farm.name;
           })
         );
       }
     } catch (error) {
       console.error("Error fetching farms:", error);
+      setFarms([]);
+    } finally {
+      setIsLoadingFarms(false);
     }
   }
   useEffect(() => {
-    getFarms();
-  }, []);
+    if (token) {
+      getFarms();
+    } else {
+      setIsLoadingFarms(false);
+    }
+  }, [token]);
 
   async function getTasks() {
     if (!token || !Farms.length) {
@@ -88,18 +112,85 @@ const Tasks = () => {
       let { data } = await axios(options);
       console.log(data);
 
-      setTasks(data);
+      const currentUserRole = Farms[index]?.roleName?.toLowerCase();
 
-      setCompletedTasks(data.filter((item) => item.completedAt !== null));
-      console.log(completedTasks);
+      // Check if user is expert - experts cannot access tasks
+      if (currentUserRole === "expert") {
+        setTasks([]);
+        setCompletedTasks([]);
+        setMyTasks([]);
+        setClaimableTasks([]);
+        return;
+      }
+
+      // If user is a worker, only show tasks assigned to them and claimable tasks
+      if (currentUserRole === "worker") {
+        // Tasks assigned to the worker
+        const assignedTasks = data
+          ? data.filter((item) => item.assignedToId === userId)
+          : [];
+        
+        // Claimable tasks (no assignedToId, not completed, not created by worker)
+        const claimableTasks = data
+          ? data.filter((item) => 
+              !item.assignedToId && 
+              !item.completedAt && 
+              item.createdById !== userId
+            )
+          : [];
+
+        setTasks([...assignedTasks, ...claimableTasks]);
+        setCompletedTasks(
+          assignedTasks.filter((item) => item.completedAt !== null)
+        );
+        setMyTasks(assignedTasks);
+        setClaimableTasks(claimableTasks);
+      } else if (currentUserRole === "owner" || currentUserRole === "manager") {
+        // Owners and managers can see all tasks
+        setTasks(data || []);
+        setCompletedTasks(
+          data ? data.filter((item) => item.completedAt !== null) : []
+        );
+        setMyTasks(
+          data ? data.filter((item) => item.assignedToId === userId) : []
+        );
+        setClaimableTasks(
+          data
+            ? data.filter((item) => 
+                !item.assignedToId && 
+                !item.completedAt && 
+                item.createdById !== userId
+              )
+            : []
+        );
+      }
+
+      console.log("User role:", currentUserRole);
+      console.log("All tasks:", data);
+      console.log(
+        "My tasks (assigned to current user):",
+        data ? data.filter((item) => item.assignedToId === userId) : []
+      );
     } catch (error) {
       console.error("Error fetching tasks:", error);
+      setTasks([]);
+      setCompletedTasks([]);
+      setMyTasks([]);
+      setClaimableTasks([]);
     }
   }
 
   useEffect(() => {
     if (Farms.length) {
       getTasks();
+
+      // Set default tab based on user role
+      const currentUserRole = Farms[index]?.roleName?.toLowerCase();
+      if (currentUserRole === "worker") {
+        setPartsDetection("All Tasks"); // Workers start with all tasks (their assigned tasks)
+      } else {
+        setPartsDetection("All Tasks"); // Others start with all tasks
+      }
     }
   }, [Farms, index]);
 
@@ -149,167 +240,481 @@ const Tasks = () => {
       console.error("Error completing task:", error);
     }
   }
+
+  async function ClaimTask(farmId, taskId) {
+    if (!token) {
+      console.error("No token available for authentication");
+      return;
+    }
+
+    try {
+      const options = {
+        url: `${baseUrl}/farms/${farmId}/Tasks/${taskId}/claim`,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      await axios(options);
+      toast.success("Task claimed successfully. You can now complete it.");
+      getTasks();
+    } catch (error) {
+      console.error("Error claiming task:", error);
+
+      // Handle specific error cases
+      if (error.response) {
+        const { status } = error.response;
+        switch (status) {
+          case 400:
+            toast.error("This task cannot be claimed.");
+            break;
+          case 403:
+            toast.error("You don't have permission to claim this task.");
+            break;
+          case 409:
+            toast.error("This task has already been claimed or assigned.");
+            break;
+          default:
+            toast.error("Failed to claim task. Please try again.");
+        }
+      } else {
+        toast.error("Failed to claim task. Please try again.");
+      }
+    }
+  }
+
+  // Handle edit task - Open edit modal
+  function handleEditTask(task) {
+    // Verify user is the creator
+    if (task.createdById !== userId) {
+      toast.error("You can only edit tasks you created.");
+      return;
+    }
+
+    console.log("Opening edit modal for task:", {
+      id: task.id,
+      title: task.title,
+      createdById: task.createdById,
+      currentUserId: userId,
+    });
+
+    setTaskToEdit(task);
+    setEditTaskModal(true);
+  }
+
+  // Handle edit task completion
+  function handleEditTaskComplete() {
+    setEditTaskModal(false);
+    setTaskToEdit(null);
+    getTasks(); // Refresh tasks list
+  }
+
+  // Show loading state
+  if (isLoadingFarms) {
+    return (
+      <div className="transition-all duration-500 px-2 sm:px-3 lg:px-0">
+        <Helmet>
+          <title>Tasks</title>
+        </Helmet>
+        <div className="flex flex-col items-center justify-center py-16 sm:py-20">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+            <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-2 border-mainColor border-t-transparent"></div>
+          </div>
+          <p className="text-sm sm:text-base text-gray-600 font-medium">
+            Loading farms...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if user is expert and show appropriate message
+  if (Farms.length > 0 && Farms.every(farm => farm.roleName?.toLowerCase() === "expert")) {
+    return (
+      <div className="transition-all duration-500 px-2 sm:px-3 lg:px-0">
+        <Helmet>
+          <title>Tasks</title>
+        </Helmet>
+        <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-center">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+            <TriangleAlert
+              size={32}
+              className="sm:w-10 sm:h-10 text-gray-400"
+            />
+          </div>
+          <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
+            Access Restricted
+          </h3>
+          <p className="text-sm text-gray-500 max-w-sm px-4">
+            Experts don't have access to the tasks page. Please contact your farm manager for task assignments.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show no farms message
+  if (Farms.length === 0 && !isLoadingFarms) {
+    return (
+      <div className="transition-all duration-500 px-2 sm:px-3 lg:px-0">
+        <Helmet>
+          <title>Tasks</title>
+        </Helmet>
+        <div className="h-[200px] rounded-md text-[18px] font-medium space-y-3 border-2 border-dashed border-[#0d121c21] mx-3 mt-20 flex flex-col justify-center items-center">
+          <TriangleAlert size={48} className="text-yellow-500 mb-2" />
+          <p className="text-[#808080]">No Accessible Farms</p>
+          <p className="text-[#1f1f1f96] text-[16px] text-center px-4">
+            No farms available for task management. You need owner or manager access to manage tasks.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <Helmet>
         <title>Tasks</title>
       </Helmet>
       {Farms.length > 0 ? (
-        <div className="transition-all duration-500">
-          <div className="flex justify-between items-center mb-[20px]">
-            <p className="text-[23px] font-semibold capitalize">Tasks</p>
-            <div className="flex justify-center">
+        <div className="transition-all duration-500 px-2 sm:px-3 lg:px-0">
+          {/* Header Section - Mobile Responsive */}
+          <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 items-start md:justify-between md:items-center mb-4 sm:mb-5 lg:mb-[20px]">
+            <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 justify-between md:items-center md:gap-x-12">
+              <h1 className="text-lg sm:text-xl lg:text-[23px] font-semibold capitalize">
+                Tasks
+              </h1>
+              <MenuElement
+                Items={FarmNames}
+                nameChange={FarmNames[index]}
+                setIndex={setIndex}
+                index={index}
+                width={200 + "px"}
+                className={"py-[6px]"}
+                Pformat="text-[#0D121C] font-[400]"
+              />
+            </div>
+            {/* Only show New Task button for owners and managers */}
+            {["owner", "manager"].includes(
+              Farms[index]?.roleName?.toLowerCase()
+            ) && (
               <button
-                className="py-2 px-5 border-[1px] border-transparent rounded-[45px] bg-mainColor text-[15px] text-[#FFFFFF] hover:bg-transparent hover:text-mainColor hover:border-mainColor transition-all duration-300 font-medium"
+                className="w-full md:w-auto py-3 px-4 border border-transparent rounded-full bg-mainColor text-sm lg:text-[15px] text-white hover:bg-transparent hover:text-mainColor hover:border-mainColor transition-all duration-300 font-medium"
                 onClick={() => {
                   setCreateTask(true);
                 }}
               >
-                <div className="flex justify-center items-center space-x-[10px]">
-                  <Plus size={19} />
-                  <p className="capitalize">new task</p>
+                <div className="flex justify-center items-center space-x-2">
+                  <Plus size={18} className="lg:w-[19px] lg:h-[19px]" />
+                  <span className="capitalize">New Task</span>
                 </div>
               </button>
+            )}
+          </div>
+
+          {/* Tab Navigation - Mobile First */}
+          <div className="mb-6 sm:mb-8 lg:mb-[52px]">
+            <div className="overflow-x-auto pb-2">
+              <div
+                className="flex items-center gap-2 sm:gap-3 lg:gap-[20px] min-w-max px-1"
+                id="parts"
+                onClick={(e) => {
+                  getPart(e.target);
+                }}
+              >
+                <button
+                  className={`flex-shrink-0 py-2 px-3 sm:py-3 sm:px-4 rounded-lg transition-all duration-200 text-xs sm:text-sm font-medium ${
+                    partsDetection === "All Tasks"
+                      ? "bg-mainColor text-white shadow-sm"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                  onClick={() => {
+                    setPartsDetection("All Tasks");
+                  }}
+                >
+                  {Farms[index]?.roleName?.toLowerCase() === "worker"
+                    ? "My"
+                    : "All"}{" "}
+                  ({tasks.length})
+                </button>
+
+                {/* Show My Tasks tab only for non-workers */}
+                {Farms[index]?.roleName?.toLowerCase() !== "worker" && (
+                  <button
+                    className={`flex-shrink-0 py-2 px-3 sm:py-3 sm:px-4 rounded-lg transition-all duration-200 text-xs sm:text-sm font-medium ${
+                      partsDetection === "My Tasks"
+                        ? "bg-mainColor text-white shadow-sm"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                    onClick={() => {
+                      setPartsDetection("My Tasks");
+                    }}
+                  >
+                    Mine ({myTasks.length})
+                  </button>
+                )}
+
+                <button
+                  className={`flex-shrink-0 py-2 px-3 sm:py-3 sm:px-4 rounded-lg transition-all duration-200 text-xs sm:text-sm font-medium ${
+                    partsDetection === "Claimable"
+                      ? "bg-mainColor text-white shadow-sm"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                  onClick={() => {
+                    setPartsDetection("Claimable");
+                  }}
+                >
+                  Claimable ({claimableTasks.length})
+                </button>
+
+                <button
+                  className={`flex-shrink-0 py-2 px-3 sm:py-3 sm:px-4 rounded-lg transition-all duration-200 text-xs sm:text-sm font-medium ${
+                    partsDetection === "completed tasks"
+                      ? "bg-mainColor text-white shadow-sm"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                  onClick={() => {
+                    setPartsDetection("completed tasks");
+                  }}
+                >
+                  Done ({completedTasks.length})
+                </button>
+              </div>
             </div>
           </div>
-          <div className="flex space-x-[20px] mb-[20px]">
-            <MenuElement
-              Items={FarmNames}
-              nameChange={FarmNames[index]}
-              setIndex={setIndex}
-              index={index}
-              width={218 + "px"}
-              Pformat={"text-[#0D121C] font-[400]"}
-            />
-          </div>
-          <div
-            className="flex items-center w-fit h-[70px] rounded-[10px] bg-[rgba(217,217,217,0.3)] space-x-[20px] px-[10px] text-[14px] md:text-[15px] font-medium mb-[52px]"
-            id="parts"
-            onClick={(e) => {
-              getPart(e.target);
-            }}
-          >
-            <p
-              className="py-[12px] px-[12px] bg-[#FFFFFF] text-mainColor rounded-[10px] cursor-pointer"
-              onClick={() => {
-                setPartsDetection("All Tasks");
-              }}
-            >
-              All Tasks
-            </p>
-            <p
-              className="py-[12px] px-[12px] rounded-[10px] cursor-pointer text-[#9F9F9F]"
-              onClick={() => {
-                setPartsDetection("My Tasks");
-              }}
-            >
-              My Tasks
-            </p>
-            <p
-              className="py-[12px] px-[12px] rounded-[10px] cursor-pointer text-[#9F9F9F]"
-              onClick={() => {
-                setPartsDetection("completed tasks");
-              }}
-            >
-              completed tasks
-            </p>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-[28px] font-manrope">
-            {/* {partsDetection === "completed tasks" ? completedTasks : tasks} */}
-            {tasks.length > 0 ? (
-              (partsDetection === "completed tasks"
-                ? completedTasks
-                : tasks
-              ).map((task, taskIndex) => {
-                return (
-                  <motion.div
-                    key={taskIndex}
-                    initial={{ x: 300, y: 0, opacity: 0 }}
-                    animate={{ x: 0, y: 0, opacity: 1 }}
-                    transition={{
-                      delay: taskIndex * 0.5,
-                      duration: 0.8,
-                      type: "spring",
-                      bounce: 0.4,
-                    }}
-                    className="rounded-[15px] border-[1px] border-[rgba(13,18,28,0.25)]"
-                  >
-                    <div className="font-manrope">
-                      <div className="pt-[24px] px-[24px] mb-[20px] flex justify-between items-center">
-                        <div className="flex items-center space-x-[10px]">
-                          <h3 className="text-[17px] font-semibold capitalize">
-                            {task.title}
-                          </h3>
-                        </div>
-                        <h3
-                          className={`bg-[${
-                            PriorityColor[task.itemPriority]
-                          }] rounded-[15px] px-[12px] py-[4px] text-[13px] font-semibold text-[#FFFFFF] capitalize`}
-                        >
-                          {Priority[task.itemPriority]}
-                        </h3>
-                      </div>
-                      <div className="px-[24px] flex items-center space-x-[8px] text-[16px] text-[#9F9F9F]">
-                        <MapPin size={20} className="" />
-                        <p className="font-semibold capitalize">
-                          {FarmNames[index]} - {task.fieldName}
-                        </p>
-                      </div>
-                      <div className="flex px-[24px] text-[16px] col-span-3 space-x-[8px] h-[100px] mt-5">
-                        <p className="text-black font-semibold">
-                          {task.description}
-                        </p>
-                      </div>
-                      <div className="mt-2 px-[28px] flex justify-between items-center text-[16px] text-[#332b2b] font-manrope">
-                        <div className="space-x-2 flex align-middle">
-                          <Calendar size={20} />
-                          <p className="text-black font-semibold">
-                            <DateDisplay dateStr={task.createdAt} />
+
+          {/* Tasks Grid - Mobile Optimized */}
+          <div className="space-y-3">
+            {(() => {
+              let displayTasks = [];
+              if (partsDetection === "completed tasks") {
+                displayTasks = completedTasks;
+              } else if (partsDetection === "My Tasks") {
+                displayTasks = myTasks;
+              } else if (partsDetection === "Claimable") {
+                displayTasks = claimableTasks;
+              } else {
+                displayTasks = tasks; // "All Tasks" or "My Tasks" for workers
+              }
+
+              return displayTasks.length > 0 ? (
+                displayTasks.map((task, taskIndex) => {
+                  return (
+                    <motion.div
+                      key={task.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        delay: taskIndex * 0.02,
+                        duration: 0.2,
+                        ease: [0.25, 0.46, 0.45, 0.94],
+                      }}
+                      className="border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow duration-200 cursor-pointer"
+                      onClick={(e) => {
+                        if (!e.target.closest("button")) {
+                          setTaskId(task.id);
+                          setDisplayTask(true);
+                        }
+                      }}
+                    >
+                      <div className="p-4 flex flex-col md:flex-row md:items-center md:justify-between">
+                        {/* Left Section - Task Info */}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="text-lg font-semibold text-gray-900 truncate">
+                              {task.title}
+                            </h3>
+                            <span
+                              className="px-2 py-1 rounded-full text-xs font-medium text-white flex-shrink-0"
+                              style={{
+                                backgroundColor:
+                                  PriorityColor[task.itemPriority],
+                              }}
+                            >
+                              {Priority[task.itemPriority]}
+                            </span>
+                            {task.completedAt ? (
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 flex-shrink-0">
+                                Completed
+                              </span>
+                            ) : (
+                              (() => {
+                                // Check if task is overdue (not completed and due date has passed)
+                                const isOverdue =
+                                  task.dueDate &&
+                                  new Date(task.dueDate) < new Date();
+
+                                if (isOverdue) {
+                                  return (
+                                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 flex-shrink-0">
+                                      Overdue
+                                    </span>
+                                  );
+                                } else if (task.assignedToId) {
+                                  return (
+                                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 flex-shrink-0">
+                                      {task.assignedToId === userId
+                                        ? "Assigned to you"
+                                        : "Assigned"}
+                                    </span>
+                                  );
+                                } else if (task.claimedById) {
+                                  return (
+                                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700 flex-shrink-0">
+                                      {task.claimedById === userId
+                                        ? "Claimed by you"
+                                        : "Claimed"}
+                                    </span>
+                                  );
+                                } else {
+                                  return (
+                                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 flex-shrink-0">
+                                      Available
+                                    </span>
+                                  );
+                                }
+                              })()
+                            )}
+                          </div>
+
+                          <div className="flex flex-col md:flex-row md:items-center gap-4 text-sm text-gray-600 mb-2">
+                            <div className="flex items-center gap-1">
+                              <MapPin size={14} />
+                              <span>
+                                {FarmNames[index]} - {task.fieldName}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Calendar size={14} />
+                              <DateDisplay dateStr={task.createdAt} />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <UserRound size={14} />
+                              <span>{task.createdBy}</span>
+                            </div>
+                          </div>
+
+                          <p
+                            className="text-sm text-gray-700"
+                            style={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {task.description}
                           </p>
                         </div>
-                        <div className="flex justify-between items-center space-x-2 font-medium">
-                          <UserRound size={20} />
-                          <p className="text-black font-semibold">
-                            {task.createdBy}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="border-t-[1px] border-[rgba(13,18,28,0.25)] py-[24px] mt-[24px]">
-                        <div className="px-[24px] flex justify-between items-center text-[#0D121C]">
-                          <Eye
-                            size={23}
-                            className="cursor-pointer"
-                            onClick={() => {
+
+                        {/* Right Section - Actions */}
+                        <div className="flex items-center md:gap-2 md:ml-4">
+                          {/* View button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setTaskId(task.id);
                               setDisplayTask(true);
-                              // setSchedule("ShowSensorUnit")
                             }}
-                          />
-                          <div className="flex items-center space-x-3">
-                            <Trash2
-                              size={23}
-                              className="cursor-pointer text-[#dc3636]"
-                              onClick={() => {
+                            className="p-2 text-gray-500 hover:text-mainColor hover:bg-gray-100 rounded-lg transition-colors"
+                            title="View Task"
+                          >
+                            <Eye size={18} />
+                          </button>
+
+                          {/* Edit - Only for creators */}
+                          {task.createdById === userId && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditTask(task);
+                              }}
+                              className="p-2 text-gray-500 hover:text-mainColor hover:bg-gray-100 rounded-lg transition-colors"
+                              title="Edit Task"
+                            >
+                              <Edit3 size={18} />
+                            </button>
+                          )}
+
+                          {/* Delete - Only for creators */}
+                          {task.createdById === userId && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 DeleteTask(task.farmId, task.id);
                               }}
-                            />
-                            <CircleCheckBig
-                              size={23}
-                              className="cursor-pointer text-[#25C462]"
-                              onClick={() => {
-                                CompleteTask(task.farmId, task.id);
-                              }}
-                            />
-                          </div>
+                              className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Delete Task"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          )}
+
+                          {/* Claim - Only for unassigned, unclaimed tasks (not by creator) */}
+                          {!task.assignedToId &&
+                            !task.claimedById &&
+                            !task.completedAt &&
+                            task.createdById !== userId && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  ClaimTask(task.farmId, task.id);
+                                }}
+                                className="p-2 text-gray-500 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                                title="Claim Task"
+                              >
+                                <Hand size={18} />
+                              </button>
+                            )}
+
+                          {/* Complete - Only for assigned user OR claimer (not completed) */}
+                          {!task.completedAt &&
+                            ((task.assignedToId === userId) ||
+                              (!task.assignedToId && task.claimedById === userId)) && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  CompleteTask(task.farmId, task.id);
+                                }}
+                                className="p-2 text-gray-500 hover:text-green-500 hover:bg-green-50 rounded-lg transition-colors"
+                                title="Complete Task"
+                              >
+                                <CircleCheckBig size={18} />
+                              </button>
+                            )}
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                );
-              })
-            ) : (
-              <p className="text-lg font-medium w-full text-center">No Tasks</p>
-            )}
+                    </motion.div>
+                  );
+                })
+              ) : (
+                <div className="h-[200px] rounded-md text-[18px] font-medium space-y-3 border-2 border-dashed border-[#0d121c21] mx-3 mt-20 flex flex-col justify-center items-center">
+                  <TriangleAlert size={48} className="text-yellow-500 mb-2" />
+                  <p className="text-[#808080]">
+                    {partsDetection === "My Tasks"
+                      ? "No Tasks Assigned"
+                      : partsDetection === "completed tasks"
+                      ? "No Completed Tasks"
+                      : partsDetection === "Claimable"
+                      ? "No Claimable Tasks"
+                      : Farms[index]?.roleName?.toLowerCase() === "worker"
+                      ? "No Tasks Assigned"
+                      : "No Tasks Available"}
+                  </p>
+                  <p className="text-[#1f1f1f96] text-[16px] text-center px-4">
+                    {partsDetection === "My Tasks"
+                      ? "No tasks have been assigned to you yet."
+                      : partsDetection === "completed tasks"
+                      ? "No completed tasks found for this farm."
+                      : partsDetection === "Claimable"
+                      ? "All tasks have been assigned or completed."
+                      : Farms[index]?.roleName?.toLowerCase() === "worker"
+                      ? "No tasks have been assigned to you yet."
+                      : "No tasks found. Create your first task to get started."}
+                  </p>
+                </div>
+              );
+            })()}
           </div>
           {DisplayTask ? (
             <div className="fixed z-50 inset-0">
@@ -329,10 +734,23 @@ const Tasks = () => {
               />
             </div>
           ) : null}
+          {EditTaskModal && taskToEdit ? (
+            <div className="fixed z-50 inset-0">
+              <EditTask
+                task={taskToEdit}
+                farmData={Farms[index]}
+                setEditTaskModal={setEditTaskModal}
+                onClose={() => {
+                  setEditTaskModal(false);
+                  setTaskToEdit(null);
+                }}
+                onUpdate={handleEditTaskComplete}
+                display={getTasks}
+              />
+            </div>
+          ) : null}
         </div>
-      ) : (
-        <p>No Farms</p>
-      )}
+      ) : null}
     </>
   );
 };

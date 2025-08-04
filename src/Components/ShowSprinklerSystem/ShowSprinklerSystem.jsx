@@ -10,27 +10,40 @@ import { AllContext } from '../../Context/All.context';
 const ShowSprinklerSystem = (children) => {
     let {baseUrl}=useContext(AllContext)
     let {token}=useContext(userContext);
-    let [irrigationUnit,setIrrigationUnit]=useState();
+    let [irrigationUnit,setIrrigationUnit]=useState(children.ShowIrr);
     let [memberRole,setMemberRole]=useState();
     let status=["Active","Idle","Maintenance"]
     //roleName
     async function getIrrigationUnit(){
-            try {
-                const options={
-                    url:`${baseUrl}/farms/${children.farmID}/fields/${children.fieldID}/IrrigationUnits`,
-                    method:"GET",
-                    headers:{
-                        Authorization:`Bearer ${token}`,
-                    }
-                }
-                let {data}=await axios(options);
-                setIrrigationUnit(data)
-                getMember(data.addedById)
-                children.setShowIrr(data)
-            }catch(error){
-                // toast.error("Incorrect email or password "+error);
-                console.log(error)
+        // If we already have the irrigation unit data, use it
+        if (children.ShowIrr) {
+            setIrrigationUnit(children.ShowIrr);
+            if (children.ShowIrr.addedById) {
+                getMember(children.ShowIrr.addedById);
             }
+            return;
+        }
+        
+        // Otherwise fetch it from API
+        try {
+            const options={
+                url:`${baseUrl}/farms/${children.farmID}/fields/${children.fieldID}/IrrigationUnits`,
+                method:"GET",
+                headers:{
+                    Authorization:`Bearer ${token}`,
+                }
+            }
+            let {data}=await axios(options);
+            // If data is an array, get the first item
+            const unitData = Array.isArray(data) ? data[0] : data;
+            setIrrigationUnit(unitData)
+            if (unitData && unitData.addedById) {
+                getMember(unitData.addedById)
+            }
+            children.setShowIrr(unitData)
+        }catch(error){
+            console.log("Error fetching irrigation unit:", error)
+        }
     }
     async function getMember(memberId){
         try {

@@ -50,7 +50,7 @@ const MenuElementCrop = ({
 
       {/* List */}
       <div
-        className={`absolute left-0 right-0 rounded-lg bg-white z-10 overflow-hidden transition-all duration-300 ease-in-out border border-[#0d121c21] ${
+        className={`absolute left-0 right-0 rounded-lg bg-white z-[9999] overflow-hidden transition-all duration-300 ease-in-out border border-[#0d121c21] ${
           open ? "max-h-40" : "max-h-0 border-transparent"
         }`}
       >

@@ -271,85 +271,89 @@ const Subscription = () => {
                         </div>
                 </div>
                 <div className="col-span-3">
-                    <div className="col-span-3 border-[1px] border-[rgba(13,18,28,0.25)] rounded-[15px]  p-[20px] ">
-                    <div className="p-[20px]">
-                        <h2 className="text-[#0D121C] text-[17px] font-medium mb-[12px]">Plan Comparison</h2>
-                        <p className="text-[#616161] text-[17px] font-medium">Your plan vs. other avaliable options</p>
-                    </div>
-                    <div className="grid grid-rows-4  w-[100%] mx-auto gap-[20px] my-[30px] ">
-                        <div className="grid grid-cols-4 text-[#0D121C] text-[17px] font-medium">
-                            <p className="">Feature</p>
-                            <p className="flex justify-center">Basic</p>
-                            <p className="flex justify-center">Advanved</p>
-                            <p className="flex justify-center">Enterprise</p>
-                        </div>
-                        <div className="grid grid-cols-4 text-[#616161] text-[16px] font-medium">
-                            <p className="">Farms</p>
-                            <p className="flex justify-center">1 Farm</p>
-                            <p className="flex justify-center">Up to 3 Farms</p>
-                            <p className="flex justify-center">Unlimited</p>
-                        </div>
-                        <div className="grid grid-cols-4 text-[#616161] text-[16px] font-medium">
-                            <p className="">Fields</p>
-                            <p className="flex justify-center">Up to 3 Fields</p>
-                            <p className="flex justify-center">5 Fields per Farm</p>
-                            <p className="flex justify-center">Unlimited</p>
-                        </div>
-                        <div className="grid grid-cols-4 text-[#616161] text-[16px] font-medium">
-                            <p className="">Disease Detection</p>
-                            <p className="flex justify-center">Limited Usage</p>
-                            <p className="flex justify-center">Unlimited</p>
-                            <p className="flex justify-center">Unlimited</p>
-                        </div>
-                        <div className="grid grid-cols-4 text-[#616161] text-[16px] font-medium">
-                            <p className="">Analytics</p>
-                            <p className="flex justify-center">Basic</p>
-                            <p className="flex justify-center">Advanced & Predictive</p>
-                            <p className="flex justify-center">Advanced & Predictive</p>
-                        </div>
-                        <div className="grid grid-cols-4 text-[#616161] text-[16px] font-medium">
-                            <p className="">Automation</p>
-                            <p className="flex justify-center">-</p>
-                            <p className="flex justify-center">Customizable Rules</p>
-                            <p className="flex justify-center">Customizable Rules</p>
-                        </div>
-                        <div className="grid grid-cols-4 text-[#616161] text-[16px] font-medium">
-                            <p className="">Support</p>
-                            <p className="flex justify-center">Standard</p>
-                            <p className="flex justify-center">Standard</p>
-                            <p className="flex justify-center">Dedicated Account Manager</p>
-                        </div>
-                        <div className="grid grid-cols-4 text-[#616161] text-[16px] font-medium">
-                            <p className="">Price</p>
-                            <p className="flex justify-center">Free</p>
-                            <p className="flex justify-center">499.99 L.E/month</p>
-                            <p className="flex justify-center">Custom</p>
-                        </div>
-                    </div>
-                    <div className="border-t-[1px] border-[rgba(13,18,28,0.25)] pt-[20px]">
-                        <div className="flex items-center space-x-4">
-                            <p className="text-[#000] text-[16px] font-medium">Current Plan:</p>
-                            <div className="py-[3px] px-[8px] text-[#089FFC] border-[1px] bg-[#089efc15] rounded-[15px] border-[#089FFC]">
-                                <p className="  text-[15px] font-bold">Advanced</p>
-                            </div>
-                        </div>
-                        <div className="flex justify-between space-x-3 items-center mt-[40px]">
-                            <button type='button' className="py-[10px] px-[30px]  border-[1px] border-[#616161] rounded-[12px] text-[#333333]  text-[17px]  hover:bg-mainColor hover:text-[#FFFFFF] hover:border-mainColor transition-all duration-300 font-semibold">
-                                    <div className="flex justify-center items-center space-x-[11px]">
-                                        <p className="">Compare Plan</p>
-                                </div>
-                            </button>
-                            <button type='submit'  className="py-[10px] px-[30px] border-[1px] border-transparent rounded-[12px] bg-mainColor text-[17px] text-[#FFFFFF] hover:bg-transparent hover:text-mainColor hover:border-mainColor transition-all duration-300 font-medium">
-                                <div className="flex justify-center items-center space-x-[11px]">
-                                    <p className="">Contact Sales</p>
-                                    
-                                </div>
-                            </button>
+                    <div className="col-span-3 border-[1px] border-[rgba(13,18,28,0.25)] rounded-[15px] p-4 sm:p-5 lg:p-[20px]">
+                        <div className="p-4 sm:p-5 lg:p-[20px]">
+                            <h2 className="text-[#0D121C] text-base sm:text-lg lg:text-[17px] font-medium mb-3 lg:mb-[12px]">Plan Comparison</h2>
+                            <p className="text-[#616161] text-sm sm:text-base lg:text-[17px] font-medium">Your plan vs. other available options</p>
                         </div>
                         
+                        {/* Mobile Card Layout */}
+                        <div className="block md:hidden space-y-4 px-4">
+                            <div className="bg-white rounded-lg border border-gray-200 p-4">
+                                <h3 className="font-semibold text-gray-800 mb-3">Plan Features</h3>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between">
+                                        <span className="text-sm font-medium">Farms</span>
+                                        <div className="text-right space-y-1">
+                                            <p className="text-xs text-gray-600">Basic: 1 Farm</p>
+                                            <p className="text-xs text-gray-600">Advanced: Up to 3 Farms</p>
+                                            <p className="text-xs text-mainColor font-semibold">Enterprise: Unlimited</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-sm font-medium">Fields</span>
+                                        <div className="text-right space-y-1">
+                                            <p className="text-xs text-gray-600">Basic: Up to 3 Fields</p>
+                                            <p className="text-xs text-gray-600">Advanced: 5 Fields per Farm</p>
+                                            <p className="text-xs text-mainColor font-semibold">Enterprise: Unlimited</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-sm font-medium">Disease Detection</span>
+                                        <div className="text-right space-y-1">
+                                            <p className="text-xs text-gray-600">Basic: Limited Usage</p>
+                                            <p className="text-xs text-gray-600">Advanced: Unlimited</p>
+                                            <p className="text-xs text-mainColor font-semibold">Enterprise: Unlimited</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-sm font-medium">Analytics</span>
+                                        <div className="text-right space-y-1">
+                                            <p className="text-xs text-gray-600">Basic: Basic</p>
+                                            <p className="text-xs text-gray-600">Advanced: Advanced & Predictive</p>
+                                            <p className="text-xs text-mainColor font-semibold">Enterprise: Advanced & Predictive</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
+                        {/* Desktop Table Layout */}
+                        <div className="hidden md:block">
+                            <div className="grid grid-rows-4 w-[100%] mx-auto gap-[20px] my-[30px]">
+                                <div className="grid grid-cols-4 text-[#0D121C] text-sm lg:text-[17px] font-medium">
+                                    <p className="">Feature</p>
+                                    <p className="flex justify-center">Basic</p>
+                                    <p className="flex justify-center">Advanced</p>
+                                    <p className="flex justify-center">Enterprise</p>
+                                </div>
+                                <div className="grid grid-cols-4 text-[#616161] text-sm lg:text-[16px] font-medium">
+                                    <p className="">Farms</p>
+                                    <p className="flex justify-center">1 Farm</p>
+                                    <p className="flex justify-center">Up to 3 Farms</p>
+                                    <p className="flex justify-center">Unlimited</p>
+                                </div>
+                                <div className="grid grid-cols-4 text-[#616161] text-sm lg:text-[16px] font-medium">
+                                    <p className="">Fields</p>
+                                    <p className="flex justify-center">Up to 3 Fields</p>
+                                    <p className="flex justify-center">5 Fields per Farm</p>
+                                    <p className="flex justify-center">Unlimited</p>
+                                </div>
+                                <div className="grid grid-cols-4 text-[#616161] text-sm lg:text-[16px] font-medium">
+                                    <p className="">Disease Detection</p>
+                                    <p className="flex justify-center">Limited Usage</p>
+                                    <p className="flex justify-center">Unlimited</p>
+                                    <p className="flex justify-center">Unlimited</p>
+                                </div>
+                                <div className="grid grid-cols-4 text-[#616161] text-sm lg:text-[16px] font-medium">
+                                    <p className="">Analytics</p>
+                                    <p className="flex justify-center">Basic</p>
+                                    <p className="flex justify-center">Advanced & Predictive</p>
+                                    <p className="flex justify-center">Advanced & Predictive</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>
         </section>

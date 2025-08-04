@@ -69,39 +69,43 @@ const SensorsDevices = () => {
       <Helmet>
         <title>Sensors And Devices</title>
       </Helmet>
-      <div className="mb-[35px] flex items-center space-x-[15px]">
-        <p className="text-[23px] text-[#0D121C] font-semibold font-manrope capitalize">
+      <div className="mb-[20px] sm:mb-[28px] xl:mb-[35px] flex items-center space-x-[10px] sm:space-x-[15px]">
+        <p className="text-[18px] sm:text-[21px] xl:text-[23px] text-[#0D121C] font-semibold font-manrope capitalize">
           sensors & devices
         </p>
       </div>
-      <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-[20px] mb-[44px]">
+      <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-[16px] xl:space-x-[20px] mb-[28px] sm:mb-[36px] xl:mb-[44px]">
         <MenuElement
           Items={allFarms}
           nameChange={allFarms[indexIRRSD]}
           setIndex={setIndexIRRSD}
           index={indexIRRSD}
-          width={200 + "px"}
-          className={"text-[15px]"}
+          width="auto"
+          className={"text-[13px] sm:text-[14px] xl:text-[15px] min-w-[160px] sm:min-w-[180px] xl:min-w-[200px]"}
           onList={onListSenDev}
           setOnList={setOnListSenDev}
         />
-        <form action="" className="">
+        <form action="" className="flex-1">
           <input
             type="text"
             placeholder="Search devices by name or serial number ..."
-            className="text-[14px] sm:text-[16px] text-[#616161] font-[400] font-manrope h-[45px] py-[8px] px-[22px] rounded-[8px] border-[1px] border-[#D9D9D9] w-[200px] sm:w-[300px] md:w-[400px] focus:outline-mainColor"
+            className="text-[13px] sm:text-[14px] xl:text-[16px] text-[#616161] font-[400] font-manrope h-[40px] sm:h-[42px] xl:h-[45px] py-[6px] sm:py-[8px] px-[16px] sm:px-[20px] xl:px-[22px] rounded-[8px] border-[1px] border-[#D9D9D9] w-full focus:outline-mainColor"
           />
         </form>
       </div>
       <div
-        className="flex w-fit items-center h-[70px] rounded-[10px] bg-[rgba(217,217,217,0.3)] space-x-[20px] px-[10px] text-[14px] md:text-[15px] font-medium mb-[52px] capitalize"
+        className="flex flex-col sm:flex-row w-full sm:w-fit items-stretch sm:items-center h-auto sm:h-[60px] xl:h-[70px] rounded-[8px] sm:rounded-[10px] bg-[rgba(217,217,217,0.3)] space-y-2 sm:space-y-0 sm:space-x-[12px] xl:space-x-[20px] p-[8px] sm:px-[10px] sm:py-[8px] text-[13px] sm:text-[14px] xl:text-[15px] font-medium mb-[32px] sm:mb-[42px] xl:mb-[52px] capitalize"
         id="parts"
         onClick={(e) => {
           getPart(e.target);
         }}
       >
         <p
-          className="py-[12px] px-[12px] rounded-[10px] cursor-pointer bg-[#FFFFFF] text-mainColor"
+          className={`py-[10px] sm:py-[12px] px-[16px] sm:px-[12px] rounded-[8px] sm:rounded-[10px] cursor-pointer text-center transition-all duration-200 ${
+            partsSenDev === "sensors" 
+              ? "bg-[#FFFFFF] text-mainColor" 
+              : "text-[#9F9F9F] hover:bg-white/50"
+          }`}
           onClick={() => {
             setPartsSenDev("sensors");
           }}
@@ -109,7 +113,11 @@ const SensorsDevices = () => {
           sensors
         </p>
         <p
-          className="py-[12px] px-[12px] rounded-[10px] cursor-pointer text-[#9F9F9F]"
+          className={`py-[10px] sm:py-[12px] px-[16px] sm:px-[12px] rounded-[8px] sm:rounded-[10px] cursor-pointer text-center transition-all duration-200 ${
+            partsSenDev === "irrigation units" 
+              ? "bg-[#FFFFFF] text-mainColor" 
+              : "text-[#9F9F9F] hover:bg-white/50"
+          }`}
           onClick={() => {
             setPartsSenDev("irrigation units");
           }}
@@ -135,6 +143,7 @@ const SensorsDevices = () => {
             setFarmID={setFarmID}
             setFieldID={setFieldID}
             setField={setField}
+            setShowIrr={setShowIrr}
             indexedDB={indexIRRSD}
             farmName={Farms[indexIRRSD].name}
             farmId={Farms[indexIRRSD].farmId}
@@ -177,6 +186,7 @@ const SensorsDevices = () => {
         {irrigationUnit === "step1" ? (
           <div className="fixed z-50 inset-0">
             <ShowSprinklerSystem
+              ShowIrr={ShowIrr}
               setShowIrr={setShowIrr}
               setShowIrrMember={setShowIrrMember}
               setIrrigationUnit={setIrrigationUnit}

@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 
 export const Review = (children) => {
-  let { outClick, setReview, setTeam, baseUrl } = useContext(AllContext);
+  let { outClick, setReview, baseUrl } = useContext(AllContext);
   let { token } = useContext(userContext);
 
   let soilTypes = ["Sandy", "Clay", "Loamy"];
@@ -73,28 +73,40 @@ export const Review = (children) => {
       // console.log("farmIdValue createFarm  ",farmId)
     } catch (error) {
       console.log("error createFarm", error);
-      
+
       // Handle different types of errors
       if (error.response) {
         const { status, data } = error.response;
-        
+
         if (status === 409) {
           // Handle 409 Conflict - Duplicate farm name
           if (data.errors && data.errors.length > 0) {
-            const duplicateError = data.errors.find(err => err.code === "Farm.DuplicateName");
+            const duplicateError = data.errors.find(
+              (err) => err.code === "Farm.DuplicateName"
+            );
             if (duplicateError) {
-              toast.error(duplicateError.description || "You already have a farm with this name.");
+              toast.error(
+                duplicateError.description ||
+                  "You already have a farm with this name."
+              );
             } else {
-              toast.error("Farm name already exists. Please choose a different name.");
+              toast.error(
+                "Farm name already exists. Please choose a different name."
+              );
             }
           } else {
-            toast.error("Farm name already exists. Please choose a different name.");
+            toast.error(
+              "Farm name already exists. Please choose a different name."
+            );
           }
         } else if (status === 400) {
           // Handle validation errors
           if (data.errors && data.errors.length > 0) {
             // Show the first validation error
-            toast.error(data.errors[0].description || "Please check your input and try again.");
+            toast.error(
+              data.errors[0].description ||
+                "Please check your input and try again."
+            );
           } else {
             toast.error("Please check your input and try again.");
           }
@@ -104,7 +116,9 @@ export const Review = (children) => {
         }
       } else if (error.request) {
         // Network error
-        toast.error("Network error. Please check your connection and try again.");
+        toast.error(
+          "Network error. Please check your connection and try again."
+        );
       } else {
         // Other errors
         toast.error("An unexpected error occurred. Please try again.");
@@ -172,7 +186,7 @@ export const Review = (children) => {
           duration: 0.4,
           ease: [0.23, 1, 0.32, 1],
         }}
-        className="w-[600px] h-[680px] border-2 rounded-2xl bg-white flex  flex-col items-center"
+        className="w-[600px] h-[680px] mx-2 border-2 rounded-2xl bg-white flex  flex-col items-center"
       >
         <div className="w-[90%] mt-5 text-[22px]  flex justify-end">
           <i
@@ -255,10 +269,17 @@ export const Review = (children) => {
 
             <div className="h-[70%] overflow-y-auto">
               {(() => {
-                const source = pendingInvites !== null ? pendingInvites : children.farmData.invitations;
+                const source =
+                  pendingInvites !== null
+                    ? pendingInvites
+                    : children.farmData.invitations;
                 const seen = new Set();
                 const deduped = source.filter((inv) => {
-                  const emailKey = (inv.receiverEmail || inv.recipient || "").toLowerCase();
+                  const emailKey = (
+                    inv.receiverEmail ||
+                    inv.recipient ||
+                    ""
+                  ).toLowerCase();
                   if (!emailKey) return false;
                   if (seen.has(emailKey)) return false;
                   seen.add(emailKey);
@@ -266,23 +287,30 @@ export const Review = (children) => {
                 });
                 if (deduped.length === 0) {
                   return (
-                    <p key="no-invites" className="text-center text-gray-500 py-4">
+                    <p
+                      key="no-invites"
+                      className="text-center text-gray-500 py-4"
+                    >
                       No team members invited
                     </p>
                   );
                 }
                 return deduped.map((item, index) => {
-                  const email = (item.receiverEmail || item.recipient || "").toLowerCase();
+                  const email = (
+                    item.receiverEmail ||
+                    item.recipient ||
+                    ""
+                  ).toLowerCase();
                   return (
-                  <div
+                    <div
                       key={item.id || index}
-                    className="flex justify-between items-center bg-[#1e693021] py-3 px-5 my-1 rounded-lg"
-                  >
+                      className="flex justify-between items-center bg-[#1e693021] py-3 px-5 my-1 rounded-lg"
+                    >
                       <p className="lowercase">{email}</p>
-                    <div className="flex items-baseline space-x-4">
-                      <p className=" capitalize ">{item.roleName}</p>
+                      <div className="flex items-baseline space-x-4">
+                        <p className=" capitalize ">{item.roleName}</p>
+                      </div>
                     </div>
-                  </div>
                   );
                 });
               })()}

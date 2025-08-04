@@ -5,26 +5,28 @@ import ForgetPassword from "../../Components/ForgetPassword/ForgetPassword";
 import { AllContext } from "../../Context/All.context";
 import OTP from "../../Components/OTP/OTP";
 import ResetPassword from "../../Components/ResetPassword/ResetPassword";
-import VerificationEmail from "../../Components/VerificationEmail/VerificationEmail";
-//import OPTLogin from "../../Components/OPTLogin/OPTLogin";
 import { Helmet } from "react-helmet";
 import { userContext } from "../../Context/User.context";
 import { object, string } from "yup";
 import axios from "axios";
 import { useFormik } from "formik";
 import { motion } from "framer-motion";
-// import bgImage from "../../assets/images/image 4.png"
+import MfaOtp from "../../Components/MfaOtp/MfaOtp";
 
 const Login = () => {
-  let { forgetPassword, otp, setForgetPassword, resetPassword, baseUrl } =
+  const { forgetPassword, otp, setForgetPassword, resetPassword, baseUrl } =
     useContext(AllContext);
-  // const [inCorrectEmailorPassword,setInCorrectEmailorPassword]=useState(null);
-  let [emailOfForgotPassword, setEmailOfForgotPassword] = useState(null);
-  // let [otpOfForgotPassword,setOtpOfForgotPassword ]=useState(null);
-  let [otpValue, setOtpValue] = useState(["", "", "", "", "", ""]);
+  const [emailOfForgotPassword, setEmailOfForgotPassword] = useState(null);
+  const [otpValue, setOtpValue] = useState(["", "", "", "", "", ""]);
   const navigate = useNavigate();
   const location = useLocation();
-  const { setToken, setRefreshToken, setExpiresIn, setTokenExpiration, setRefreshTokenExpiration, verification } = useContext(userContext);
+  const {
+    setToken,
+    setRefreshToken,
+    setExpiresIn,
+    setTokenExpiration,
+    setRefreshTokenExpiration,
+  } = useContext(userContext);
   const validationSchema = object({
     email: string().required("Email is required").email("Email is invalid"),
     password: string()
@@ -36,15 +38,16 @@ const Login = () => {
   const [loginError, setLoginError] = useState("");
   const [socialLoading, setSocialLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(
-    localStorage.getItem("rememberMe") === "true"
-  );
+  const [rememberMe, setRememberMe] = useState(() => {
+    return localStorage.getItem("rememberMe") === "true";
+  });
   const [verificationEmail, setVerificationEmail] = useState("");
   const [showEmailNotConfirmed, setShowEmailNotConfirmed] = useState(false);
   const [resetToken, setResetToken] = useState("");
   const [resendingVerification, setResendingVerification] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [showOtpPopup, setShowOtpPopup] = useState(false);
 
   // Debug: Log when loginError changes
   useEffect(() => {
@@ -146,21 +149,29 @@ const Login = () => {
       }
 
       // Calculate token expiration time
-      const tokenExpirationTime = new Date(Date.now() + (data.expiresIn * 60 * 1000));
+      const tokenExpirationTime = new Date(
+        Date.now() + data.expiresIn * 60 * 1000
+      );
 
       // Store the JWT tokens and expiration data
       localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.id);
       localStorage.setItem("expiresIn", data.expiresIn);
-      localStorage.setItem("tokenExpiration", tokenExpirationTime.toISOString());
-      
+      localStorage.setItem(
+        "tokenExpiration",
+        tokenExpirationTime.toISOString()
+      );
+
       if (data.refreshToken) {
         localStorage.setItem("refreshToken", data.refreshToken);
         setRefreshToken(data.refreshToken);
       }
-      
+
       if (data.refreshTokenExpiration) {
-        localStorage.setItem("refreshTokenExpiration", data.refreshTokenExpiration);
+        localStorage.setItem(
+          "refreshTokenExpiration",
+          data.refreshTokenExpiration
+        );
         setRefreshTokenExpiration(data.refreshTokenExpiration);
       }
 
@@ -169,9 +180,12 @@ const Login = () => {
       setExpiresIn(data.expiresIn);
       setTokenExpiration(tokenExpirationTime.toISOString());
 
-      // Store credentials if remember me is checked
+      // Handle remember me functionality for Google login
+      // Note: For Google login, we can't save the password, but we can save the preference
       if (rememberMe) {
         localStorage.setItem("rememberMe", "true");
+      } else {
+        localStorage.setItem("rememberMe", "false");
       }
 
       // Clean up any Google modal
@@ -180,7 +194,7 @@ const Login = () => {
         document.body.removeChild(googleModal);
       }
 
-      const redirect = new URLSearchParams(location.search).get('redirect');
+      const redirect = new URLSearchParams(location.search).get("redirect");
       navigate(redirect || "/dashboard");
     } catch (error) {
       console.error("Google login error:", error);
@@ -397,24 +411,6 @@ const Login = () => {
     }
   };
 
-  const handleFacebookLogin = async () => {
-    setSocialLoading(true);
-    setLoginError("");
-
-    try {
-      // For demo purposes, simulate successful login
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const redirect = new URLSearchParams(location.search).get('redirect');
-      navigate(redirect || "/dashboard");
-    } catch (error) {
-      setLoginError("Facebook login failed. Please try again.");
-      console.log(error);
-    } finally {
-      setSocialLoading(false);
-    }
-  };
-
   // Function to resend verification email
   const resendVerificationEmail = async () => {
     if (!verificationEmail || resendCooldown > 0) return;
@@ -473,7 +469,7 @@ const Login = () => {
 
   async function sendDataToLogin(values) {
     console.log("sendDataToLogin called with values:", values);
-    
+
     // Check if form has validation errors
     const errors = await formik.validateForm();
     if (Object.keys(errors).length > 0) {
@@ -491,34 +487,32 @@ const Login = () => {
     setShowEmailNotConfirmed(false);
     setResendMessage("");
     setResendCooldown(0);
-    
+
     // Clear any existing tokens to prevent axios interceptor interference
-    const existingToken = localStorage.getItem('token');
+    const existingToken = localStorage.getItem("token");
     if (existingToken) {
-      localStorage.removeItem('token');
-      console.log('Cleared existing token before login');
+      localStorage.removeItem("token");
+      console.log("Cleared existing token before login");
     }
 
     try {
       // Create a fresh axios instance without interceptors for login
       const loginAxios = axios.create();
-      
+
       const response = await loginAxios.post(`${baseUrl}/auth`, values);
       const data = response.data;
       console.log("login", data);
       if (data.token && data.refreshToken) {
         // Calculate token expiration time
-        const tokenExpirationTime = new Date(Date.now() + (data.expiresIn * 60 * 1000));
+        const tokenExpirationTime = new Date(
+          Date.now() + data.expiresIn * 60 * 1000
+        );
 
-        // Store all token data
-        localStorage.setItem("userId", data.id);
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("refreshToken", data.refreshToken);
-        localStorage.setItem("expiresIn", data.expiresIn);
-        localStorage.setItem("tokenExpiration", tokenExpirationTime.toISOString());
-        
         if (data.refreshTokenExpiration) {
-          localStorage.setItem("refreshTokenExpiration", data.refreshTokenExpiration);
+          localStorage.setItem(
+            "refreshTokenExpiration",
+            data.refreshTokenExpiration
+          );
           setRefreshTokenExpiration(data.refreshTokenExpiration);
         }
 
@@ -528,19 +522,35 @@ const Login = () => {
         setExpiresIn(data.expiresIn);
         setTokenExpiration(tokenExpirationTime.toISOString());
 
-        // Handle remember me functionality
         if (rememberMe) {
+          localStorage.setItem("userId", data.id);
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("refreshToken", data.refreshToken);
+          localStorage.setItem("expiresIn", data.expiresIn);
+          localStorage.setItem(
+            "tokenExpiration",
+            tokenExpirationTime.toISOString()
+          );
           localStorage.setItem("rememberedEmail", values.email);
           localStorage.setItem("rememberedPassword", values.password);
           localStorage.setItem("rememberMe", "true");
         } else {
+          sessionStorage.setItem("token", data.token);
+          sessionStorage.setItem("userId", data.id);
+          sessionStorage.setItem("refreshToken", data.refreshToken);
+          sessionStorage.setItem("expiresIn", data.expiresIn);
+          sessionStorage.setItem(
+            "tokenExpiration",
+            tokenExpirationTime.toISOString()
+          );
+
           localStorage.removeItem("rememberedEmail");
           localStorage.removeItem("rememberedPassword");
-          localStorage.removeItem("rememberMe");
+          localStorage.setItem("rememberMe", "false");
         }
 
         setTimeout(() => {
-          const redirect = new URLSearchParams(location.search).get('redirect');
+          const redirect = new URLSearchParams(location.search).get("redirect");
           navigate(redirect || "/dashboard");
         }, 500);
       }
@@ -567,15 +577,32 @@ const Login = () => {
         }
       } else if (error.response?.status === 401) {
         console.log("Setting login error for 401");
-        setLoginError("Invalid email or password. Please try again.");
+        const errorData = error.response?.data;
+        
+        // Check if it's specifically an MFA OTP required error
+        if (errorData?.errors?.some(err => err.code === "User.MfaOtpSent")) {
+          setLoginError("Multi-factor authentication is required. Please enter the OTP code sent to your email.");
+          setVerificationEmail(values.email);
+          setShowOtpPopup(true);
+        } else {
+          // Handle other 401 errors (like invalid credentials)
+          setLoginError("Invalid email or password. Please try again.");
+        }
       } else if (error.response?.status === 400) {
         const errorData = error.response?.data;
-        const errorMessage = errorData?.message || errorData?.title || "Please check your email and password.";
+        const errorMessage =
+          errorData?.message ||
+          errorData?.title ||
+          "Please check your email and password.";
         setLoginError(errorMessage);
       } else if (error.response?.status >= 500) {
         setLoginError("Server error. Please try again later.");
       } else {
-        const errorMessage = error.response?.data?.message || error.response?.data?.title || error.message || "Something went wrong. Please try again.";
+        const errorMessage =
+          error.response?.data?.message ||
+          error.response?.data?.title ||
+          error.message ||
+          "Something went wrong. Please try again.";
         setLoginError(errorMessage);
       }
     } finally {
@@ -591,6 +618,23 @@ const Login = () => {
     validationSchema,
     onSubmit: sendDataToLogin,
   });
+
+  // Effect to update form values when remember me changes
+  useEffect(() => {
+    if (rememberMe) {
+      const savedEmail = localStorage.getItem("rememberedEmail");
+      const savedPassword = localStorage.getItem("rememberedPassword");
+      if (savedEmail) {
+        formik.setFieldValue("email", savedEmail);
+      }
+      if (savedPassword) {
+        formik.setFieldValue("password", savedPassword);
+      }
+    } else {
+      // If remember me is unchecked, don't auto-fill but don't clear current input
+      // User might be in the middle of typing
+    }
+  }, [rememberMe]); // Only run when rememberMe state changes
   return (
     <>
       <Helmet>
@@ -600,7 +644,7 @@ const Login = () => {
         <div className="h-full w-full">
           <div className="w-full h-full grid lg:grid-cols-12 relative overflow-hidden">
             <motion.div
-              className="contentAndbg lg:col-span-5 z-10"
+              className="contentAndbg hidden lg:block lg:col-span-5 z-10"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
@@ -641,22 +685,75 @@ const Login = () => {
               </div>
             </motion.div>
             {/* right part */}
-            <div className="lg:col-span-7 flex justify-center mt-4 lg:items-center px-2">
+            <div className="col-span-12 lg:col-span-7 flex justify-center mt-4 lg:items-center px-4 lg:px-2">
               <div className="w-full md:w-[640px]  lg:w-[500px]  ">
+                {/* Logo for mobile with navigation links */}
+                <div className="relative flex justify-center items-center mb-6 lg:hidden">
+                  {/* Back to Home - Absolute positioned left */}
+                  <Link
+                    to="/"
+                    className="absolute left-0 flex items-center space-x-1 text-gray-600 hover:text-mainColor transition-colors"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                      />
+                    </svg>
+                    <span className="text-sm font-medium">Home</span>
+                  </Link>
+
+                  {/* Logo - Centered */}
+                  <img
+                    src="/blackLogo.png"
+                    className="w-32 h-10"
+                    alt="Agrivision Logo"
+                  />
+
+                  {/* Register - Absolute positioned right */}
+                  <Link
+                    to="/signUp"
+                    className="absolute right-0 flex items-center space-x-1 text-gray-600 hover:text-mainColor transition-colors"
+                  >
+                    <span className="text-sm font-medium">Register</span>
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M14 5l7 7m0 0l-7 7m7-7H3"
+                      />
+                    </svg>
+                  </Link>
+                </div>
                 <h1 className="text-center text-[28px] md:text-[33px] lg:text-[38px] my-5 text-mainColor font-medium">
                   Log in to your account
                 </h1>
-                <form onSubmit={(e) => {
-                  console.log('Form submit event triggered');
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log('Form default prevented');
-                  try {
-                    formik.handleSubmit(e);
-                  } catch (error) {
-                    console.error('Error in form submission:', error);
-                  }
-                }}>
+                <form
+                  onSubmit={(e) => {
+                    console.log("Form submit event triggered");
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log("Form default prevented");
+                    try {
+                      formik.handleSubmit(e);
+                    } catch (error) {
+                      console.error("Error in form submission:", error);
+                    }
+                  }}
+                >
                   {loginError && (
                     <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
                       <p className="text-red-600 text-sm font-medium">
@@ -799,10 +896,30 @@ const Login = () => {
                         className=" my-2 mx-3 w-4 h-4  accent-mainColor   "
                         id="Remember"
                         checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
+                        onChange={(e) => {
+                          const isChecked = e.target.checked;
+                          setRememberMe(isChecked);
+                          // Immediately update localStorage when checkbox state changes
+                          if (isChecked) {
+                            localStorage.setItem("rememberMe", "true");
+                          } else {
+                            localStorage.setItem("rememberMe", "false");
+                            // If unchecked, clear any saved credentials
+                            localStorage.removeItem("rememberedEmail");
+                            localStorage.removeItem("rememberedPassword");
+                          }
+                        }}
                       />
-                      <label htmlFor="Remember" className="text-[15px] ">
-                        remember me
+                      <label
+                        htmlFor="Remember"
+                        className="text-[15px] cursor-pointer select-none"
+                      >
+                        Remember me
+                        {localStorage.getItem("rememberedEmail") && (
+                          <span className="text-xs text-mainColor ml-1">
+                            (credentials saved)
+                          </span>
+                        )}
                       </label>
                     </div>
                     <p
@@ -814,15 +931,7 @@ const Login = () => {
                       Forgot Password ?
                     </p>
                   </div>
-                  {/* onClick={()=>{setOptLogin(true); */}
-                  {/* // }} */}
-                  {/* <button
-                    disabled={loading}
-                    type="submit"
-                    className="btn w-[90%] px-2 py-5 mx-5 my-10 text-white bg-mainColor  hover:border-mainColor hover:text-mainColor hover:bg-transparent font-medium border-2 "
-                  >
-                    {loading ? "Logging in..." : "Login"}
-                  </button> */}
+
                   <motion.button
                     disabled={loading}
                     type="submit"
@@ -851,7 +960,7 @@ const Login = () => {
                       <div className="border-t border-gray-300 flex-1"></div>
                     </div>
 
-                    <div className="flex justify-center space-x-6">
+                    <div className="flex justify-center">
                       <motion.div
                         onClick={!socialLoading ? handleGoogleLogin : undefined}
                         className={`cursor-pointer ${
@@ -877,25 +986,6 @@ const Login = () => {
                             fill="#EA4335"
                             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                           />
-                        </svg>
-                      </motion.div>
-
-                      <motion.div
-                        onClick={
-                          !socialLoading ? handleFacebookLogin : undefined
-                        }
-                        className={`cursor-pointer ${
-                          socialLoading ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                        whileHover={!socialLoading ? { scale: 1.1 } : {}}
-                        whileTap={!socialLoading ? { scale: 0.95 } : {}}
-                      >
-                        <svg
-                          className="w-6 h-6"
-                          fill="#1877F2"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                         </svg>
                       </motion.div>
                     </div>
@@ -932,9 +1022,13 @@ const Login = () => {
           // optLogin?<div className=" absolute inset-0"><OPTLogin/></div>:""
         }
 
-        {verification ? (
+        {showOtpPopup ? (
           <div className="fixed z-50 inset-0">
-            <VerificationEmail email={verificationEmail} />
+            <MfaOtp
+              email={verificationEmail}
+              setShowOtpPopup={setShowOtpPopup}
+              rememberMe={rememberMe}
+            />
           </div>
         ) : (
           ""

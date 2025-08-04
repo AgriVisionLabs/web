@@ -3,9 +3,13 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
 import Sidebar from "../Sidebar/Sidebar";
 import { MessageSquareMore } from "lucide-react";
+import useNotificationHub from "../../hooks/useNotificationHub";
 
 const Layout = () => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  
+  // Initialize global notification hub (includes chat connectivity and message notifications)
+  const { chatConnected, notificationPreferences } = useNotificationHub();
 
   const closeMobileSidebar = () => {
     setIsMobileSidebarOpen(false);

@@ -24,14 +24,12 @@ const EditItem = ({
   const [indexMeasurementUnit, setIndexMeasurementUnit] = useState(0);
   //   const [indexCategory, setIndexCategory] = useState(0);
 
-  const MeasurementUnit = ["Kg", "L", "g", "mL", "Ibs", "oz"];
+  const MeasurementUnit = ["Unit", "Kg", "L", "g", "mL", "Ibs", "oz"];
   const Category = [
-    "Irrigation",
-    "Fertilization",
-    "PlantingOrHarvesting",
-    "Maintenance",
-    "Inspection",
-    "PestAndHealthControl",
+    "Fertilizer",
+    "Chemicals",
+    "Treatments",
+    "Produce",
   ];
 
   const validationSchema = object({

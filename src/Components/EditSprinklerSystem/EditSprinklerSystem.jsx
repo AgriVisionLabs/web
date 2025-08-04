@@ -32,7 +32,7 @@ const EditSprinklerSystem = (children) => {
         console.log("updateIrrigationUnit")
         try {
             const options={
-                url:`${baseUrl}/farms/${irrigationUnit.farmId}/fields/${irrigationUnit.fieldId}/IrrigationUnits`,
+                url:`${baseUrl}/farms/${irrigationUnit.farmId}/fields/${irrigationUnit.fieldId}/irrigationunits`,
                 method:"PUT",
                 data:values,
                 headers:{
@@ -41,9 +41,10 @@ const EditSprinklerSystem = (children) => {
             }
             let {data}=await axios(options);
             children.setIrrigationUnit(null)
+            toast.success("Irrigation unit updated successfully");
             console.log("updateIrrigationUnit",data);
         }catch(error){
-            // toast.error("Incorrect email or password "+error);
+            toast.error("Failed to update irrigation unit: " + (error.response?.data?.message || error.message));
             console.log(error)
         }
     }
@@ -57,23 +58,29 @@ const formik=useFormik({
     onSubmit:updateIrrigationUnit,
 });
 useEffect(()=>{
-    let count=0;
-    
     setStatusIndex(irrigationUnit.status)
-    for(let item of children.Fields){
-        count=count+1;
-        if(item.id==irrigationUnit.fieldId){
-            setFieldIndex(count)
-        }
+    
+    // Find the correct field index (0-based) only if Fields array is available
+    if (children.Fields && children.Fields.length > 0) {
+        const fieldIdx = children.Fields.findIndex(field => field.id === irrigationUnit.fieldId);
+        setFieldIndex(fieldIdx >= 0 ? fieldIdx : 0);
     }
+    
+    // Set initial form values
+    formik.setFieldValue('name', irrigationUnit.name);
+    formik.setFieldValue('status', irrigationUnit.status);
+    formik.setFieldValue('newFieldId', irrigationUnit.fieldId);
 },[])
+
 useEffect(()=>{
-    formik.values.status=statusIndex
-    formik.values.newFieldId=allFieldsID[fieldIndex]
-},[statusIndex,fieldIndex])
+    formik.setFieldValue('status', statusIndex);
+},[statusIndex])
+
 useEffect(()=>{
-    formik.values.name=irrigationUnit.name
-},[])
+    if(fieldIndex >= 0 && allFieldsID && allFieldsID[fieldIndex]) {
+        formik.setFieldValue('newFieldId', allFieldsID[fieldIndex]);
+    }
+},[fieldIndex])
 
     return (
         children.ShowIrr?<section className='h-[100vh]  flex justify-center items-center bg-black bg-opacity-70  font-manrope  absolute z-50 w-[100%]' onClick={(e)=>{if(e.target==e.currentTarget){children.setIrrigationUnit(null)}}}>

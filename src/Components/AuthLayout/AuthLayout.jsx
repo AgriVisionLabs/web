@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
 
 const AuthLayout = ({ children }) => {
   const location = useLocation();
-  
+
   return (
     <div className="h-[100vh] w-[100vw] relative overflow-hidden">
       <AnimatePresence mode="wait" initial={true}>
@@ -22,4 +23,4 @@ const AuthLayout = ({ children }) => {
   );
 };
 
-export default AuthLayout; 
+export default AuthLayout;

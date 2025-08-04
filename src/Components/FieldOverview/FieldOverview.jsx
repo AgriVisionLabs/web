@@ -14,31 +14,34 @@ import { AllContext } from "../../Context/All.context";
 import { userContext } from "../../Context/User.context";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import EditField from "../EditField/EditField";
 
 const FieldOverview = ({ farmId, fieldId, setShowField, userRole }) => {
   const { baseUrl } = useContext(AllContext);
   const { token } = useContext(userContext);
   const [field, setField] = useState(null);
+  const [showEditField, setShowEditField] = useState(false);
+
+  async function getField() {
+    if (!token && !farmId) return;
+
+    try {
+      const options = {
+        url: `${baseUrl}/farms/${farmId}/Fields/${fieldId}`,
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      let { data } = await axios(options);
+      console.log(data);
+      setField(data);
+    } catch (error) {
+      console.error("Error fetching field:", error);
+    }
+  }
 
   useEffect(() => {
-    async function getField() {
-      if (!token && !farmId) return;
-
-      try {
-        const options = {
-          url: `${baseUrl}/farms/${farmId}/Fields/${fieldId}`,
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-        let { data } = await axios(options);
-        console.log(data);
-        setField(data);
-      } catch (error) {
-        console.error("Error fetching farm:", error);
-      }
-    }
     getField();
   }, []);
 
@@ -64,8 +67,16 @@ const FieldOverview = ({ farmId, fieldId, setShowField, userRole }) => {
   };
 
   const handleEditField = () => {
-    // TODO: Implement edit functionality
-    toast.info("Edit functionality will be implemented soon!");
+    setShowEditField(true);
+  };
+
+  const handleCloseEdit = () => {
+    setShowEditField(false);
+  };
+
+  const handleSaveField = async () => {
+    // Refresh field data after edit
+    await getField();
   };
 
   if (!field) {
@@ -81,6 +92,9 @@ const FieldOverview = ({ farmId, fieldId, setShowField, userRole }) => {
   const harvestDate = new Date(field.expectedHarvestDate);
   const timeDiff = harvestDate.getTime() - today.getTime();
   const daysLeft = Math.max(Math.ceil(timeDiff / (1000 * 60 * 60 * 24)), 0);
+
+  // Check if there's a planted crop
+  const hasPlantedCrop = field.cropName && field.cropName.trim() !== '' && field.plantingDate;
 
   return (
     <div className="h-[100vh] flex justify-center items-center bg-black bg-opacity-70 font-manrope backdrop-blur-[blur(5)] fixed z-50 w-[100%] px-2 inset-0">
@@ -141,82 +155,101 @@ const FieldOverview = ({ farmId, fieldId, setShowField, userRole }) => {
                 Crop Name
               </span>
               <span className="block font-semibold text-lg">
-                {field.cropName}
+                {field.cropName || "No crop planted"}
               </span>
             </div>
           </div>
-          <div className="space-y-3 bg-[#F5F5F5] rounded-xl p-5 col-span-2">
-            <div className="flex items-center space-x-2 ">
-              <Activity className="text-mainColor" size={18} />
-              <span className="font-semibold text-xl">Progress & Status</span>
-            </div>
-            <div>
-              <span className="text-[#6A6C76] font-medium text-lg">
-                Growth Progress
-              </span>
-              <span className="block font-semibold text-lg">
-                {field.progress}
-              </span>
-              <div className="w-full bg-[#6A6C76] rounded-full h-3">
-                <span
-                  className="h-full bg-mainColor rounded-full block"
-                  style={{ inlineSize: `${field.progress}%` }}
-                />
+          
+          {/* Only show Progress & Status section if there's a planted crop */}
+          {hasPlantedCrop && (
+            <div className="space-y-3 bg-[#F5F5F5] rounded-xl p-5 col-span-2">
+              <div className="flex items-center space-x-2 ">
+                <Activity className="text-mainColor" size={18} />
+                <span className="font-semibold text-xl">Progress & Status</span>
+              </div>
+              <div>
+                <span className="text-[#6A6C76] font-medium text-lg">
+                  Growth Progress
+                </span>
+                <span className="block font-semibold text-lg">
+                  {field.progress}%
+                </span>
+                <div className="w-full bg-[#6A6C76] rounded-full h-3">
+                  <span
+                    className="h-full bg-mainColor rounded-full block"
+                    style={{ inlineSize: `${field.progress}%` }}
+                  />
+                </div>
+              </div>
+              <div>
+                <span className="text-[#6A6C76] font-medium text-lg">
+                  Days Until Harvest
+                </span>
+                <span className="block font-semibold text-lg">{daysLeft}</span>
               </div>
             </div>
-            <div>
-              <span className="text-[#6A6C76] font-medium text-lg">
-                Days Until Harvest
-              </span>
-              <span className="block font-semibold text-lg">{daysLeft}</span>
-            </div>
-          </div>
-          <div className="space-y-3 bg-[#F5F5F5] rounded-xl p-5 col-span-1">
-            <div className="flex items-center space-x-2 ">
-              <Calendar className="text-mainColor" size={18} />
-              <span className="font-semibold text-xl">Timeline</span>
-            </div>
-            <div>
-              <span className="text-[#6A6C76] font-medium text-lg">
-                Planting Date
-              </span>
-              <span className="block font-semibold text-lg">
-                {new Date(field.plantingDate).toLocaleDateString("en-GB", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
-            </div>
-            <div>
-              <span className="text-[#6A6C76] font-medium text-lg">
-                Expected Harvest Date
-              </span>
-              <span className="block font-semibold text-lg">
-                {new Date(field.expectedHarvestDate).toLocaleDateString(
-                  "en-GB",
-                  {
+          )}
+          
+          {/* Only show Timeline section if there's a planted crop */}
+          {hasPlantedCrop && (
+            <div className="space-y-3 bg-[#F5F5F5] rounded-xl p-5 col-span-1">
+              <div className="flex items-center space-x-2 ">
+                <Calendar className="text-mainColor" size={18} />
+                <span className="font-semibold text-xl">Timeline</span>
+              </div>
+              <div>
+                <span className="text-[#6A6C76] font-medium text-lg">
+                  Planting Date
+                </span>
+                <span className="block font-semibold text-lg">
+                  {new Date(field.plantingDate).toLocaleDateString("en-GB", {
                     day: "numeric",
                     month: "long",
                     year: "numeric",
-                  }
-                )}
-              </span>
+                  })}
+                </span>
+              </div>
+              <div>
+                <span className="text-[#6A6C76] font-medium text-lg">
+                  Expected Harvest Date
+                </span>
+                <span className="block font-semibold text-lg">
+                  {new Date(field.expectedHarvestDate).toLocaleDateString(
+                    "en-GB",
+                    {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    }
+                  )}
+                </span>
+              </div>
             </div>
-          </div>
-          <div className="space-y-3 bg-[#F5F5F5] rounded-xl p-5 col-span-2">
+          )}
+          
+          <div className={`space-y-3 bg-[#F5F5F5] rounded-xl p-5 ${hasPlantedCrop ? 'col-span-2' : 'col-span-3'}`}>
             <div className="flex items-center space-x-2 ">
               <Sprout className="text-mainColor" size={18} />
               <span className="font-semibold text-xl">Description</span>
             </div>
             <div>
               <span className="text-[#6A6C76] font-medium text-lg">
-                {field.description}
+                {field.description || "No description available"}
               </span>
             </div>
           </div>
         </section>
       </motion.div>
+      
+      {/* Edit Field Modal */}
+      {showEditField && (
+        <EditField
+          field={field}
+          farmId={farmId}
+          onClose={handleCloseEdit}
+          onSave={handleSaveField}
+        />
+      )}
     </div>
   );
 };

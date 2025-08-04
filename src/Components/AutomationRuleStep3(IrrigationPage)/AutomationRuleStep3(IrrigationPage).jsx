@@ -1,5 +1,8 @@
 import { motion } from 'framer-motion';
 import React, { useContext, useState } from 'react';
+import { AllContext } from '../../Context/All.context';
+import { X } from 'lucide-react';
+import MenuElement from '../MenuElement/MenuElement';
 
 const AutomationRuleStep3IrrigationPage = () => {
     let {setControlIrrigationPage}=useContext(AllContext);
@@ -7,13 +10,12 @@ const AutomationRuleStep3IrrigationPage = () => {
     return (
         <section className='h-[100vh]  flex justify-center items-center bg-black bg-opacity-70  font-manrope  absolute z-50 w-[100%]' onClick={(e)=>{if(e.target==e.currentTarget){setControlIrrigationPage(null)}}}>
             <motion.div
-                        initial={{ x: 0, y: 500, opacity: 0 }}
-                        animate={{ x: 0, y: 0, opacity: 1 }}
+                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
                         transition={{
-                            delay:  0.2,
-                            duration: 2,
-                            type: "spring",
-                            bounce: 0.4,
+                            duration: 0.4,
+                            ease: [0.23, 1, 0.32, 1],
                             }} className="w-[650px] px-[40px] h-[780px]   border-2 rounded-2xl bg-white p-[20px]">
                 <X size={33} className='  ms-auto cursor-pointer hover:text-red-500 transition-all duration-150' onClick={()=>{setControlIrrigationPage(null)}}/>
                 <div className="text-center mt-[16px] space-y-[15px]">
@@ -68,7 +70,6 @@ const AutomationRuleStep3IrrigationPage = () => {
             
             
         </section>
-    );
     );
 }
 

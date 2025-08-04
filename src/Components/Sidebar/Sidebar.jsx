@@ -14,6 +14,7 @@ import {
   Cuboid,
   ChartLine,
   ChevronLeft,
+  CreditCard,
 } from "lucide-react";
 
 const Sidebar = ({ onClose }) => {
@@ -80,6 +81,8 @@ const Sidebar = ({ onClose }) => {
           className="cursor-pointer font-medium text-[16px] flex items-center p-2 lg:p-3 space-x-3 text-[#374151] transition duration-300 hover:text-[#C15B5B] rounded-lg"
           onClick={() => {
             logOut();
+            localStorage.removeItem("token");
+            sessionStorage.removeItem("token");
             navigate("/login");
             onClose && onClose(); // Close mobile sidebar when logging out
           }}

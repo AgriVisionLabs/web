@@ -4,7 +4,7 @@ import BasicInfo from "../../Components/BasicInfo/BasicInfo";
 import Team from "../../Components/Team/Team";
 import { Review } from "../../Components/Review/Review";
 import { Circle } from "rc-progress";
-import { MapPin, SquarePen, Trash2 } from "lucide-react";
+import { MapPin, SquarePen, Trash2, TriangleAlert } from "lucide-react";
 import { AllContext } from "../../Context/All.context";
 import { motion } from "framer-motion";
 import axios from "axios";
@@ -180,11 +180,11 @@ const Farms = ({ setClickFarm }) => {
                   duration: 0.3,
                   ease: [0.25, 0.46, 0.45, 0.94],
                 }}
-                className="rounded-[15px] border-[1px] border-[rgba(13,18,28,0.25)] cursor-pointer"
+                className="rounded-[15px] border-[1px] border-[rgba(13,18,28,0.25)] cursor-pointer h-full"
               >
-                <div className="shadow-md rounded-xl border-[1px] border-[#0d121c21]">
+                <div className="shadow-md rounded-xl border-[1px] border-[#0d121c21] h-full flex flex-col">
                   <div
-                    className="mt-2 px-[24px] py-2 grid grid-cols-1"
+                    className="px-[24px] py-6 grid grid-cols-1 h-full"
                     onClick={(e) => {
                       if (
                         e.target !== editIcons.current &&
@@ -195,14 +195,14 @@ const Farms = ({ setClickFarm }) => {
                       }
                     }}
                   >
-                    <p className="font-[600] my-2 capitalize text-mainColor text-[18px]">
+                    <p className="font-[600] mb-4 capitalize text-mainColor text-[18px]">
                       {farm.name}
                     </p>
-                    <div className="flex items-center space-x-2 text-[16px] my-2 text-[#515050]">
+                    <div className="flex items-center space-x-2 text-[16px] mb-4 text-[#515050]">
                       <MapPin size={18} />
                       <p className="">{farm.location}</p>
                     </div>
-                    <div className="grid grid-cols-2 mb-10 gap-y-3 font-medium text-[#2a2929]">
+                    <div className="grid grid-cols-2 mb-8 gap-y-3 font-medium text-[#2a2929]">
                       <p className="capitalize">Fields: {farm.fieldsNo}</p>
                       <p className="capitalize">Area: {farm.area} acres</p>
                       <p className="capitalize">
@@ -234,7 +234,7 @@ const Farms = ({ setClickFarm }) => {
 
                       if (!hasCrops && fields.length > 0) {
                         return (
-                          <div className="flex justify-center my-8">
+                          <div className="flex justify-center mb-8">
                             <div className="text-center">
                               <p className="text-yellow-600 font-medium text-[16px] mb-2">
                                 ⚠️ No planted crops in fields
@@ -250,7 +250,7 @@ const Farms = ({ setClickFarm }) => {
 
                       if (plantedFields.length === 0) {
                         return (
-                          <div className="flex justify-center my-8">
+                          <div className="flex justify-center mb-8">
                             <div className="text-center">
                               <p className="text-yellow-600 font-medium text-[16px] mb-2">
                                 ⚠️ No fields available
@@ -267,7 +267,7 @@ const Farms = ({ setClickFarm }) => {
                       const fieldCount = fieldsToShow.length;
 
                       return (
-                        <div className="my-5 w-[100%] text-[#2a2929]">
+                        <div className="mb-6 w-[100%] text-[#2a2929]">
                           {fieldCount <= 3 ? (
                             // 1-3 fields: single row centered
                             <div
@@ -396,7 +396,7 @@ const Farms = ({ setClickFarm }) => {
                         </div>
                       );
                     })()}
-                    <div className="flex justify-between items-center mt-2 mb-5">
+                    <div className="flex justify-between items-center mt-auto">
                       <div className="typeOfUser border-2 border-[#0d121c21] rounded-xl text-[12px] font-semibold py-1 px-3 h-min">
                         <p className="font-[500] text-[14px]">
                           {farm.roleName}
@@ -434,9 +434,13 @@ const Farms = ({ setClickFarm }) => {
             ))}
           </div>
         ) : (
-          <p className="w-full py-6 text-center text-lg font-medium">
-            You haven&apos;t added any forms or fields yet.
-          </p>
+          <div className="h-[200px] rounded-md text-[18px] font-medium space-y-3 border-2 border-dashed border-[#0d121c21] mx-3 mt-20 flex flex-col justify-center items-center">
+            <TriangleAlert size={48} className="text-yellow-500 mb-2" />
+            <p className="text-[#808080]">You haven&apos;t added any farms or fields yet.</p>
+            <p className="text-[#1f1f1f96] text-[16px] text-center px-4">
+              Add your first farm to start managing your agricultural operations.
+            </p>
+          </div>
         )}
       </div>
       {basicInfo && (

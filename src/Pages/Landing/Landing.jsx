@@ -21,8 +21,20 @@ import {
 import How_it_work from "../../Components/Landing/How_it_work/How_it_work";
 import Pricing from "../../Components/Landing/Pricing/Pricing";
 import { Testimonials } from "../../Components/Landing/testimonials/Testimonials";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Landing = () => {
+  const router = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      localStorage.setItem("token", token);
+      router("/dashboard");
+    }
+  }, []);
   return (
     <div>
       {/* Fixed Navigation Bar */}

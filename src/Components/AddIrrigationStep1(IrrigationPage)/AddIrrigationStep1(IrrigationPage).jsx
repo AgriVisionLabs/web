@@ -30,43 +30,72 @@ const AddIrrigationStep1IrrigationPage = (children) => {
     //     }
     //     useEffect(()=>{getFields()},[]);
     return (
-        <section className='h-[100vh]  flex justify-center items-center bg-black bg-opacity-70  font-manrope  absolute z-50 w-[100%]' onClick={(e)=>{if(e.target==e.currentTarget){setControlIrrigationPage(null)}}}>
+        <section className='fixed inset-0 flex justify-center items-center bg-black bg-opacity-70 font-manrope backdrop-blur-sm z-50 p-4 sm:p-6' onClick={(e)=>{if(e.target==e.currentTarget){setControlIrrigationPage(null)}}}>
             <motion.div
-                        initial={{ x: 0, y: 500, opacity: 0 }}
-                        animate={{ x: 0, y: 0, opacity: 1 }}
+                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
                         transition={{
-                            delay:  0.2,
-                            duration: 2,
-                            type: "spring",
-                            bounce: 0.4,
-                            }} className="w-[650px] h-[400px]   border-2 rounded-2xl bg-white p-[20px]">
-                <X size={33} className='  ms-auto cursor-pointer hover:text-red-500 transition-all duration-150' onClick={()=>{setControlIrrigationPage(null)}}/>
-                <div className="text-center mt-[16px] space-y-[20px]">
-                    <h1 className="text-[24px] text-mainColor font-medium capitalize">add new irrigation unit</h1>
-                    <p className="text-[22px] text-[#616161] font-medium ">Add a new irrigation unit to a field</p>
-                </div>
-                <div className="px-3 mt-[35px] ">
-                    <h4 className="text-[20px] font-medium mb-[16px]">Field</h4>
-                    <MenuElement Items={fields} nameChange={fields[children.indexIRRS1]} setIndex={children.setIndexIRRS1} index={children.indexIRRS1} onList={onListAddNewSensorStep1} width={100+"%"} name={"Check Fields"} setOnList={setOnListAddNewSensorStep1} Pformat={"text-[#616161]"}/>
-                </div>
-                <div className="flex justify-end items-center space-x-[16px] mt-[50px]">
-                    <button type='button' className="py-[8px] px-[30px] border-[1px] border-[#616161] rounded-[12px]  text-[16px] text-[#333333] hover:bg-mainColor hover:text-[#FFFFFF] hover:border-mainColor transition-all duration-300 font-medium" onClick={()=>{setControlIrrigationPage(null)}}>
-                        <div className="flex justify-center items-center space-x-[11px]">
-                            <p className="">Cancel</p>
+                            duration: 0.4,
+                            ease: [0.23, 1, 0.32, 1],
+                            }} className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-lg sm:rounded-2xl border-2 font-manrope">
+                
+                {/* Header - Sticky */}
+                <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-4 rounded-t-lg sm:rounded-t-2xl">
+                    <div className="flex items-center justify-between">
+                        <div className="flex-1 min-w-0">
+                            <h1 className="text-lg sm:text-xl font-semibold text-mainColor capitalize">Add New Irrigation Unit</h1>
+                            <p className="text-sm sm:text-base text-[#616161] font-medium mt-1">Add a new irrigation unit to a field</p>
                         </div>
-                    </button>
-                    <button type='button'  className="py-[8px] px-[40px] border-[1px] border-transparent rounded-[12px] bg-mainColor text-[16px] text-[#FFFFFF] hover:bg-transparent hover:text-mainColor hover:border-mainColor transition-all duration-300 font-medium" onClick={()=>{setControlIrrigationPage("Step2Irrigation")}}>
-                        <div className="flex justify-center items-center space-x-[11px]">
-                            <p className="">Next</p>
+                        <button
+                            onClick={() => setControlIrrigationPage(null)}
+                            className="p-1 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0 ml-2"
+                        >
+                            <X size={24} className="text-gray-600 hover:text-red-500 transition-colors" />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Content */}
+                <div className="px-4 sm:px-6 py-6">
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-base sm:text-lg font-medium mb-3 sm:mb-4">Field</label>
+                            <MenuElement 
+                                Items={fields} 
+                                nameChange={fields[children.indexIRRS1]} 
+                                setIndex={children.setIndexIRRS1} 
+                                index={children.indexIRRS1} 
+                                onList={onListAddNewSensorStep1} 
+                                width="100%" 
+                                name="Select Field" 
+                                setOnList={setOnListAddNewSensorStep1} 
+                                Pformat="text-[#616161]"
+                            />
                         </div>
-                    </button>
+                    </div>
+                </div>
+
+                {/* Footer - Sticky */}
+                <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 sm:px-6 py-4 rounded-b-lg sm:rounded-b-2xl">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                        <button 
+                            type='button' 
+                            className="flex-1 sm:flex-none py-3 px-6 sm:px-8 border border-gray-300 rounded-lg text-sm sm:text-base text-gray-700 hover:bg-gray-50 hover:border-mainColor hover:text-mainColor transition-all duration-300 font-medium" 
+                            onClick={() => setControlIrrigationPage(null)}
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type='button'  
+                            className="flex-1 sm:flex-none py-3 px-6 sm:px-8 border border-transparent rounded-lg bg-mainColor text-sm sm:text-base text-white hover:bg-transparent hover:text-mainColor hover:border-mainColor transition-all duration-300 font-medium" 
+                            onClick={() => setControlIrrigationPage("Step2Irrigation")}
+                        >
+                            Next
+                        </button>
+                    </div>
                 </div>
             </motion.div>
-            
-                
-                
-            
-            
         </section>
     );
 }

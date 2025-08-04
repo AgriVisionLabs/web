@@ -30,98 +30,150 @@ import {
   Cpu,
   ClipboardCheck,
   Archive,
-  ChartColumn
+  ChartColumn,
+  User,
+  CreditCard,
+  X
 } from 'lucide-react';
 import { footerFeatures, footerSupport } from "../Landing/data";
 import LandingNavBar from "../../Components/Navbar/LandingNavBar";
 
 const FeaturesPage = () => {
   const [activeFeature, setActiveFeature] = useState(0);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [currentVideoUrl, setCurrentVideoUrl] = useState('');
 
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  const openVideoModal = (videoUrl) => {
+    setCurrentVideoUrl(videoUrl);
+    setIsVideoModalOpen(true);
+  };
+
+  const closeVideoModal = () => {
+    setIsVideoModalOpen(false);
+    setCurrentVideoUrl('');
+  };
+
+  // Close modal on escape key press
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === 'Escape' && isVideoModalOpen) {
+        closeVideoModal();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isVideoModalOpen]);
+
   const mainFeatures = [
     {
       id: 0,
-      title: "AI Disease Detection",
-      subtitle: "95% accuracy across 14 crops",
-      description: "Advanced computer vision technology that identifies crop diseases, pests, and nutrient deficiencies using dual AI models for both images and videos.",
-      icon: Bug,
-      color: "from-red-500 to-red-600",
+      title: "Farm Profiles",
+      subtitle: "Complete farm management system",
+      description: "Comprehensive farm profile management allowing you to create, edit, and organize multiple farms with detailed information and weather forecasting.",
+      icon: User,
+      color: "from-green-500 to-green-600",
+      videoUrl: "https://api.agrivisionlabs.tech/uploads/farm_profile.mp4",
       benefits: [
-        "Early detection prevents crop loss",
-        "Supports 14 crops with 38 disease classes",
-        "Dual model system for images and videos",
-        "Treatment recommendations included"
+        "Create and manage multiple farm profiles",
+        "Weather forecast based on location",
+        "Detailed farm information storage",
+        "Easy switching between farms"
       ],
       techSpecs: [
-        "Two specialized models trained on 60,000+ images",
-        "Image analysis: Almost instant detection",
-        "Video analysis: ~1 minute processing time",
-        "95% accuracy rate across all supported crops"
+        "Multi-farm support",
+        "Location-based weather integration",
+        "Custom farm details",
+        "Weather forecasting system"
       ]
     },
     {
       id: 1,
-      title: "Smart Irrigation",
-      subtitle: "40% water reduction guaranteed",
-      description: "Intelligent water management system that optimizes irrigation schedules based on soil moisture.",
-      icon: Droplets,
+      title: "Subscription",
+      subtitle: "Flexible pricing plans",
+      description: "Comprehensive subscription management with multiple pricing tiers to fit farms of all sizes and requirements.",
+      icon: CreditCard,
       color: "from-blue-500 to-blue-600",
+      videoUrl: "https://api.agrivisionlabs.tech/uploads/subscription.mp4",
       benefits: [
-        "Reduces water usage by up to 40%",
-        "Prevents over/under watering",
-        "Automated scheduling",
-        "Remote control via mobile app"
+        "Multiple subscription tiers",
+        "Secure payment processing",
+        "Easy plan upgrades/downgrades",
+        "Transparent pricing"
       ],
       techSpecs: [
-        "IoT soil moisture sensors",
-        "Weather API integration",
-        "Compatible with existing irrigation systems"
+        "Stripe payment integration",
+        "Monthly/yearly billing",
+        "Plan comparison tools",
+        "Automated billing management"
       ]
     },
     {
       id: 2,
-      title: "Reports & Analytics",
-      subtitle: "Data-driven insights",
-      description: "Comprehensive analytics dashboard that generates detailed reports and insights based on your farm activities, user inputs, and system actions.",
-      icon: BarChart3,
-      color: "from-green-500 to-green-600",
+      title: "Irrigation Control",
+      subtitle: "Smart water management",
+      description: "Advanced irrigation control system that allows remote monitoring and control of irrigation units with smart scheduling and automation.",
+      icon: Droplets,
+      color: "from-cyan-500 to-cyan-600",
+      videoUrl: "https://api.agrivisionlabs.tech/uploads/irrigation_control.mp4",
       benefits: [
-        "Detailed activity reports",
-        "User input analysis",
-        "System action tracking",
-        "Data visualization charts",
-        "Performance monitoring"
+        "Remote irrigation control",
+        "Smart scheduling system",
+        "Water usage optimization",
+        "Real-time monitoring"
       ],
       techSpecs: [
-        "Real-time data processing",
-        "Custom report generation",
-        "Interactive dashboard",
-        "Export capabilities"
+        "IoT device integration",
+        "Mobile app control",
+        "Automated scheduling",
+        "Usage analytics"
       ]
     },
     {
       id: 3,
-      title: "Mobile Command Center",
-      subtitle: "Farm management anywhere",
-      description: "Complete mobile management platform that puts your entire farm operation in your pocket with real-time monitoring and control.",
-      icon: Smartphone,
+      title: "Sensors & Devices",
+      subtitle: "IoT monitoring network",
+      description: "Comprehensive sensor and device management system for monitoring soil conditions, weather data, and environmental factors.",
+      icon: Cpu,
       color: "from-purple-500 to-purple-600",
+      videoUrl: "https://api.agrivisionlabs.tech/uploads/sensors_devices.mp4",
       benefits: [
-        "Monitor farms from anywhere",
-        "Real-time alerts and notifications",
-        "Remote device control",
-        "Offline functionality",
-        "Team collaboration tools"
+        "Real-time sensor monitoring",
+        "Device health tracking",
+        "Environmental data collection",
+        "Alert notifications"
       ],
       techSpecs: [
-        "iOS and Android apps",
-        "Offline synchronization",
-        "Push notifications"
+        "Multiple sensor types",
+        "Wireless connectivity",
+        "Battery monitoring",
+        "Data visualization"
+      ]
+    },
+    {
+      id: 4,
+      title: "Disease Detection",
+      subtitle: "AI-powered diagnostics",
+      description: "Advanced AI disease detection system that identifies crop diseases, pests, and nutrient deficiencies from images and videos.",
+      icon: Bug,
+      color: "from-red-500 to-red-600",
+      videoUrl: "https://api.agrivisionlabs.tech/uploads/disease_detection.mp4",
+      benefits: [
+        "AI-powered disease identification",
+        "Early detection capabilities",
+        "Treatment recommendations",
+        "Image and video analysis"
+      ],
+      techSpecs: [
+        "95% accuracy rate",
+        "14 crop types supported",
+        "Dual AI models",
+        "Instant results"
       ]
     }
   ];
@@ -130,44 +182,44 @@ const FeaturesPage = () => {
 
   const additionalFeatures = [
     {
-      icon: Sprout,
-      title: "Crop Selection",
-      description: "Choose the right crop at the right time – no guesswork, just data."
+      icon: User,
+      title: "Farm Profiles",
+      description: "Create and manage comprehensive farm profiles with weather forecasting and detailed information."
     },
     {
-      icon: Droplet,
-      title: "Smart Irrigation",
-      description: "Connect field devices to remotely control and monitor irrigation units in real time."
+      icon: CreditCard,
+      title: "Subscription Management",
+      description: "Flexible pricing plans with secure payment processing and easy plan management."
+    },
+    {
+      icon: Droplets,
+      title: "Irrigation Control",
+      description: "Smart irrigation control with remote monitoring and automated scheduling systems."
+    },
+    {
+      icon: Cpu,
+      title: "Sensors & Devices",
+      description: "Real-time monitoring of soil moisture, temperature, and environmental data through IoT sensors."
     },
     {
       icon: Bug,
       title: "Disease Detection",
-      description: "AI models detect signs of disease from images and video data."
-    },
-    {
-      icon: UsersRound,
-      title: "Multi-Tenant",
-      description: "Seamlessly manage multiple farms under one account with robust tenant separation."
-    },
-    {
-      icon: Cpu,
-      title: "Sensor Integration",
-      description: "Real-time monitoring of soil moisture, temperature, and environmental data."
+      description: "AI-powered disease identification from images and videos with treatment recommendations."
     },
     {
       icon: ClipboardCheck,
       title: "Task Management",
-      description: "Stay ahead of the season with streamlined task scheduling – no confusion, just coordination."
+      description: "Stay ahead of the season with streamlined task scheduling and team coordination."
     },
     {
       icon: Archive,
-      title: "Inventory Logging",
-      description: "Record actual harvest and compare against forecasts."
+      title: "Inventory Management",
+      description: "Comprehensive inventory tracking with harvest logging and forecasting capabilities."
     },
     {
       icon: ChartColumn,
-      title: "Reports & Analytics",
-      description: "Generate detailed reports and gain actionable insights with ease."
+      title: "Analytics & Reports",
+      description: "Generate detailed reports and gain actionable insights with advanced data visualization."
     }
   ];
 
@@ -295,7 +347,10 @@ const FeaturesPage = () => {
                 </div>
               </div>
 
-              <button className="bg-[#1E6930] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#0F4A1A] transition-all flex items-center space-x-2">
+              <button 
+                onClick={() => openVideoModal(activeFeatureData.videoUrl)}
+                className="bg-[#1E6930] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#0F4A1A] transition-all flex items-center space-x-2 w-fit"
+              >
                 <Play className="h-5 w-5" />
                 <span>Watch Demo</span>
               </button>
@@ -396,6 +451,39 @@ const FeaturesPage = () => {
           </p>
         </div>
       </section>
+
+      {/* Video Modal */}
+      {isVideoModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4"
+          onClick={closeVideoModal}
+        >
+          <div className="relative w-full max-w-4xl mx-auto">
+            <button
+              onClick={closeVideoModal}
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <div 
+              className="bg-black rounded-lg overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <video
+                src={currentVideoUrl}
+                controls
+                autoPlay
+                className="w-full h-auto max-h-[70vh] object-contain"
+                onError={(e) => {
+                  console.error('Video failed to load:', e);
+                }}
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="border-t border-[#E5E7EB] py-10 px-5">

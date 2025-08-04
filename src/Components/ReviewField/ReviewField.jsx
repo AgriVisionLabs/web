@@ -166,38 +166,50 @@ const ReviewField = (children) => {
               Irrigation Units
             </p>
             <div className=" flex flex-col gap-2  h-[80px] overflow-y-auto">
-              {children.FieldData.IrrigationUnit?.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col bg-[#1e693021] py-2 px-5 my-1 rounded-lg"
-                >
-                  <p className="capitalize text-[15px] py-1">{item.name}</p>
-                  <p className="text-[13px] text-[#757575]">
-                    {item.serialNumber}
-                  </p>
+              {children.FieldData.IrrigationUnit?.length > 0 ? (
+                children.FieldData.IrrigationUnit.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col bg-[#1e693021] py-2 px-5 my-1 rounded-lg"
+                  >
+                    <p className="capitalize text-[15px] py-1">{item.name}</p>
+                    <p className="text-[13px] text-[#757575]">
+                      {item.serialNumber}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-500 text-[14px]">
+                  <p>No irrigation units added</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
           <div className=" flex-grow ">
             <p className="text-[16px] text-[#0b0b0bd8] font-semibold my-1">
-              Sensors Units
+              Sensor Units
             </p>
             <div className=" flex flex-col gap-2  h-[80px] overflow-y-auto">
-              {children.FieldData.SensorUnit?.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col bg-[#1e693021] py-2 px-5 my-1 rounded-lg"
-                >
-                  <p className="capitalize text-[15px] py-1">{item.name}</p>
-                  <p className="text-[13px] text-[#757575]">
-                    {item.serialNumber}
-                  </p>
+              {children.FieldData.SensorUnit?.length > 0 ? (
+                children.FieldData.SensorUnit.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col bg-[#1e693021] py-2 px-5 my-1 rounded-lg"
+                  >
+                    <p className="capitalize text-[15px] py-1">{item.name}</p>
+                    <p className="text-[13px] text-[#757575]">
+                      {item.serialNumber}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-500 text-[14px]">
+                  <p>No sensor units added</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
-          <div className="flex mt-4 justify-between items-center">
+          <div className="flex mt-4 mb-4 justify-between items-center">
             <i
               className="fa-solid fa-angle-left hover:text-mainColor  transition-all duration-300  cursor-pointer text-[22px]"
               onClick={() => {
@@ -208,10 +220,10 @@ const ReviewField = (children) => {
               type="button"
               className="btn self-end w-[150px] rounded-lg py-4 bg-mainColor text-[16px] text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium "
               onClick={() => {
-                createField();
+                setAddField(null);
               }}
             >
-              Create Field
+              Done
             </button>
           </div>
         </form>

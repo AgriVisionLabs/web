@@ -13,8 +13,15 @@ import { motion } from "framer-motion";
 
 const SignUp = () => {
   let { baseUrl } = useContext(AllContext);
-  let { verification, setVerification, setToken, setRefreshToken, setExpiresIn, setTokenExpiration, setRefreshTokenExpiration } =
-    useContext(userContext);
+  let {
+    verification,
+    setVerification,
+    setToken,
+    setRefreshToken,
+    setExpiresIn,
+    setTokenExpiration,
+    setRefreshTokenExpiration,
+  } = useContext(userContext);
   let [check, setCheck] = useState(false);
   const [loading, setLoading] = useState(false);
   // const [showPasswordTooltip, setShowPasswordTooltip] = useState(false);
@@ -85,28 +92,30 @@ const SignUp = () => {
       };
       let { data } = await axios(option);
       console.log("Registration successful:", data);
-      
+
       // Store the email for verification modal
       setVerificationEmail(values.email);
-      
+
       // Show verification email modal after successful registration
       setVerification(true);
-      
     } catch (error) {
       console.log("Registration error:", error);
-      
+
       // Close verification modal if it's open
       setVerification(false);
       setVerificationEmail("");
-      
+
       // Handle specific error cases
       if (error.response?.status === 400) {
-        const errorMessage = error.response?.data?.message || 
-                           error.response?.data?.errors?.[0]?.description || 
-                           "Registration failed. Please check your information.";
+        const errorMessage =
+          error.response?.data?.message ||
+          error.response?.data?.errors?.[0]?.description ||
+          "Registration failed. Please check your information.";
         setSignUpError(errorMessage);
       } else if (error.response?.status === 409) {
-        setSignUpError("This email is already registered. Please use a different email or try logging in.");
+        setSignUpError(
+          "This email is already registered. Please use a different email or try logging in."
+        );
       } else {
         setSignUpError("Registration failed. Please try again later.");
       }
@@ -227,21 +236,29 @@ const SignUp = () => {
       }
 
       // Calculate token expiration time
-      const tokenExpirationTime = new Date(Date.now() + (data.expiresIn * 60 * 1000));
+      const tokenExpirationTime = new Date(
+        Date.now() + data.expiresIn * 60 * 1000
+      );
 
       // Store the JWT tokens and expiration data
       localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.id);
       localStorage.setItem("expiresIn", data.expiresIn);
-      localStorage.setItem("tokenExpiration", tokenExpirationTime.toISOString());
-      
+      localStorage.setItem(
+        "tokenExpiration",
+        tokenExpirationTime.toISOString()
+      );
+
       if (data.refreshToken) {
         localStorage.setItem("refreshToken", data.refreshToken);
         setRefreshToken(data.refreshToken);
       }
-      
+
       if (data.refreshTokenExpiration) {
-        localStorage.setItem("refreshTokenExpiration", data.refreshTokenExpiration);
+        localStorage.setItem(
+          "refreshTokenExpiration",
+          data.refreshTokenExpiration
+        );
         setRefreshTokenExpiration(data.refreshTokenExpiration);
       }
 
@@ -396,7 +413,7 @@ const SignUp = () => {
       // Render Google button with proper configuration - wait for Google to be ready
       let retryCount = 0;
       const maxRetries = 25; // Maximum 5 seconds of retries (25 * 200ms)
-      
+
       const renderGoogleButton = () => {
         const buttonContainer = document.getElementById("google-signup-button");
         if (buttonContainer && window.google?.accounts?.id) {
@@ -418,13 +435,19 @@ const SignUp = () => {
             showFallbackButton(buttonContainer);
           }
         } else if (retryCount < maxRetries) {
-          console.log(`Google OAuth not ready, retrying... (${retryCount + 1}/${maxRetries})`);
+          console.log(
+            `Google OAuth not ready, retrying... (${
+              retryCount + 1
+            }/${maxRetries})`
+          );
           retryCount++;
           setTimeout(renderGoogleButton, 200);
         } else {
           console.error("Google OAuth failed to load after maximum retries");
           // Show fallback message
-          const buttonContainer = document.getElementById("google-signup-button");
+          const buttonContainer = document.getElementById(
+            "google-signup-button"
+          );
           if (buttonContainer) {
             showFallbackButton(buttonContainer);
           }
@@ -469,24 +492,6 @@ const SignUp = () => {
     }
   };
 
-  const handleFacebookLogin = async () => {
-    setSocialLoading(true);
-    setSignUpError("");
-
-    try {
-      // For demo purposes, simulate successful signup
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Demo: Navigate to dashboard
-      navigate("/dashboard");
-    } catch (error) {
-      setSignUpError("Facebook signup failed. Please try again.");
-      console.log(error);
-    } finally {
-      setSocialLoading(false);
-    }
-  };
-
   return (
     <section
       className={`${styles.SignUp} h-full min-h-screen w-full font-manrope overflow-auto`}
@@ -494,8 +499,59 @@ const SignUp = () => {
       <div className="h-full w-full">
         <div className="w-full min-h-screen grid grid-cols-1 lg:grid-cols-12 relative overflow-hidden">
           {/* Form Section */}
-          <div className="order-2 lg:order-1 lg:col-span-7 flex justify-center mt-4 lg:items-center px-2 pb-4">
+          <div className="order-2 lg:order-1 col-span-12 lg:col-span-7 flex justify-center mt-4 lg:items-center px-4 lg:px-2 pb-4">
             <div className="w-full md:w-[640px] lg:w-[500px]">
+              {/* Logo for mobile with navigation links */}
+              <div className="relative flex justify-center items-center mb-6 lg:hidden">
+                {/* Back to Home - Absolute positioned left */}
+                <Link
+                  to="/"
+                  className="absolute left-0 flex items-center space-x-1 text-gray-600 hover:text-mainColor transition-colors"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    />
+                  </svg>
+                  <span className="text-sm font-medium">Home</span>
+                </Link>
+
+                {/* Logo - Centered */}
+                <img
+                  src="/blackLogo.png"
+                  className="w-32 h-10"
+                  alt="Agrivision Logo"
+                />
+
+                {/* Login - Absolute positioned right */}
+                <Link
+                  to="/login"
+                  className="absolute right-0 flex items-center space-x-1 text-gray-600 hover:text-mainColor transition-colors"
+                >
+                  <span className="text-sm font-medium">Login</span>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    />
+                  </svg>
+                </Link>
+              </div>
               <h1 className="text-center text-[28px] md:text-[33px] lg:text-[38px] my-5 text-mainColor font-medium">
                 Create your new account
               </h1>
@@ -819,7 +875,7 @@ const SignUp = () => {
                     <div className="border-t border-gray-300 flex-1"></div>
                   </div>
 
-                  <div className="flex justify-center space-x-6">
+                  <div className="flex justify-center">
                     {/* Google Login */}
                     <motion.div
                       onClick={!socialLoading ? handleGoogleLogin : undefined}
@@ -848,22 +904,6 @@ const SignUp = () => {
                         />
                       </svg>
                     </motion.div>
-
-                    {/* Facebook Login */}
-                    <motion.div
-                      onClick={handleFacebookLogin}
-                      className="cursor-pointer"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <svg
-                        className="w-6 h-6"
-                        fill="#1877F2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                      </svg>
-                    </motion.div>
                   </div>
                 </div>
               </form>
@@ -872,7 +912,7 @@ const SignUp = () => {
 
           {/* Background Section */}
           <motion.div
-            className="order-1 lg:order-2 contentAndbg lg:col-span-5 z-10"
+            className="order-1 lg:order-2 contentAndbg hidden lg:block lg:col-span-5 z-10"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}

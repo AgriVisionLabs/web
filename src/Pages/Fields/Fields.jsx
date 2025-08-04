@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useContext, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AllContext } from "../../Context/All.context";
 
 import {
@@ -32,6 +33,7 @@ const Fields = ({ farmId }) => {
   const { SetOpenFarmsOrFieled, addField, setAddField, baseUrl } =
     useContext(AllContext);
   const { token, userId } = useContext(userContext);
+  const navigate = useNavigate();
   const [farmData, setFarmData] = useState(null);
   const [fieldsData, setFieldsData] = useState([]);
   const [membersData, setMembersData] = useState(null);
@@ -71,6 +73,7 @@ const Fields = ({ farmId }) => {
     IrrigationUnit: [],
     SensorUnit: [],
   });
+  const [createdFieldId, setCreatedFieldId] = useState(null);
 
   // function toggleMember() {
   //   [
@@ -204,26 +207,29 @@ const Fields = ({ farmId }) => {
           const data = error.response.data || {};
           let friendly = "Failed to send invitation.";
           let code = "";
-          
+
           if (data.errors && data.errors.length > 0) {
             friendly = data.errors[0].description || friendly;
             code = data.errors[0].code || "";
           }
-          
+
           // Map error codes to friendlier messages
           const errorMap = {
-            "FarmUserRole.UserAlreadyHasAccess": "User already has access to this farm.",
-            "FarmInvitation.InvitationAlreadyExists": "An invitation has already been sent to this user.",
+            "FarmUserRole.UserAlreadyHasAccess":
+              "User already has access to this farm.",
+            "FarmInvitation.InvitationAlreadyExists":
+              "An invitation has already been sent to this user.",
             "FarmInvitation.SelfInvitation": "You cannot invite yourself.",
-            "FarmUserRole.InsufficientPermissions": "You do not have permission to add members.",
+            "FarmUserRole.InsufficientPermissions":
+              "You do not have permission to add members.",
             "User.UserNotFound": "User not found.",
             "FarmRole.RoleNotFound": "Selected role is not valid.",
           };
-          
+
           if (code && errorMap[code]) {
             friendly = errorMap[code];
           }
-          
+
           setInviteServerError(friendly);
         } else if (error.request) {
           setInviteServerError("Network error. Please try again.");
@@ -266,43 +272,43 @@ const Fields = ({ farmId }) => {
   // Delete member function with role-based permissions
   const deleteMember = async (memberId, memberRole) => {
     if (!token || !memberId) return;
-    
+
     const currentUserRole = farmData.roleName?.toLowerCase();
     const targetRole = memberRole?.toLowerCase();
-    
+
     // Role-based permission checks
-    if (currentUserRole === 'manager') {
+    if (currentUserRole === "manager") {
       // Manager can't delete owner or other managers
-      if (targetRole === 'owner' || targetRole === 'manager') {
-        toast.error('You don\'t have permission to remove this member');
+      if (targetRole === "owner" || targetRole === "manager") {
+        toast.error("You don't have permission to remove this member");
         return;
       }
     }
-    
+
     try {
       const response = await axios({
         url: `${baseUrl}/farms/${farmId}/members/${memberId}`,
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      
+
       if (response.status >= 200 && response.status < 300) {
-        toast.success('Member removed successfully');
+        toast.success("Member removed successfully");
         // Refresh team data
         refreshTeamData();
       }
     } catch (error) {
-      console.error('Error deleting member:', error);
-      toast.error(error.response?.data?.message || 'Failed to remove member');
+      console.error("Error deleting member:", error);
+      toast.error(error.response?.data?.message || "Failed to remove member");
     }
   };
 
   // Helper function to refresh team data
   const refreshTeamData = () => {
     getmembers();
-    if (['owner', 'manager'].includes(farmData.roleName?.toLowerCase())) {
+    if (["owner", "manager"].includes(farmData.roleName?.toLowerCase())) {
       getPendingInvites();
     }
   };
@@ -377,6 +383,20 @@ const Fields = ({ farmId }) => {
               </div>
             </div>
             <div className="flex md:mt-5 md:ms-auto gap-5 relative">
+              {/* Show Analytics icon for owners and experts only */}
+              {["owner", "expert"].includes(
+                farmData.roleName?.toLowerCase()
+              ) && (
+                <SquareKanban
+                  className="transition-all duration-200 hover:text-[#e42ad2] cursor-pointer"
+                  onClick={() => {
+                    // Navigate to analytics page
+                    navigate('/analytics');
+                  }}
+                  title="View Analytics & Reports"
+                />
+              )}
+
               {/* Show Users icon based on role permissions */}
               {["owner", "manager"].includes(
                 farmData.roleName?.toLowerCase()
@@ -404,7 +424,6 @@ const Fields = ({ farmId }) => {
                     className="transition-all duration-200 hover:text-mainColor cursor-pointer"
                     onClick={() => setShowEditFarm(true)}
                   />
-                  <SquareKanban className="transition-all duration-200 hover:text-[#e42ad2] cursor-pointer" />
                   <Trash2
                     className="transition-all duration-200 hover:text-[#f02929] cursor-pointer"
                     onClick={() => setShowDeleteConfirm(true)}
@@ -523,21 +542,32 @@ const Fields = ({ farmId }) => {
       )}
       {addField == 1 ? (
         <div className="fixed z-50 inset-0">
-          <AddNewField 
-            setFieldData={setFieldData} 
-            setCropType={setCropType} 
+          <AddNewField
+            setFieldData={setFieldData}
+            setCropType={setCropType}
             farmId={farmId}
             getFields={getFields}
             userRole={farmData?.roleName?.toLowerCase()}
+            setCreatedFieldId={setCreatedFieldId}
           />
         </div>
       ) : addField == 2 ? (
         <div className="fixed z-50 inset-0">
-          <Irrigation setFieldData={setFieldData} FieldData={FieldData} />
+          <Irrigation 
+            setFieldData={setFieldData} 
+            FieldData={FieldData}
+            farmId={farmId}
+            fieldId={createdFieldId}
+          />
         </div>
       ) : addField == 3 ? (
         <div className="fixed z-50 inset-0">
-          <Sensors setFieldData={setFieldData} FieldData={FieldData} />
+          <Sensors 
+            setFieldData={setFieldData} 
+            FieldData={FieldData}
+            farmId={farmId}
+            fieldId={createdFieldId}
+          />
         </div>
       ) : addField == 4 ? (
         <div className="fixed z-50 inset-0">
@@ -626,7 +656,9 @@ const Fields = ({ farmId }) => {
               duration: 0.4,
               ease: [0.23, 1, 0.32, 1],
             }}
-            className={`w-[600px] ${inviteServerError ? "h-[720px]" : "h-[680px]"} border-2 rounded-2xl bg-white flex flex-col items-center`}
+            className={`w-[600px] ${
+              inviteServerError ? "h-[720px]" : "h-[680px]"
+            } border-2 rounded-2xl bg-white flex flex-col items-center`}
           >
             <div className="w-[90%] mt-5 text-[22px] flex justify-end">
               <i
@@ -675,30 +707,35 @@ const Fields = ({ farmId }) => {
                   <div className="space-y-3">
                     {membersData && membersData.length > 0 ? (
                       membersData.map((member, index) => {
-                        const currentUserRole = farmData.roleName?.toLowerCase();
+                        const currentUserRole =
+                          farmData.roleName?.toLowerCase();
                         const memberRole = member.roleName?.toLowerCase();
                         const isCurrentUser = member.memberId === userId;
-                        
+
                         // Determine if current user can delete this member
                         const canDelete = (() => {
                           // Users can't delete themselves
                           if (isCurrentUser) return false;
-                          
+
                           // Owner can delete anyone except themselves
-                          if (currentUserRole === 'owner') return true;
-                          
+                          if (currentUserRole === "owner") return true;
+
                           // Manager can only delete members they invited and cannot delete owners or other managers
-                          if (currentUserRole === 'manager') {
+                          if (currentUserRole === "manager") {
                             // Can't delete owners or other managers
-                            if (memberRole === 'owner' || memberRole === 'manager') return false;
+                            if (
+                              memberRole === "owner" ||
+                              memberRole === "manager"
+                            )
+                              return false;
                             // Can only delete members they invited themselves
                             return member.invitedById === userId;
                           }
-                          
+
                           // Workers and experts can't delete anyone
                           return false;
                         })();
-                        
+
                         return (
                           <div
                             key={member.memberId || index}
@@ -713,7 +750,9 @@ const Fields = ({ farmId }) => {
                                   </span>
                                 )}
                               </p>
-                              <p className="text-sm text-[#6c757d] mt-1">{member.email}</p>
+                              <p className="text-sm text-[#6c757d] mt-1">
+                                {member.email}
+                              </p>
                             </div>
                             <div className="flex items-center space-x-3">
                               <div className="px-3 py-2 bg-white border border-[#0d121c21] rounded-xl text-sm font-medium text-mainColor capitalize">
@@ -722,7 +761,12 @@ const Fields = ({ farmId }) => {
                               {canDelete && (
                                 <i
                                   className="fa-solid fa-x text-[16px] text-gray-400 hover:text-red-600 transition-all duration-300 cursor-pointer p-2"
-                                  onClick={() => deleteMember(member.memberId, member.roleName)}
+                                  onClick={() =>
+                                    deleteMember(
+                                      member.memberId,
+                                      member.roleName
+                                    )
+                                  }
                                   title="Remove member"
                                 ></i>
                               )}
@@ -732,7 +776,9 @@ const Fields = ({ farmId }) => {
                       })
                     ) : (
                       <div className="text-center py-12">
-                        <p className="text-[#6c757d] text-[16px]">No members found</p>
+                        <p className="text-[#6c757d] text-[16px]">
+                          No members found
+                        </p>
                       </div>
                     )}
                   </div>
@@ -748,10 +794,12 @@ const Fields = ({ farmId }) => {
                       {/* Server Error Display */}
                       {inviteServerError && (
                         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md w-full text-center">
-                          <p className="text-red-600 text-sm font-medium">{inviteServerError}</p>
+                          <p className="text-red-600 text-sm font-medium">
+                            {inviteServerError}
+                          </p>
                         </div>
                       )}
-                      
+
                       {/* Invite Form */}
                       <form
                         className="flex items-center justify-center space-x-3"
@@ -764,8 +812,10 @@ const Fields = ({ farmId }) => {
                             <div className="relative group">
                               <i className="fa-solid fa-info-circle text-gray-400 hover:text-gray-600 cursor-help text-sm"></i>
                               <div className="absolute left-0 top-full mt-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                                Input must be:<br/>
-                                &bull; Username with at least 3 characters<br/>
+                                Input must be:
+                                <br />
+                                &bull; Username with at least 3 characters
+                                <br />
                                 &bull; or a valid email address
                                 <div className="absolute bottom-full left-3 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
                               </div>
@@ -780,7 +830,8 @@ const Fields = ({ farmId }) => {
                             onBlur={inviteFormik.handleBlur}
                             autoComplete="off"
                             className={`py-2.5 px-2 border mt-2 text-[16px] w-[100%] rounded-xl ${
-                              inviteFormik.touched.recipient && inviteFormik.errors.recipient
+                              inviteFormik.touched.recipient &&
+                              inviteFormik.errors.recipient
                                 ? "border-red-500 text-red-500 placeholder-red-400"
                                 : "border-[#0d121c21]"
                             }`}
@@ -789,10 +840,16 @@ const Fields = ({ farmId }) => {
                         <div>
                           <label>Role</label>
                           <MenuElement
-                            Items={farmData.roleName?.toLowerCase() === 'owner' ? roleOptions : roleOptions.slice(0, 2)}
+                            Items={
+                              farmData.roleName?.toLowerCase() === "owner"
+                                ? roleOptions
+                                : roleOptions.slice(0, 2)
+                            }
                             name={"manager"}
                             width={140 + "px"}
-                            Pformat={"text-[16px] font-[400]  select-none  text-[#000] "}
+                            Pformat={
+                              "text-[16px] font-[400]  select-none  text-[#000] "
+                            }
                             className={
                               "rounded-xl border-[1px] mt-2 px-2 py-2.5 border-[#0d121c21]"
                             }
@@ -802,11 +859,12 @@ const Fields = ({ farmId }) => {
                             setIndex={setInviteIndex}
                             index={inviteIndex}
                           />
-                          {inviteFormik.touched.roleName && inviteFormik.errors.roleName && (
-                            <i className="text-red-600 text-sm mt-1">
-                              {inviteFormik.errors.roleName}
-                            </i>
-                          )}
+                          {inviteFormik.touched.roleName &&
+                            inviteFormik.errors.roleName && (
+                              <i className="text-red-600 text-sm mt-1">
+                                {inviteFormik.errors.roleName}
+                              </i>
+                            )}
                         </div>
                         <button
                           type="submit"

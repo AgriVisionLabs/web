@@ -1,97 +1,68 @@
-import { useContext, useEffect } from "react";
-import * as signalR from "@microsoft/signalr";
 import { Droplet, Thermometer, Wind } from "lucide-react";
-import { AllContext } from "../../Context/All.context";
-const SensorItem = ({farmId,accessToken,latestReadings,setLatestReadings }) => {
-    let {baseUrl}=useContext(AllContext)
-        console.log(farmId,accessToken,latestReadings)
-    useEffect(() => {
-        const connection = new signalR.HubConnectionBuilder()
-        .withUrl(`${baseUrl}/hubs/sensors`, {
-            accessTokenFactory: () => accessToken,
-        })
-        .withAutomaticReconnect()
-        .build();
 
-        // Safe handler that figures out the shape of incoming data
-        connection.on("ReceiveReading", (...args) => {
-        console.log("📡 ReceiveReading fired with args:", args);
+const SensorItem = ({ sensorUnit, latestReadings }) => {
+    // Get the readings for this specific sensor unit
+    const sensorReading = latestReadings[sensorUnit.id];
+    
+    console.log(`📊 Sensor reading for ${sensorUnit.name}:`, sensorReading);
 
-        if (args.length === 2) {
-            const [unitId, data] = args;
-            console.log("✅ Interpreted as unitId + data:", unitId, data);
+    // Helper function to format moisture percentage
+    const formatMoisture = (moisture) => {
+        if (moisture === null || moisture === undefined) return '--';
+        const value = Math.max(0, parseFloat(moisture)); // Ensure non-negative
+        return `${String(value).split(".")[0]}%`;
+    };
 
-            if (data && data.readings) {
-            setLatestReadings((prev) => ({
-                ...prev,
-                [unitId]: {
-                unitId,
-                readings: data.readings,
-                },
-            }));
-            } else {
-            console.warn("⚠️ Received data has no 'readings' field:", data);
-            }
-        } else if (args.length === 1) {
-            const payload = args[0];
-            console.log("✅ Interpreted as single payload:", payload);
+    // If no readings available, show default values or loading state
+    if (!sensorReading || !sensorReading.readings) {
+        return (
+            <div className="grid grid-cols-3 px-[16px] sm:px-[20px] xl:px-[24px] font-manrope gap-[4px] sm:gap-[6px] xl:gap-[8px] mt-[12px] sm:mt-[14px] xl:mt-[16px]">
+                <div className="flex flex-col items-center justify-around py-[8px] sm:py-[10px] min-w-0 h-[80px] sm:h-[90px] xl:h-[104px] rounded-[10px] sm:rounded-[12px] xl:rounded-[15px] bg-[rgba(8,159,252,0.1)]">
+                    <Droplet size={16} className="sm:w-[18px] sm:h-[18px] xl:w-[20px] xl:h-[20px] text-[#089FFC] flex-shrink-0"/>
+                    <p className="text-[12px] sm:text-[14px] xl:text-[15px] font-semibold">--</p>
+                    <p className="text-[#757575] text-[10px] sm:text-[11px] xl:text-[12px] font-medium capitalize">moisture</p>
+                </div>
+                <div className="flex flex-col items-center justify-around py-[8px] sm:py-[10px] min-w-0 h-[80px] sm:h-[90px] xl:h-[104px] rounded-[10px] sm:rounded-[12px] xl:rounded-[15px] bg-[rgba(209,42,0,0.1)]">
+                    <Thermometer size={16} className="sm:w-[18px] sm:h-[18px] xl:w-[20px] xl:h-[20px] text-[#D12A00] flex-shrink-0"/>
+                    <p className="text-[12px] sm:text-[14px] xl:text-[15px] font-semibold">--</p>
+                    <p className="text-[#757575] text-[10px] sm:text-[11px] xl:text-[12px] font-medium capitalize">temp</p>
+                </div>
+                <div className="flex flex-col items-center justify-around py-[8px] sm:py-[10px] min-w-0 h-[80px] sm:h-[90px] xl:h-[104px] rounded-[10px] sm:rounded-[12px] xl:rounded-[15px] bg-[rgba(37,196,98,0.1)]">
+                    <Wind size={16} className="sm:w-[18px] sm:h-[18px] xl:w-[20px] xl:h-[20px] text-[#25C462] flex-shrink-0"/>
+                    <p className="text-[12px] sm:text-[14px] xl:text-[15px] font-semibold">--</p>
+                    <p className="text-[#757575] text-[10px] sm:text-[11px] xl:text-[12px] font-medium capitalize">humidity</p>
+                </div>
+            </div>
+        );
+    }
 
-            if (payload && payload.unitId && payload.readings) {
-            setLatestReadings((prev) => ({
-                ...prev,
-                [payload.unitId]: payload,
-            }));
-            } else {
-            console.warn("⚠️ Malformed payload:", payload);
-            }
-        } else {
-            console.error("❌ Unexpected arguments received in ReceiveReading");
-        }
-        });
-
-        connection
-        .start()
-        .then(() => {
-            console.log("✅ Connected to SignalR hub");
-            return connection.invoke("SubscribeToFarm", farmId);
-        })
-        .then(() => {
-            console.log(`🪴 Subscribed to farm ${farmId}`);
-        })
-        .catch((err) => {
-            console.error("❌ Error during SignalR connection:", err);
-        });
-
-        return () => {
-        connection.stop();
-        };
-    }, [accessToken, farmId, setLatestReadings]);
+    const { readings } = sensorReading;
 
     return (
-        <div className="grid grid-cols-2 px-[24px] sm:grid-cols-3  font-manrope justify-items-center gap-[10px] ">
-        {Object.values(latestReadings).map((sensor, index) => ( 
-            <>
-            <div key={index} className="flex flex-col items-center justify-around py-[10px] w-[120px] h-[104px] rounded-[15px] bg-[rgba(8,159,252,0.1)]">
-                <Droplet className="text-[#089FFC]"/>
-                <p className="text-[15px] font-semibold">{String(sensor.readings.moisture).split(".")[0]}%</p>
-                <p className="text-[#757575] text-[15px] font-medium capitalize">moisture</p>
+        <div className="grid grid-cols-3 px-[16px] sm:px-[20px] xl:px-[24px] font-manrope gap-[4px] sm:gap-[6px] xl:gap-[8px] mt-[12px] sm:mt-[14px] xl:mt-[16px]">
+            <div className="flex flex-col items-center justify-around py-[8px] sm:py-[10px] min-w-0 h-[80px] sm:h-[90px] xl:h-[104px] rounded-[10px] sm:rounded-[12px] xl:rounded-[15px] bg-[rgba(8,159,252,0.1)]">
+                <Droplet size={16} className="sm:w-[18px] sm:h-[18px] xl:w-[20px] xl:h-[20px] text-[#089FFC] flex-shrink-0"/>
+                <p className="text-[12px] sm:text-[14px] xl:text-[15px] font-semibold">
+                    {formatMoisture(readings.moisture)}
+                </p>
+                <p className="text-[#757575] text-[10px] sm:text-[11px] xl:text-[12px] font-medium capitalize">moisture</p>
             </div>
-            <div className="flex flex-col items-center justify-around py-[10px] w-[120px] h-[104px] rounded-[15px] bg-[rgba(209,42,0,0.1)]">
-                <Thermometer className="text-[#D12A00]"/>
-                <p className="text-[15px] font-semibold">{sensor.readings.temperature}°C</p>
-                <p className="text-[#757575] text-[15px] font-medium capitalize">temp</p>
+            <div className="flex flex-col items-center justify-around py-[8px] sm:py-[10px] min-w-0 h-[80px] sm:h-[90px] xl:h-[104px] rounded-[10px] sm:rounded-[12px] xl:rounded-[15px] bg-[rgba(209,42,0,0.1)]">
+                <Thermometer size={16} className="sm:w-[18px] sm:h-[18px] xl:w-[20px] xl:h-[20px] text-[#D12A00] flex-shrink-0"/>
+                <p className="text-[12px] sm:text-[14px] xl:text-[15px] font-semibold">
+                    {readings.temperature ? `${readings.temperature}°C` : '--'}
+                </p>
+                <p className="text-[#757575] text-[10px] sm:text-[11px] xl:text-[12px] font-medium capitalize">temp</p>
             </div>
-            <div className="flex flex-col items-center justify-around py-[10px] w-[120px] h-[104px] rounded-[15px] bg-[rgba(37,196,98,0.1)]">
-                <Wind className="text-[#25C462]"/>
-                <p className="text-[15px] font-semibold">{sensor.readings.humidity}%</p>
-                <p className="text-[#757575] text-[15px] font-medium capitalize">humidity</p>
+            <div className="flex flex-col items-center justify-around py-[8px] sm:py-[10px] min-w-0 h-[80px] sm:h-[90px] xl:h-[104px] rounded-[10px] sm:rounded-[12px] xl:rounded-[15px] bg-[rgba(37,196,98,0.1)]">
+                <Wind size={16} className="sm:w-[18px] sm:h-[18px] xl:w-[20px] xl:h-[20px] text-[#25C462] flex-shrink-0"/>
+                <p className="text-[12px] sm:text-[14px] xl:text-[15px] font-semibold">
+                    {readings.humidity ? `${readings.humidity}%` : '--'}
+                </p>
+                <p className="text-[#757575] text-[10px] sm:text-[11px] xl:text-[12px] font-medium capitalize">humidity</p>
             </div>
-            </>
-        ))}
-
         </div>
     );
-    };
-    
+};
 
 export default SensorItem;

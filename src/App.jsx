@@ -29,15 +29,41 @@ import Tasks from "./Pages/Tasks/Tasks";
 import Analytics from "./Pages/Analytics/Analytics";
 import Settings from "./Pages/Settings/Settings";
 import Inventory from "./Pages/Inventory/Inventory";
+import NotificationsPage from "./Pages/Notifications/Notifications";
 import AuthLayout from "./Components/AuthLayout/AuthLayout";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import SubscriptionSuccess from "./Pages/SubscriptionSuccess/SubscriptionSuccess";
+import SubscriptionFailure from "./Pages/SubscriptionFailure/SubscriptionFailure";
+import PublicRoutes from "./Components/PublicRoutes/PublicRoutes";
+
 //Inventory
 function App() {
   const router = createBrowserRouter([
     { index: true, element: <Landing /> },
-    { path: "/features", element: <Features /> },
-    { path: "/pricing", element: <Pricing /> },
-    { path: "/about", element: <About /> },
+    {
+      path: "/features",
+      element: (
+        <PublicRoutes>
+          <Features />
+        </PublicRoutes>
+      ),
+    },
+    {
+      path: "/pricing",
+      element: (
+        <PublicRoutes>
+          <Pricing />
+        </PublicRoutes>
+      ),
+    },
+    {
+      path: "/about",
+      element: (
+        <PublicRoutes>
+          <About />
+        </PublicRoutes>
+      ),
+    },
     {
       path: "/",
       element: (
@@ -63,32 +89,46 @@ function App() {
         { path: "sensors&devices", element: <SensorsDevices /> },
         { path: "analytics", element: <Analytics /> },
         { path: "disease_detection", element: <HomeDiseaseDetection /> },
+        { path: "notifications", element: <NotificationsPage /> },
         { path: "settings", element: <Settings /> },
         //Settings
         // ]
         // },
       ],
     },
-    { path: "/chat", element: <Chat /> },
+    {
+      path: "/chat",
+      element: (
+        <ProtectedRoute>
+          <Chat />
+        </ProtectedRoute>
+      ),
+    },
 
     {
       path: "/login",
       element: (
-        <AuthLayout>
-          <Login />
-        </AuthLayout>
+        <PublicRoutes>
+          <AuthLayout>
+            <Login />
+          </AuthLayout>
+        </PublicRoutes>
       ),
     },
     {
       path: "/signUp",
       element: (
-        <AuthLayout>
-          <SignUp />
-        </AuthLayout>
+        <PublicRoutes>
+          <AuthLayout>
+            <SignUp />
+          </AuthLayout>
+        </PublicRoutes>
       ),
     },
     { path: "/emailConfirmation", element: <EmailConfirmation /> },
     { path: "/invite/accept", element: <AcceptInvitation /> },
+    { path: "/subscriptions/success", element: <SubscriptionSuccess /> },
+    { path: "/subscriptions/failure", element: <SubscriptionFailure /> },
   ]);
   const myClient = new QueryClient();
   return (

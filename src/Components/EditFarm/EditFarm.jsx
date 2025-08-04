@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { motion } from "framer-motion";
 
+// eslint-disable-next-line react/prop-types
 const EditFarm = ({ farmId, setEdit, display }) => {
   let { indexBI, setIndexBI, baseUrl } = useContext(AllContext);
   let { token } = useContext(userContext);
@@ -110,7 +111,7 @@ const EditFarm = ({ farmId, setEdit, display }) => {
           duration: 0.4,
           ease: [0.23, 1, 0.32, 1],
         }}
-        className="w-[600px] h-min border-2 rounded-2xl bg-white flex flex-col items-center"
+        className="w-[600px] mx-2 h-min border-2 rounded-2xl bg-white flex flex-col items-center"
       >
         <div className="w-[90%] mt-5 text-[22px] flex justify-end">
           <i
@@ -118,91 +119,113 @@ const EditFarm = ({ farmId, setEdit, display }) => {
             onClick={() => setEdit(false)}
           ></i>
         </div>
-        <div className="flex flex-col justify-center items-center mb-5">
+        <div className="flex flex-col justify-center items-center">
           <div className="capitalize mb-5 text-[20px] font-semibold text-mainColor">
             Edit Farm
           </div>
         </div>
 
         <form
-          className="w-[75%] my-5 flex flex-col text-[18px]"
+          className="w-[85%] my-5 flex flex-col text-[18px]"
           onSubmit={formik.handleSubmit}
         >
-            <div className="mb-4">
-              <label htmlFor="name" className="ms-1 block mb-2">
-                Farm Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                placeholder={isLoading ? "Loading..." : (farm ? farm.name : "Farm Name")}
-                className="formControl mx-0 rounded-xl text-[16px] py-5 w-[100%] border-[#0d121c21]"
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                disabled={isLoading}
-              />
-              {formik.touched.name && formik.errors.name && (
-                <div className="text-red-500 text-sm mt-1">{formik.errors.name}</div>
-              )}
-            </div>
+          <div className="mb-4">
+            <label htmlFor="name" className="ms-1 block mb-2">
+              Farm Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder={
+                isLoading ? "Loading..." : farm ? farm.name : "Farm Name"
+              }
+              className="formControl mx-0 rounded-xl text-[16px] py-5 w-[100%] border-[#0d121c21]"
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              disabled={isLoading}
+            />
+            {formik.touched.name && formik.errors.name && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.name}
+              </div>
+            )}
+          </div>
 
-            <div className="mb-4">
-              <label htmlFor="area" className="ms-1 block mb-2">
-                Farm Size (acres)
-              </label>
-              <input
-                type="number"
-                id="area"
-                name="area"
-                placeholder={isLoading ? "Loading..." : (farm ? farm.area : "Farm Size")}
-                className="formControl mx-0 rounded-xl text-[16px] py-5 w-[100%] border-[#0d121c21]"
-                value={formik.values.area}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                disabled={isLoading}
-              />
-              {formik.touched.area && formik.errors.area && (
-                <div className="text-red-500 text-sm mt-1">{formik.errors.area}</div>
-              )}
-            </div>
+          <div className="mb-4">
+            <label htmlFor="area" className="ms-1 block mb-2">
+              Farm Size (acres)
+            </label>
+            <input
+              type="number"
+              id="area"
+              name="area"
+              placeholder={
+                isLoading ? "Loading..." : farm ? farm.area : "Farm Size"
+              }
+              className="formControl mx-0 rounded-xl text-[16px] py-5 w-[100%] border-[#0d121c21]"
+              value={formik.values.area}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              disabled={isLoading}
+            />
+            {formik.touched.area && formik.errors.area && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.area}
+              </div>
+            )}
+          </div>
 
-            <div className="mb-4">
-              <label htmlFor="location" className="ms-1 block mb-2">
-                Farm Location
-              </label>
-              <input
-                type="text"
-                id="location"
-                name="location"
-                placeholder={isLoading ? "Loading..." : (farm ? farm.location : "Farm Location")}
-                className="formControl mx-0 rounded-xl text-[16px] py-5 w-[100%] border-[#0d121c21]"
-                value={formik.values.location}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                disabled={isLoading}
-              />
-              {formik.touched.location && formik.errors.location && (
-                <div className="text-red-500 text-sm mt-1">{formik.errors.location}</div>
-              )}
-            </div>
+          <div className="mb-4">
+            <label htmlFor="location" className="ms-1 block mb-2">
+              Farm Location
+            </label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              placeholder={
+                isLoading
+                  ? "Loading..."
+                  : farm
+                  ? farm.location
+                  : "Farm Location"
+              }
+              className="formControl mx-0 rounded-xl text-[16px] py-5 w-[100%] border-[#0d121c21]"
+              value={formik.values.location}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              disabled={isLoading}
+            />
+            {formik.touched.location && formik.errors.location && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.location}
+              </div>
+            )}
+          </div>
 
-            <div className="mb-6">
-              <label htmlFor="soilType" className="ms-1 block mb-2">
-                Soil Type
-              </label>
-              <MenuElement
-                Items={soilTypes}
-                name={isLoading ? "Loading..." : (farm ? soilTypes[farm.soilType] : "Select Soil Type")}
-                width="100%"
-                nameChange={soilTypes[indexBI]}
-                setIndex={setIndexBI}
-                className="my-2 rounded-xl"
-                textColor="#000"
-                disabled={isLoading}
-              />
-            </div>
+          <div className="mb-6">
+            <label htmlFor="soilType" className="ms-1 block mb-2">
+              Soil Type
+            </label>
+            <MenuElement
+              Items={soilTypes}
+              name={
+                isLoading
+                  ? "Loading..."
+                  : farm
+                  ? soilTypes[farm.soilType]
+                  : "Select Soil Type"
+              }
+              width="100%"
+              nameChange={soilTypes[indexBI]}
+              setIndex={setIndexBI}
+              className="my-2 rounded-xl"
+              textColor="#000"
+              disabled={isLoading}
+            />
+          </div>
 
           <button
             type="submit"

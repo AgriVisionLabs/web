@@ -91,7 +91,7 @@ const About = () => {
       date: "Jul 2025",
       title: "Final Implementation",
       description: "Final deployment, documentation, and project presentation for graduation.",
-      status: "in-progress"
+      status: "completed"
     }
   ];
 
@@ -386,17 +386,17 @@ const About = () => {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Development Progress</span>
-                  <span className="font-medium text-[#1E6930]">90%</span>
+                  <span className="font-medium text-[#1E6930]">100%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div className="bg-[#1E6930] h-3 rounded-full transition-all duration-500" style={{width: '90%'}}></div>
+                  <div className="bg-[#1E6930] h-3 rounded-full transition-all duration-500" style={{width: '100%'}}></div>
                 </div>
                 <p className="text-sm text-gray-600">
-                  Currently in final implementation phase with documentation and project presentation preparation.
+                  Project development completed successfully! Final documentation and presentation have been finalized for graduation.
                 </p>
                 <div className="flex items-center space-x-2 text-sm text-green-600 font-medium">
                   <CheckCircle className="w-4 h-4" />
-                  <span>On Track for Graduation</span>
+                  <span>Project Completed</span>
                 </div>
               </div>
             </div>
@@ -414,15 +414,22 @@ const About = () => {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-2xl mx-auto">
-                <button className="bg-[#1E6930] text-white py-3 px-10 rounded-full font-semibold hover:bg-[#0F4A1A] transition-all duration-300 flex items-center justify-center space-x-2">
+                <Link 
+                  to="/features"
+                  className="bg-[#1E6930] text-white py-3 px-10 rounded-full font-semibold hover:bg-[#0F4A1A] transition-all duration-300 flex items-center justify-center space-x-2"
+                >
                   <Play className="w-5 h-5" />
                   <span>View Project Demo</span>
-                </button>
+                </Link>
                 
-                <button className="border-2 border-[#1E6930] text-[#1E6930] py-3 px-10 rounded-full font-semibold hover:bg-[#1E6930] hover:text-white transition-all duration-300 flex items-center justify-center space-x-2">
+                <a 
+                  href="https://api.agrivisionlabs.tech/uploads/agrivision.pdf"
+                  download="Agrivision_Presentation.pdf"
+                  className="border-2 border-[#1E6930] text-[#1E6930] py-3 px-10 rounded-full font-semibold hover:bg-[#1E6930] hover:text-white transition-all duration-300 flex items-center justify-center space-x-2"
+                >
                   <Download className="w-5 h-5" />
                   <span>Download Presentation</span>
-                </button>
+                </a>
               </div>
             </div>
           </div>

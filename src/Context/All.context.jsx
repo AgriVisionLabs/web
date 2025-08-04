@@ -22,6 +22,7 @@ export default function AllProvider(items) {
   let [detection, setDetection] = useState(false);
   let [onOpenPage, setOnOpenPage] = useState(0);
   let [detectionPage, setDetectionPage] = useState("DiseaseDetectionpage");
+  let [selectedField, setSelectedField] = useState(null);
   let [allFarms, setAllFarms] = useState([]);
   let [onListAddNewSensorStep1, setOnListAddNewSensorStep1] = useState(false);
   let [addNewSensor, setAddNewSensor] = useState(null);
@@ -70,31 +71,7 @@ export default function AllProvider(items) {
   //         }
   //     }
   // }
-  function toggleButton(e) {
-    if (e.target == e.currentTarget) {
-      if (e.target.classList.contains("bg-[#5e5e5f21]")) {
-        e.target.classList.replace("bg-[#5e5e5f21]", "bg-[#1E6930]");
-        e.target.firstElementChild.classList.toggle("ms-[19px]");
-      } else {
-        e.target.classList.replace("bg-[#1E6930]", "bg-[#5e5e5f21]");
-        e.target.firstElementChild.classList.toggle("ms-[19px]");
-      }
-    } else {
-      if (e.target.parentElement.classList.contains("bg-[#5e5e5f21]")) {
-        e.target.parentElement.classList.replace(
-          "bg-[#5e5e5f21]",
-          "bg-[#1E6930]"
-        );
-        e.target.classList.toggle("ms-[19px]");
-      } else {
-        e.target.parentElement.classList.replace(
-          "bg-[#1E6930]",
-          "bg-[#5e5e5f21]"
-        );
-        e.target.classList.toggle("ms-[19px]");
-      }
-    }
-  }
+
   const [valuesForget, setValuesForget] = React.useState([
     "",
     "",
@@ -145,6 +122,8 @@ export default function AllProvider(items) {
         setDetection,
         detectionPage,
         setDetectionPage,
+        selectedField,
+        setSelectedField,
         onListAddNewSensorStep1,
         setOnListAddNewSensorStep1,
         addNewSensor,
@@ -161,7 +140,6 @@ export default function AllProvider(items) {
         setIndexBI,
         allFarms,
         setAllFarms,
-        toggleButton,
       }}
     >
       {children}

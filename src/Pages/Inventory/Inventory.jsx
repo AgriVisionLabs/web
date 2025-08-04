@@ -8,6 +8,7 @@ import {
   DollarSign,
   Edit,
   FileText,
+  MoreVertical,
   Package,
   Plus,
   Trash2,
@@ -17,6 +18,7 @@ import axios from "axios";
 import InventoryManagement from "../../Components/InventoryManagement (Inventory Page)/InventoryManagement";
 import { Helmet } from "react-helmet";
 import EditItem from "../../Components/InventoryManagement (Inventory Page)/EditItem";
+import LogChange from "../../Components/InventoryManagement (Inventory Page)/LogChange";
 
 const Inventory = () => {
   const { baseUrl, getPart } = useContext(AllContext);
@@ -30,16 +32,48 @@ const Inventory = () => {
   const [lowStock, setLow] = useState([]);
   const [expir, setexpire] = useState([]);
   const [openDropdownId, setOpenDropdownId] = useState(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const [logChangeItem, setLogChangeItem] = useState(null);
   let [part, setPart] = useState("all items");
+
+  const calculateDropdownPosition = (buttonElement) => {
+    const rect = buttonElement.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    
+    const position = {
+      top: rect.bottom + scrollTop + 5,
+      left: Math.max(10, rect.right + scrollLeft - 140), // 140px is min-w of dropdown, ensure it doesn't go off-screen
+    };
+    
+    console.log("Dropdown position calculated:", position);
+    return position;
+  };
 
   useEffect(() => {
     const handleClick = (e) => {
-      if (!e.target.closest(".dropdown-action")) {
+      if (!e.target.closest(".dropdown-action") && !e.target.closest(".global-dropdown-menu")) {
         setOpenDropdownId(null);
       }
     };
+    
+    const handleScroll = () => {
+      setOpenDropdownId(null);
+    };
+    
+    const handleResize = () => {
+      setOpenDropdownId(null);
+    };
+    
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
+    
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   async function getFarms() {
@@ -150,12 +184,10 @@ const Inventory = () => {
   }, [farms, indexFarm]);
 
   const categories = [
-    "Irrigation",
-    "Fertilization",
-    "PlantingOrHarvesting",
-    "Maintenance",
-    "Inspection",
-    "PestAndHealthControl",
+    "Fertilizer",
+    "Chemicals", 
+    "Treatments",
+    "Produce",
   ];
 
   const partOptions = [
@@ -167,10 +199,10 @@ const Inventory = () => {
   ];
 
   const partToCategoryLabel = {
-    fertilizers: "Fertilization",
-    chemicals: "PestAndHealthControl",
-    treatments: "Inspection",
-    produce: "PlantingOrHarvesting",
+    fertilizers: "Fertilizer",
+    chemicals: "Chemicals",
+    treatments: "Treatments",
+    produce: "Produce",
   };
 
   console.log(part);
@@ -348,147 +380,256 @@ const Inventory = () => {
         </div>
 
         <div className="mt-[20px]">
-          <div className="rounded-[15px] w-full grid grid-cols-7  border border-[#0d121c37]">
-            <div className=" w-full border-b col-span-7 border-[#0d121c37] text-[#616161] rounded-t-[15px]">
-              <div className="min-w-[700px]  lg:min-w-[900px] xl:min-w-[1000px] 2xl:min-w-[1237px] grid grid-cols-7    text-center space-x-6 text-[16px]  bg-[#F4F4F4]">
-                <p className=" p-[15px]">Name</p>
-                <p className=" p-[15px]">Category</p>
-                <p className=" p-[15px]">Quantity</p>
-                <p className=" p-[15px]">Stock Level</p>
-                <p className=" p-[15px]">Expiry</p>
-                <p className=" p-[15px]">Field</p>
-                <p className=" p-[15px]">Actions</p>
-              </div>
-            </div>
-
-            <div className=" border-b col-span-7 border-[#0d121c37] text-[#616161] rounded-t-[15px]">
-              <div className="min-w-[700px] lg:min-w-[900px] xl:min-w-[1000px] 2xl:min-w-[1237px]">
-                {filteredTableData.length > 0 ? (
-                  filteredTableData.map((item, index) => (
-                    <div
-                      key={item.id || index}
-                      className="grid grid-cols-7 space-x-6 font-medium text-[14px] text-center"
-                    >
-                      {/* Name */}
-                      <div className="p-[15px]">{item.name}</div>
-
-                      {/* Category */}
-                      <div className="p-[15px]">
-                        {categories[item.category]}
+          {/* Mobile Card Layout */}
+          <div className="block md:hidden">
+            {filteredTableData.length > 0 ? (
+              <div className="space-y-4">
+                {filteredTableData.map((item, index) => (
+                  <div
+                    key={item.id || index}
+                    className="bg-white rounded-lg border border-[#0d121c37] p-4 space-y-3"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-semibold text-[16px] text-[#0D121C]">{item.name}</h3>
+                        <p className="text-sm text-[#616161]">{categories[item.category]}</p>
                       </div>
-
-                      {/* Quantity */}
-                      <div className="p-[15px]">
-                        {item.quantity} {item.measurementUnit}
+                      <div className="text-right">
+                        <p className="text-sm font-medium">
+                          {item.quantity} {item.measurementUnit}
+                        </p>
                       </div>
-
-                      {/* Stock Level */}
-                      <div className="p-[15px] text-white">
-                        <div className="flex justify-center w-full items-start">
-                          <p
-                            className={`capitalize flex justify-center items-center px-[12px] rounded-full py-[2px] ${
-                              item.stockLevel === "Low"
-                                ? "bg-[#F04444]"
-                                : item.stockLevel === "Medium"
-                                ? "bg-[#F4731C]"
-                                : "bg-[#25C462]"
-                            }`}
-                          >
-                            {item.stockLevel.toLowerCase()}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Expiry */}
-                      <div className="py-[15px] pl-10">
-                        <div
-                          className={`rounded-full flex items-center ${
-                            expir.includes(item)
-                              ? "text-[#E13939]"
-                              : "text-[#25C462]"
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <div className="flex flex-col space-y-2">
+                        <p
+                          className={`capitalize text-white text-xs px-2 py-1 rounded-full w-fit ${
+                            item.stockLevel === "Low"
+                              ? "bg-[#F04444]"
+                              : item.stockLevel === "Medium"
+                              ? "bg-[#F4731C]"
+                              : "bg-[#25C462]"
                           }`}
                         >
-                          {item.dayTillExpiry <= 0 ? (
-                            <AlertTriangle size={18} />
-                          ) : (
-                            <Clock5 size={18} />
-                          )}
-                          <p className="capitalize ml-2">
-                            {item.dayTillExpiry <= 0
-                              ? "Expired"
-                              : `${item.dayTillExpiry} days`}
+                          {item.stockLevel.toLowerCase()}
+                        </p>
+                        <p className="text-xs text-[#616161]">
+                          Field: {item.fieldName || "N/A"}
+                        </p>
+                      </div>
+                      
+                      <div className="flex flex-col items-end space-y-2">
+                        <div
+                          className={`rounded-full flex items-center text-xs px-2 py-1 ${
+                            expir.includes(item)
+                              ? "text-[#E13939] bg-red-50"
+                              : "text-[#25C462] bg-green-50"
+                          }`}
+                        >
+                          <p>
+                            {expir.includes(item)
+                              ? "Expires Soon"
+                              : "Fresh"}
                           </p>
                         </div>
-                      </div>
-
-                      {/* Field */}
-                      <div className="p-[15px]">{item.fieldName || "N/A"}</div>
-
-                      {/* Actions (اختياري) */}
-                      <div className="p-[15px]">
-                        <div className="relative w-full">
-                          <div
-                            className="flex space-x-[3px] items-center justify-center cursor-pointer"
-                            onClick={() => {
-                              setOpenDropdownId((prev) =>
-                                prev === item.id ? null : item.id
-                              );
-
-                              // setOpenDropdownId((prev) => !prev)
+                        
+                                                <div className="dropdown-action">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              console.log("Mobile dropdown button clicked for item:", item.id);
+                              if (openDropdownId === item.id) {
+                                console.log("Closing mobile dropdown");
+                                setOpenDropdownId(null);
+                              } else {
+                                console.log("Opening mobile dropdown");
+                                const position = calculateDropdownPosition(e.currentTarget);
+                                setDropdownPosition(position);
+                                setOpenDropdownId(item.id);
+                              }
                             }}
-                            // onClick={(e) => {
-                            //   e.currentTarget.nextElementSibling.classList.toggle(
-                            //     "hidden"
-                            //   );
-                            // }}
+                            className="p-1 hover:bg-gray-100 rounded-full"
                           >
-                            <div className="w-[5px] h-[5px] rounded-full bg-black"></div>
-                            <div className="w-[5px] h-[5px] rounded-full bg-black"></div>
-                            <div className="w-[5px] h-[5px] rounded-full bg-black"></div>
-                          </div>
-
-                          {openDropdownId === item.id ? (
-                            <div className="absolute dropdown-action justify-cente space-y-[10px]  w-[150px] top-[10px] left-[50%] translate-x-[-50%] rounded-[15px] border-[1px] bg-white z-20 border-[#0d121c3e] p-[10px] ">
-                              <div
-                                className="flex items-center space-x-3  cursor-pointer"
-                                onClick={() => {
-                                  setItem(item);
-                                  setOpenDialog("edit");
-                                }}
-                              >
-                                <Edit size={20} />
-                                <p className="">Update</p>
-                              </div>
-                              <div className="flex items-center space-x-3 cursor-pointer">
-                                <FileText size={20} />
-                                <p className="">Log Change</p>
-                              </div>
-                              <div
-                                className="flex items-center space-x-3 text-[#E13939] cursor-pointer"
-                                onClick={() => {
-                                  deleteItem(item.id);
-                                }}
-                              >
-                                <Trash2 size={20} />
-                                <p className="">Delete</p>
-                              </div>
-                            </div>
-                          ) : (
-                            ""
-                          )}
+                            <MoreVertical size={16} />
+                          </button>
                         </div>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <div className="col-span-7 text-center py-4 text-[#9F9F9F] font-medium">
-                    No inventory items available.
                   </div>
-                )}
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-10">
+                <p className="text-[#616161]">No inventory items found</p>
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Table Layout */}
+          <div className="hidden md:block">
+            <div className="overflow-x-auto rounded-[15px] border border-[#0d121c37]">
+              <div className="min-w-[700px] lg:min-w-[900px] xl:min-w-[1000px] 2xl:min-w-[1237px]">
+                {/* Table Header */}
+                <div className="grid grid-cols-7 text-center text-[16px] bg-[#F4F4F4] text-[#616161] border-b border-[#0d121c37]">
+                  <div className="p-[15px] font-semibold">Name</div>
+                  <div className="p-[15px] font-semibold">Category</div>
+                  <div className="p-[15px] font-semibold">Quantity</div>
+                  <div className="p-[15px] font-semibold">Stock Level</div>
+                  <div className="p-[15px] font-semibold">Expiry</div>
+                  <div className="p-[15px] font-semibold">Field</div>
+                  <div className="p-[15px] font-semibold">Actions</div>
+                </div>
+
+                {/* Table Body */}
+                <div className="bg-white">
+                  {filteredTableData.length > 0 ? (
+                    filteredTableData.map((item, index) => (
+                      <div
+                        key={item.id || index}
+                        className={`grid grid-cols-7 text-center font-medium text-[14px] hover:bg-gray-50 transition-colors ${
+                          index !== filteredTableData.length - 1 ? 'border-b border-[#0d121c37]' : ''
+                        }`}
+                      >
+                        {/* Name */}
+                        <div className="p-[15px] text-[#0D121C]">{item.name}</div>
+
+                        {/* Category */}
+                        <div className="p-[15px] text-[#616161]">
+                          {categories[item.category]}
+                        </div>
+
+                        {/* Quantity */}
+                        <div className="p-[15px] text-[#0D121C]">
+                          {item.quantity} {item.measurementUnit}
+                        </div>
+
+                        {/* Stock Level */}
+                        <div className="p-[15px]">
+                          <div className="flex justify-center">
+                            <span
+                              className={`capitalize text-white px-[12px] rounded-full py-[2px] text-xs font-medium ${
+                                item.stockLevel === "Low"
+                                  ? "bg-[#F04444]"
+                                  : item.stockLevel === "Medium"
+                                  ? "bg-[#F4731C]"
+                                  : "bg-[#25C462]"
+                              }`}
+                            >
+                              {item.stockLevel.toLowerCase()}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Expiry */}
+                        <div className="p-[15px]">
+                          <span
+                            className={`text-xs font-medium ${
+                              expir.includes(item)
+                                ? "text-[#E13939]"
+                                : "text-[#25C462]"
+                            }`}
+                          >
+                            {expir.includes(item)
+                              ? "Expires Soon"
+                              : "Fresh"}
+                          </span>
+                        </div>
+
+                        {/* Field */}
+                        <div className="p-[15px] text-[#616161]">{item.fieldName || "N/A"}</div>
+
+                        {/* Actions */}
+                        <div className="p-[15px] flex justify-center">
+                          <div className="dropdown-action">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                console.log("Desktop dropdown button clicked for item:", item.id);
+                                if (openDropdownId === item.id) {
+                                  console.log("Closing dropdown");
+                                  setOpenDropdownId(null);
+                                } else {
+                                  console.log("Opening dropdown");
+                                  const position = calculateDropdownPosition(e.currentTarget);
+                                  setDropdownPosition(position);
+                                  setOpenDropdownId(item.id);
+                                }
+                              }}
+                              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                            >
+                              <MoreVertical size={16} className="text-[#616161]" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-10">
+                      <p className="text-[#616161]">No inventory items found</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Global Dropdown Menu */}
+        {openDropdownId && (
+          <div
+            className="global-dropdown-menu fixed bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50 min-w-[140px]"
+            style={{
+              top: `${dropdownPosition.top}px`,
+              left: `${dropdownPosition.left}px`,
+            }}
+          >
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Log Change clicked for item ID:", openDropdownId);
+                const selectedItem = [...filteredTableData].find(item => item.id === openDropdownId);
+                console.log("Selected item:", selectedItem);
+                setLogChangeItem(selectedItem);
+                setOpenDropdownId(null);
+              }}
+              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center space-x-2 text-[#0D121C]"
+            >
+              <FileText size={14} />
+              <span>Log Change</span>
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Update clicked for item ID:", openDropdownId);
+                const selectedItem = [...filteredTableData].find(item => item.id === openDropdownId);
+                console.log("Selected item:", selectedItem);
+                setItem(selectedItem);
+                setOpenDialog("edit");
+                setOpenDropdownId(null);
+              }}
+              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center space-x-2 text-[#0D121C]"
+            >
+              <Edit size={14} />
+              <span>Update</span>
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Delete clicked for item ID:", openDropdownId);
+                deleteItem(openDropdownId);
+                setOpenDropdownId(null);
+              }}
+              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 text-red-600 flex items-center space-x-2"
+            >
+              <Trash2 size={14} />
+              <span>Delete</span>
+            </button>
+          </div>
+        )}
       </section>
       {openDialog === "new" ? (
         <div className="fixed z-50 inset-0">
@@ -514,6 +655,17 @@ const Inventory = () => {
         </div>
       ) : (
         ""
+      )}
+
+      {logChangeItem && (
+        <div className="fixed z-50 inset-0">
+          <LogChange
+            item={logChangeItem}
+            farmId={farms[indexFarm]?.farmId}
+            onClose={() => setLogChangeItem(null)}
+            onSuccess={inventoryItems}
+          />
+        </div>
       )}
     </>
   );

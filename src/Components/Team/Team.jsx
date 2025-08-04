@@ -7,15 +7,8 @@ import { userContext } from "../../Context/User.context";
 import { useFormik } from "formik";
 import { motion } from "framer-motion";
 const Team = (children) => {
-  const {
-    outClick,
-    setTeam,
-    setReview,
-    setBasicInfo,
-    onListItem,
-    setOnListItem,
-    baseUrl,
-  } = useContext(AllContext);
+  const { outClick, setTeam, setReview, onListItem, setOnListItem, baseUrl } =
+    useContext(AllContext);
   const { token } = useContext(userContext);
 
   const [serverError, setServerError] = useState("");
@@ -52,17 +45,13 @@ const Team = (children) => {
       .required("Recipient is required.")
       .min(3, "Recipient must be at least 3 characters.")
       .max(150, "Recipient must not exceed 150 characters.")
-      .test(
-        "email-format",
-        "Invalid email format.",
-        (value) => {
-          if (!value) return true; // handled by required
-          if (value.includes("@")) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-          }
-          return true;
+      .test("email-format", "Invalid email format.", (value) => {
+        if (!value) return true; // handled by required
+        if (value.includes("@")) {
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
         }
-      ),
+        return true;
+      }),
     roleName: string().required("Role is required."),
   });
 
@@ -99,7 +88,9 @@ const Team = (children) => {
         };
         children.setFarmData((prev) => ({
           ...prev,
-          invitations: prev.invitations ? [...prev.invitations, newInvite] : [newInvite],
+          invitations: prev.invitations
+            ? [...prev.invitations, newInvite]
+            : [newInvite],
         }));
 
         resetForm();
@@ -115,10 +106,13 @@ const Team = (children) => {
         }
         // map codes to friendlier messages
         const map = {
-          "FarmUserRole.UserAlreadyHasAccess": "User already has access to this farm.",
-          "FarmInvitation.InvitationAlreadyExists": "An invitation has already been sent to this user.",
+          "FarmUserRole.UserAlreadyHasAccess":
+            "User already has access to this farm.",
+          "FarmInvitation.InvitationAlreadyExists":
+            "An invitation has already been sent to this user.",
           "FarmInvitation.SelfInvitation": "You cannot invite yourself.",
-          "FarmUserRole.InsufficientPermissions": "You do not have permission to add members.",
+          "FarmUserRole.InsufficientPermissions":
+            "You do not have permission to add members.",
           "User.UserNotFound": "User not found.",
           "FarmRole.RoleNotFound": "Selected role is not valid.",
         };
@@ -195,7 +189,7 @@ const Team = (children) => {
           duration: 0.4,
           ease: [0.23, 1, 0.32, 1],
         }}
-        className={`w-[600px] ${popupHeightClass} border-2 rounded-2xl bg-white flex flex-col items-center`}
+        className={`w-[600px] mx-2 ${popupHeightClass} border-2 rounded-2xl bg-white flex flex-col items-center`}
       >
         <div className="w-[90%] mt-5 text-[22px]  flex justify-end">
           <i
@@ -206,10 +200,10 @@ const Team = (children) => {
           ></i>
         </div>
         <div className="flex flex-col justify-center items-center mt-5 mb-[12px]">
-          <div className=" capitalize mb-5 text-[20px] font-semibold text-mainColor">
+          <div className="capitalize mb-5 text-[20px] font-semibold text-mainColor">
             add new farm
           </div>
-          <div className="w-[100%] rounded-xl flex gap-4  items-center">
+          <div className="w-[100%] rounded-xl flex gap-4 items-center">
             <div className="flex flex-col items-center ">
               <div className="w-[35px] h-[35px] text-[20px] text-white flex justify-center items-center bg-mainColor rounded-full">
                 <p className="">1</p>
@@ -236,15 +230,17 @@ const Team = (children) => {
             </div>
           </div>
         </div>
-        <div className="w-[85%] py-4 flex-grow flex flex-col justify-between text-[18px] overflow-y-auto">
+        <div className="w-[90%] py-4 flex-grow flex flex-col justify-between text-[18px] overflow-y-auto">
           <div className="flex flex-col justify-between">
             {serverError && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md w-full text-center">
-                <p className="text-red-600 text-sm font-medium">{serverError}</p>
+                <p className="text-red-600 text-sm font-medium">
+                  {serverError}
+                </p>
               </div>
             )}
             <form
-              className="flex items-center justify-center space-x-3"
+              className="flex flex-col md:flex-row md:items-end md:justify-center space-y-3 md:space-y-0 md:space-x-3"
               onSubmit={formik.handleSubmit}
               autoComplete="off"
             >
@@ -254,8 +250,10 @@ const Team = (children) => {
                   <div className="relative group">
                     <i className="fa-solid fa-info-circle text-gray-400 hover:text-gray-600 cursor-help text-sm"></i>
                     <div className="absolute left-0 top-full mt-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                      Input must be:<br/>
-                      &bull; Username with at least 3 characters<br/>
+                      Input must be:
+                      <br />
+                      &bull; Username with at least 3 characters
+                      <br />
                       &bull; or a valid email address
                       <div className="absolute bottom-full left-3 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
                     </div>
@@ -303,7 +301,7 @@ const Team = (children) => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="rounded-xl mt-8 h-fit py-2.5 px-6 bg-mainColor text-[16px] text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium disabled:opacity-50"
+                className="rounded-xl mt-10 h-fit py-2.5 px-6 bg-mainColor text-[16px] text-white hover:bg-transparent hover:border-mainColor border-2 hover:text-mainColor font-medium disabled:opacity-50"
               >
                 {isLoading ? "Adding..." : "Add"}
               </button>
@@ -316,23 +314,23 @@ const Team = (children) => {
             </p>
             <div className="max-h-[300px] overflow-y-auto">
               {(children.teamMemberList || []).map((item) => (
-                      <div
+                <div
                   key={item.id || item.recipient}
                   className="flex justify-between items-center bg-[#1e693021] py-3 px-5 my-1 rounded-lg"
-                      >
+                >
                   <p className="">
                     {item.receiverEmail || item.recipient || ""}
                   </p>
-                        <div className="flex items-baseline space-x-4">
+                  <div className="flex items-baseline space-x-4">
                     <p className="capitalize ">{item.roleName}</p>
                     {item.id && (
-                          <i
+                      <i
                         className="fa-solid fa-x text-[16px] hover:text-red-700 transition-all duration-300 cursor-pointer"
                         onClick={() => deleteInvitation(item.id)}
-                          ></i>
+                      ></i>
                     )}
-                        </div>
-                      </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -346,7 +344,9 @@ const Team = (children) => {
               }}
             >
               {children.farmData?.invitations &&
-              children.farmData.invitations.filter(inv => inv.recipient && inv.recipient.trim() !== "").length === 0
+              children.farmData.invitations.filter(
+                (inv) => inv.recipient && inv.recipient.trim() !== ""
+              ).length === 0
                 ? "Skip"
                 : "Next"}
               <i className="fa-solid fa-angle-right ms-3"></i>
